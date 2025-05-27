@@ -159,3 +159,8 @@ Route::middleware(['auth:api'])->group(function () {
 // Route::post('group/{group}', [GroupController::class, 'update']);
 // Route::post('section/{section}', [SectionController::class, 'update']);
 // Route::post('learning_activity/{learningActivity}', [LearningActivityController::class, 'update']);
+
+
+Route::get('test', function () {
+    return response()->json(['message' => 'test worked']);
+});
