@@ -17,3 +17,12 @@ php artisan vendor:publish --provider="CloudinaryLabs\CloudinaryLaravel\Cloudina
 
 echo "Running migrations..."
 php artisan migrate --force
+
+echo "Running seeders..."
+php artisan db:seed
+
+echo "Running passport..."
+php artisan passport:client --personal
+
+echo "Running passport..."
+php artisan passprt:keys
