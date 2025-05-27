@@ -27,7 +27,6 @@ use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\Grade\GradeController;
 use App\Http\Controllers\Progress\ProgressController;
 use App\Http\Controllers\Attendance\AttendanceController;
-use Spatie\Permission\Models\Role;
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
@@ -163,6 +162,5 @@ Route::post('login', [AuthController::class, 'login']);
 
 
 Route::get('test', function () {
-    $roles = Role::get();
-    return response()->json(['message' => $roles]);
+    return response()->json(['message' => 'test worked']);
 });
