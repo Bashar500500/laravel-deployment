@@ -1,0 +1,57 @@
+<?php
+namespace App\DataTransferObjects\User;
+
+use App\Http\Requests\User\UserRequest;
+use App\Enums\User\UserRole;
+
+class UserDto
+{
+    public function __construct(
+        public readonly ?int $currentPage,
+        public readonly ?int $pageSize,
+        public readonly ?string $firstName,
+        public readonly ?string $lastName,
+        public readonly ?string $email,
+        public readonly ?string $password,
+        public readonly ?UserRole $role,
+    ) {}
+
+    public static function fromIndexRequest(UserRequest $request): UserDto
+    {
+        return new self(
+            currentPage: $request->validated('page'),
+            pageSize: $request->validated('page_size') ?? 20,
+            firstName: null,
+            lastName: null,
+            email: null,
+            password: null,
+            role: null,
+        );
+    }
+
+    public static function fromStoreRequest(UserRequest $request): UserDto
+    {
+        return new self(
+            currentPage: null,
+            pageSize: null,
+            firstName: $request->validated('first_name'),
+            lastName: $request->validated('last_name'),
+            email: $request->validated('email'),
+            password: $request->validated('password'),
+            role: UserRole::from($request->validated('role')),
+        );
+    }
+
+    public static function fromUpdateRequest(UserRequest $request): UserDto
+    {
+        return new self(
+            currentPage: null,
+            pageSize: null,
+            firstName: $request->validated('first_name'),
+            lastName: $request->validated('last_name'),
+            email: $request->validated('email'),
+            password: $request->validated('password'),
+            role: null,
+        );
+    }
+}

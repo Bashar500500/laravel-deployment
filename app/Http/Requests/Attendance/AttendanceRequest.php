@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Http\Requests\Attendance;
+
+use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\Request\ValidationType;
+use App\Enums\Request\FieldName;
+
+class AttendanceRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    protected function onIndex() {
+        return [
+            'page' => ['required', 'integer', 'gt:0'],
+            'page_size' => ['sometimes', 'integer', 'gt:0'],
+        ];
+    }
+
+    protected function onStore() {
+        return [
+            'section_id' => ['required', 'exists:sections,id'],
+            'student_id' => ['required', 'exists:users,id'],
+            'is_present' => ['required', 'boolean'],
+        ];
+    }
+
+    protected function onUpdate() {
+        return [
+            'is_present' => ['sometimes', 'boolean'],
+        ];
+    }
+
+    public function rules(): array
+    {
+        if (request()->isMethod('get'))
+        {
+            return $this->onIndex();
+        }
+        else if (request()->isMethod('post'))
+        {
+            return $this->onStore();
+        }
+        else
+        {
+            return $this->onUpdate();
+        }
+    }
+
+    // public function messages(): array
+    // {
+    //     return [
+    //         'page.required' => ValidationType::Required->getMessage(),
+    //         'page.integer' => ValidationType::Integer->getMessage(),
+    //         'page.gt' => ValidationType::GreaterThanZero->getMessage(),
+    //         'page_size.integer' => ValidationType::Integer->getMessage(),
+    //         'page_size.gt' => ValidationType::GreaterThanZero->getMessage(),
+    //         'section_id.required' => ValidationType::Required->getMessage(),
+    //         'section_id.exists' => ValidationType::Exists->getMessage(),
+    //         'student_id.required' => ValidationType::Required->getMessage(),
+    //         'student_id.exists' => ValidationType::Exists->getMessage(),
+    //         'is_present.required' => ValidationType::Required->getMessage(),
+    //         'is_present.boolean' => ValidationType::Boolean->getMessage(),
+    //     ];
+    // }
+
+    // public function attributes(): array
+    // {
+    //     return [
+    //         'page' => FieldName::Page->getMessage(),
+    //         'page_size' => FieldName::PageSize->getMessage(),
+    //         'section_id' => FieldName::SectionId->getMessage(),
+    //         'student_id' => FieldName::StudentId->getMessage(),
+    //         'is_present' => FieldName::IsPresent->getMessage(),
+    //     ];
+    // }
+}

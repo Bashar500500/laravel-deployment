@@ -1,0 +1,61 @@
+<?php
+
+return [
+    'index' => [
+        'message' => 's list retrieved successfully.'
+    ],
+    'show' => [
+        'message' => ' retrieved successfully.'
+    ],
+    'store' => [
+        'message' => ' created successfully.'
+    ],
+    'update' => [
+        'message' => ' updated successfully.'
+    ],
+    'delete' => [
+        'message' => ' deleted successfully.'
+    ],
+    'view' => [
+        'message' => ' viewed successfully.'
+    ],
+    'download' => [
+        'message' => ' downloded successfully.'
+    ],
+    'join' => [
+        'message' => ' joind successfully.'
+    ],
+    'leave' => [
+        'message' => ' leaved successfully.'
+    ],
+    'upload' => [
+        'message' => ' uploaded successfully.'
+    ],
+    'register' => [
+        'message' => ' registered successfully.'
+    ],
+    'login' => [
+        'message' => ' logined successfully.'
+    ],
+    'logout' => [
+        'message' => ' logout successfully.'
+    ],
+    'send_reset_code' => [
+        'message' => ' code sent to user email successfully.'
+    ],
+    'verify_reset_code' => [
+        'message' => ' code verifyed successfully.'
+    ],
+    'assign' => [
+        'message' => ' assigned to user successfully.'
+    ],
+    'revoke' => [
+        'message' => ' revoked from user successfully.'
+    ],
+    'student_added_to_course' => [
+        'message' => ' added to course successfully.'
+    ],
+    'remove_added_from_course' => [
+        'message' => ' removed from course successfully.'
+    ],
+];
