@@ -70,6 +70,7 @@ use App\Repositories\Auth\RegisterRepository;
 use App\Repositories\Auth\PasswordResetCodeRepositoryInterface;
 use App\Repositories\Auth\PasswordResetCodeRepository;
 use App\Models\Auth\PasswordResetCode;
+use URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -199,6 +200,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if ($this->app->environment('production'))
+        {
+            URL::forceScheme('https');
+        }
     }
 }
