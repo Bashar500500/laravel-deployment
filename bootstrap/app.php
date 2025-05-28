@@ -19,7 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->appendToGroup('api', 'cors');
+        $middleware->appendToGroup('api', \Illuminate\Routing\Middleware\SubstituteBindings::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->renderable(function (InternalException $exception) {
