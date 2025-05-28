@@ -162,6 +162,10 @@ Route::post('login', [AuthController::class, 'login']);
 
 
 use App\Models\Policy\Policy;
+Route::get('test', function () {
+    return response()->json(['message' => 'test worked']);
+});
+
 Route::get('a', function () {
     $l = Policy::get();
     return response()->json(['message' => 'test worked', 'data' => $l]);
