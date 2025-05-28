@@ -161,6 +161,37 @@ Route::post('login', [AuthController::class, 'login']);
 // Route::post('learning_activity/{learningActivity}', [LearningActivityController::class, 'update']);
 
 
-Route::get('test', function () {
-    return response()->json(['message' => 'test worked']);
+use App\Models\Policy\Policy;
+Route::get('a', function () {
+    $l = Policy::get();
+    return response()->json(['message' => 'test worked', 'data' => $l]);
+});
+
+Route::get('s', function () {
+    $l = Policy::find(1);
+    return response()->json(['message' => 'test worked', 'data' => $l]);
+});
+
+Route::get('c', function () {
+    $l = Policy::create([
+        'name' => 'xx',
+        'category' => 'xx',
+        'description' => 'xx',
+    ]);
+    return response()->json(['message' => 'test worked', 'data' => $l]);
+});
+
+Route::get('u', function () {
+    $l = Policy::find(1);
+    $l = Policy::create([
+        'name' => 'xUx',
+        'category' => 'xUx',
+        'description' => 'xUx',
+    ]);
+    return response()->json(['message' => 'test worked', 'data' => $l]);
+});
+
+Route::get('d', function () {
+    $l = Policy::delete(1);
+    return response()->json(['message' => 'test worked', 'data' => $l]);
 });
