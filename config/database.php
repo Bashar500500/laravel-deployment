@@ -84,17 +84,17 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => 'postgresql://projectdatabase_61x7_user:mmK8h5mv3Qkxznq69S5TuDF3UA70CMh6@dpg-d0s0uae3jp1c73e7ajbg-a/projectdatabase_61x7',
-            'host' => 'dpg-d0s0uae3jp1c73e7ajbg-a',
-            'port' => '5432',
-            'database' => 'projectdatabase_61x7',
-            'username' => 'projectdatabase_61x7_user',
-            'password' => 'mmK8h5mv3Qkxznq69S5TuDF3UA70CMh6',
+            'url' => 'postgresql://postgres.omymvavsbwwcugzzzeuq:uRCf6zMOXNogkRVH@aws-0-eu-central-1.pooler.supabase.com:5432/postgres',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_DATABASE', 'laravel'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => 'uRCf6zMOXNogkRVH',
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'require',
+            'sslmode' => 'prefer',
         ],
 
         'sqlsrv' => [

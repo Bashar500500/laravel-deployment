@@ -9,12 +9,6 @@ php artisan key:generate --show
 echo "Caching config..."
 php artisan config:cache
 
-echo "Caching routes..."
-php artisan route:cache
-
-# echo "Publishing cloudinary provider..."
-# php artisan vendor:publish --provider="CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider" --tags="cloudinary-laravel-config"
-
 echo "Running migrations..."
 php artisan migrate --force
 
@@ -26,3 +20,9 @@ php artisan passport:client --personal
 
 echo "Running passport..."
 php artisan passport:keys
+
+echo "Caching routes..."
+php artisan route:cache
+
+# echo "Publishing cloudinary provider..."
+# php artisan vendor:publish --provider="CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider" --tags="cloudinary-laravel-config"
