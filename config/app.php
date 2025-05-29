@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', true),
+    'debug' => (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://laravel-deployment-x565.onrender.com'),
+    'url' => env('APP_URL', 'https://laravel-deployment-z8gd.onrender.com'),
 
     /*
     |--------------------------------------------------------------------------
