@@ -25,4 +25,4 @@ echo "Running passport..."
 php artisan passport:client --personal
 
 echo "Running passport..."
-php artisan passprt:keys
+php artisan passport:keys

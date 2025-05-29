@@ -84,7 +84,7 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => 'postgresql://projectdatabase_61x7_user:mmK8h5mv3Qkxznq69S5TuDF3UA70CMh6@dpg-d0s0uae3jp1c73e7ajbg-a/projectdatabase_61x7',
+            'url' => 'dpg-d0s0uae3jp1c73e7ajbg-a.oregon-postgres.render.com',
             'host' => 'dpg-d0s0uae3jp1c73e7ajbg-a',
             'port' => '5432',
             'database' => 'projectdatabase_61x7',
