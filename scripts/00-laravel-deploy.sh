@@ -8,8 +8,8 @@ php artisan config:cache
 echo "Caching routes..."
 php artisan route:cache
 
-echo "Publishing cloudinary provider..."
-php artisan vendor:publish --provider="CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider" --tags="cloudinary-laravel-config"
+# echo "Publishing cloudinary provider..."
+# php artisan vendor:publish --provider="CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider" --tags="cloudinary-laravel-config"
 
 # echo "Running serv..."
 # php artisan serv
