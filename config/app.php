@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://laravel-deployment-gyox.onrender.com'),
+    'url' => env('APP_URL', 'https://laravel-deployment-jl5s.onrender.com'),
 
     /*
     |--------------------------------------------------------------------------
