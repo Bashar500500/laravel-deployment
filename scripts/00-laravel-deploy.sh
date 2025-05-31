@@ -17,8 +17,8 @@ php artisan route:cache
 # echo "Running passport..."
 # php artisan passport:client --personal
 
-echo "Running passport..."
-php artisan passport:keys
+# echo "Running passport..."
+# php artisan passport:keys
 
 # echo "Publishing cloudinary provider..."
 # php artisan vendor:publish --provider="CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider" --tags="cloudinary-laravel-config"
