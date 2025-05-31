@@ -86,7 +86,7 @@ Route::middleware(['auth:api'])->prefix('permissions')->group(function () {
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-// Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['auth:api'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::apiResource('chat', ChatController::class)->except(['update']);
     Route::apiResource('message', MessageController::class)->except(['show']);
@@ -151,7 +151,7 @@ Route::post('login', [AuthController::class, 'login']);
     Route::post('add-student-to-course', [UserController::class, 'addStudentToCourse']);
     Route::post('remove-student-from-course', [UserController::class, 'removeStudentFromCourse']);
     Route::apiResource('admin-user', AdminController::class);
-// });
+});
 // Route::apiResource('user', UserController::class)->only(['index']);
 
 
