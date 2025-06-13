@@ -11,7 +11,7 @@ class ProfileGroupsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'course_id' => $this->course_id,
+            'courseId' => $this->course_id,
             'name' => $this->name,
             'description' => $this->description,
         ];

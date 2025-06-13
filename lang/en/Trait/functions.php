@@ -23,7 +23,7 @@ return [
         'message' => ' downloded successfully.'
     ],
     'join' => [
-        'message' => ' joind successfully.'
+        'message' => ' joined successfully.'
     ],
     'leave' => [
         'message' => ' leaved successfully.'

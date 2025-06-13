@@ -28,4 +28,10 @@ return [
     'password_reset_code' => [
         'description' => 'The email and password reset code does not match the values in database. Try again with correct data.'
     ],
+    'project_leader_not_in_course' => [
+        'description' => 'The project leader did not enroll in course. Try again with correct data.'
+    ],
+    'project_group_not_in_course' => [
+        'description' => 'The project group does not exists in course. Try again with correct data.'
+    ],
 ];

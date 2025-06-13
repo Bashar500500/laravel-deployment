@@ -107,8 +107,8 @@ class SectionController extends Controller
         $message = $this->uploadService->uploadSectionFile($request, $section);
 
         return match ($message) {
-            UploadMessage::Image => $this->controller->setFunctionName(FunctionName::Upload)
-                ->setModelName(ModelName::Image)
+            UploadMessage::File => $this->controller->setFunctionName(FunctionName::Upload)
+                ->setModelName(ModelName::File)
                 ->setData((object) [])
                 ->successResponse(),
             UploadMessage::Chunk => $this->controller->setFunctionName(FunctionName::Upload)

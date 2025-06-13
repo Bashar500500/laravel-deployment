@@ -255,7 +255,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
             ]);
         });
 
-        return UploadMessage::Image;
+        return UploadMessage::File;
     }
 
     public function deleteAttachment(int $id, string $fileName): void

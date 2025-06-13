@@ -7,6 +7,9 @@ use App\Http\Requests\Group\GroupRequest;
 use App\Models\Group\Group;
 use App\DataTransferObjects\Group\GroupDto;
 use Illuminate\Support\Facades\Auth;
+use App\Exceptions\CustomException;
+use App\Enums\Trait\ModelName;
+use App\Enums\Exception\ForbiddenExceptionMessage;
 
 class GroupService
 {
@@ -45,12 +48,30 @@ class GroupService
     public function join(Group $group): void
     {
         $data = $this->prepareJoinAndLeaveData();
+        $student = $data['student'];
+
+        if (!is_null($student->userCourseGroups->where('group_id', $group->id)->first()))
+        {
+            throw CustomException::forbidden(ModelName::Group, ForbiddenExceptionMessage::GroupJoinTwice);
+        }
+        else if ($group->students->count() == $group->capacity_max)
+        {
+            throw CustomException::forbidden(ModelName::Group, ForbiddenExceptionMessage::GroupCapacityMax);
+        }
+
         $this->repository->join($group->id, $data);
     }
 
     public function leave(Group $group): void
     {
         $data = $this->prepareJoinAndLeaveData();
+        $student = $data['student'];
+
+        if (is_null($student->userCourseGroups->where('group_id', $group->id)->first()))
+        {
+            throw CustomException::forbidden(ModelName::Group, ForbiddenExceptionMessage::GroupNotJoined);
+        }
+
         $this->repository->leave($group->id, $data);
     }
 
@@ -72,7 +93,7 @@ class GroupService
     private function prepareJoinAndLeaveData(): array
     {
         return [
-            'studentId' => Auth::user()->id,
+            'student' => Auth::user(),
         ];
     }
 }

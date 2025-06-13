@@ -27,6 +27,10 @@ use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\Grade\GradeController;
 use App\Http\Controllers\Progress\ProgressController;
 use App\Http\Controllers\Attendance\AttendanceController;
+use App\Http\Controllers\CommunityAccess\CommunityAccessController;
+use App\Http\Controllers\Project\ProjectController;
+use App\Http\Controllers\Question\QuestionController;
+use App\Http\Controllers\Ticket\TicketController;
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
@@ -151,6 +155,18 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('add-student-to-course', [UserController::class, 'addStudentToCourse']);
     Route::post('remove-student-from-course', [UserController::class, 'removeStudentFromCourse']);
     Route::apiResource('admin-user', AdminController::class);
+    Route::apiResource('question', QuestionController::class);
+    Route::get('view-question-image', [QuestionController::class, 'view']);
+    Route::get('download-question-image', [QuestionController::class, 'download']);
+    Route::post('upload-question-image', [QuestionController::class, 'upload']);
+    Route::delete('delete-question-image', [QuestionController::class, 'destroyAttachment']);
+    Route::apiResource('project', ProjectController::class);
+    Route::get('view-project-file/{project}/{fileName}', [SectionController::class, 'view']);
+    Route::get('download-project-file/{project}', [SectionController::class, 'download']);
+    Route::post('upload-project-file/{project}', [SectionController::class, 'upload']);
+    Route::delete('delete-project-file/{project}/{fileName}', [SectionController::class, 'destroyAttachment']);
+    Route::apiResource('ticket', TicketController::class);
+    Route::apiResource('community-access', CommunityAccessController::class);
 });
 // Route::apiResource('user', UserController::class)->only(['index']);
 

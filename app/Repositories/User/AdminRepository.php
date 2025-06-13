@@ -73,8 +73,60 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
 
         $user = DB::transaction(function () use ($id, $model) {
             $profile = $model->profile;
+            $projects = $model->projects;
+            $ownedCourses = $model->ownedCourses;
+
             $profile->attachments()->delete();
             Storage::disk('local')->deleteDirectory('Profile/' . $profile->id);
+            foreach ($projects as $project)
+            {
+                $project->attachments()->delete();
+                Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+            }
+            foreach ($ownedCourses as $ownedCourse)
+            {
+                $sections = $ownedCourse->sections;
+                $groups = $ownedCourse->groups;
+                $learningActivities = $ownedCourse->learningActivities;
+                $events = $ownedCourse->events;
+                $questions = $ownedCourse->questions;
+                $projects = $ownedCourse->projects;
+
+                foreach ($learningActivities as $learningActivity)
+                {
+                    $learningActivity->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('LearningActivity/' . $learningActivity->id);
+                }
+                foreach ($sections as $section)
+                {
+                    $section->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Section/' . $section->id);
+                }
+                foreach ($groups as $group)
+                {
+                    $group->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Group/' . $group->id);
+                }
+                foreach ($events as $event)
+                {
+                    $event->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Event/' . $event->id);
+                }
+                foreach ($questions as $question)
+                {
+                    $question->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Question/' . $question->id);
+                }
+                foreach ($projects as $project)
+                {
+                    $project->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+                }
+
+                $ownedCourse->attachments()->delete();
+                Storage::disk('local')->deleteDirectory('Course/' . $ownedCourse->id);
+            }
+
             return parent::delete($id);
         });
 

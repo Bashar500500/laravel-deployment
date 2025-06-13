@@ -70,7 +70,18 @@ use App\Repositories\Auth\RegisterRepository;
 use App\Repositories\Auth\PasswordResetCodeRepositoryInterface;
 use App\Repositories\Auth\PasswordResetCodeRepository;
 use App\Models\Auth\PasswordResetCode;
-use URL;
+use App\Repositories\Question\QuestionRepositoryInterface;
+use App\Repositories\Question\QuestionRepository;
+use App\Models\Question\Question;
+use App\Repositories\Project\ProjectRepositoryInterface;
+use App\Repositories\Project\ProjectRepository;
+use App\Models\Project\Project;
+use App\Repositories\Ticket\TicketRepositoryInterface;
+use App\Repositories\Ticket\TicketRepository;
+use App\Models\Ticket\Ticket;
+use App\Repositories\CommunityAccess\CommunityAccessRepositoryInterface;
+use App\Repositories\CommunityAccess\CommunityAccessRepository;
+use App\Models\CommunityAccess\CommunityAccess;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -193,6 +204,26 @@ class AppServiceProvider extends ServiceProvider
             return new PasswordResetCodeRepository($app->make(PasswordResetCode::class),
             );
         });
+
+        $this->app->bind(QuestionRepositoryInterface::class, function (Container $app) {
+            return new QuestionRepository($app->make(Question::class),
+            );
+        });
+
+        $this->app->bind(ProjectRepositoryInterface::class, function (Container $app) {
+            return new ProjectRepository($app->make(Project::class),
+            );
+        });
+
+        $this->app->bind(TicketRepositoryInterface::class, function (Container $app) {
+            return new TicketRepository($app->make(Ticket::class),
+            );
+        });
+
+        $this->app->bind(CommunityAccessRepositoryInterface::class, function (Container $app) {
+            return new CommunityAccessRepository($app->make(CommunityAccess::class),
+            );
+        });
     }
 
     /**
@@ -200,9 +231,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if ($this->app->environment('production'))
-        {
-            URL::forceScheme('https');
-        }
+        //
     }
 }

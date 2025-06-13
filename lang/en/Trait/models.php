@@ -109,4 +109,16 @@ return [
     'email' => [
         'message' => 'Email'
     ],
+    'question' => [
+        'message' => 'Question'
+    ],
+    'project' => [
+        'message' => 'Project'
+    ],
+    'ticket' => [
+        'message' => 'Ticket'
+    ],
+    'community_access' => [
+        'message' => 'Community access'
+    ],
 ];

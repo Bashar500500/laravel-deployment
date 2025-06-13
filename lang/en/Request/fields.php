@@ -478,4 +478,100 @@ return [
     'subject' => [
         'message' => 'subject',
     ],
+    'question' => [
+        'message' => 'question',
+    ],
+    'option_a' => [
+        'message' => 'option a',
+    ],
+    'option_b' => [
+        'message' => 'option b',
+    ],
+    'option_c' => [
+        'message' => 'option c',
+    ],
+    'option_d' => [
+        'message' => 'option d',
+    ],
+    'correct_answer' => [
+        'message' => 'correct answer',
+    ],
+    'code_snippets' => [
+        'message' => 'code snippets',
+    ],
+    'answer_explanation' => [
+        'message' => 'answer explanation',
+    ],
+    'question_image' => [
+        'message' => 'question image',
+    ],
+    'video_link' => [
+        'message' => 'video link',
+    ],
+    'leader_id' => [
+        'message' => 'leader id',
+    ],
+    'group_id' => [
+        'message' => 'group id',
+    ],
+    'priority' => [
+        'message' => 'priority',
+    ],
+    'community' => [
+        'message' => 'community',
+    ],
+    'community_enabled' => [
+        'message' => 'community enabled',
+    ],
+    'access_community' => [
+        'message' => 'access community',
+    ],
+    'course' => [
+        'message' => 'course',
+    ],
+    'course_discussions_enabled' => [
+        'message' => 'course discussions enabled',
+    ],
+    'permissions' => [
+        'message' => 'permissions',
+    ],
+    'post_enabled' => [
+        'message' => 'post enabled',
+    ],
+    'poll_enabled' => [
+        'message' => 'poll enabled',
+    ],
+    'comment_enabled' => [
+        'message' => 'comment enabled',
+    ],
+    'reactions' => [
+        'message' => 'reactions',
+    ],
+    'upvote_enabled' => [
+        'message' => 'upvote enabled',
+    ],
+    'like_enabled' => [
+        'message' => 'like enabled',
+    ],
+    'share_enabled' => [
+        'message' => 'share enabled',
+    ],
+    'images_enabled' => [
+        'message' => 'images enabled',
+    ],
+    'videos_enabled' => [
+        'message' => 'videos enabled',
+    ],
+    'files_enabled' => [
+        'message' => 'files enabled',
+    ],
+    'access_course_discussions' => [
+        'message' => 'access course discussions',
+    ],
+    'course_discussions_level' => [
+        'message' => 'course discussions level',
+    ],
+    'inbox_communication' => [
+        'message' => 'inbox communication',
+    ],
 ];

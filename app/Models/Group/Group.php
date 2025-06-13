@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use App\Models\Course\Course;
 use App\Models\SectionGroup\SectionGroup;
 use App\Models\UserCourseGroup\UserCourseGroup;
+use App\Models\Project\Project;
 use App\Models\Attachment\Attachment;
 
 class Group extends Model
@@ -39,6 +40,11 @@ class Group extends Model
     public function students(): HasMany
     {
         return $this->hasMany(UserCourseGroup::class, 'group_id');
+    }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class, 'group_id');
     }
 
     public function attachments(): MorphMany

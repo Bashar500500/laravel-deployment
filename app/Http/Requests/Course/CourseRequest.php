@@ -28,9 +28,9 @@ class CourseRequest extends FormRequest
 
     protected function onStore() {
         return [
+            'category_id' => ['required', 'exists:categories,id'],
             'name' => ['required', 'string'],
             'description' => ['sometimes', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
             'language' => ['required', new Enum(CourseLanguage::class)],
             'level' => ['required', new Enum(CourseLevel::class)],
             'timezone' => ['required', 'regex:^(?:Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])$^'],
@@ -63,9 +63,9 @@ class CourseRequest extends FormRequest
 
     protected function onUpdate() {
         return [
+            'category_id' => ['required', 'exists:categories,id'],
             'name' => ['sometimes', 'string'],
             'description' => ['sometimes', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
             'language' => ['sometimes', new Enum(CourseLanguage::class)],
             'level' => ['sometimes', new Enum(CourseLevel::class)],
             'timezone' => ['sometimes', 'regex:^(?:Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])$^'],
@@ -80,7 +80,7 @@ class CourseRequest extends FormRequest
             'access_settings.price_hidden' => ['sometimes', 'boolean'],
             'access_settings.is_secret' => ['sometimes', 'boolean'],
             'access_settings.enrollment_limit' => ['sometimes', 'array'],
-            'access_settings.enrollment_limit.enabled' => ['sometimes', 'boolean'],
+            'access_settings.enrollment_limit.enabled' => ['required_with:access_settings.enrollment_limit', 'boolean'],
             'access_settings.enrollment_limit.limit' => ['required_if:access_settings.enrollment_limit.enabled,==,true', 'missing_if:access_settings.enrollment_limit.enabled,==,false', 'missing_if:access_settings.enrollment_limit.enabled,==,null', 'integer', 'gt:0'],
             'features' => ['sometimes', 'array'],
             'features.personalized_learning_paths' => ['sometimes', 'boolean'],
@@ -120,11 +120,11 @@ class CourseRequest extends FormRequest
     //         'page.gt' => ValidationType::GreaterThanZero->getMessage(),
     //         'page_size.integer' => ValidationType::Integer->getMessage(),
     //         'page_size.gt' => ValidationType::GreaterThanZero->getMessage(),
+    //         'category_id.required' => ValidationType::Required->getMessage(),
+    //         'category_id.exists' => ValidationType::Exists->getMessage(),
     //         'name.required' => ValidationType::Required->getMessage(),
     //         'name.string' => ValidationType::String->getMessage(),
     //         'description.string' => ValidationType::String->getMessage(),
-    //         'category_id.required' => ValidationType::Required->getMessage(),
-    //         'category_id.exists' => ValidationType::Exists->getMessage(),
     //         'language.required' => ValidationType::Required->getMessage(),
     //         'language.Illuminate\Validation\Rules\Enum' => ValidationType::Enum->getMessage(),
     //         'level.required' => ValidationType::Required->getMessage(),
@@ -159,6 +159,7 @@ class CourseRequest extends FormRequest
     //         'access_settings.enrollment_limit.required' => ValidationType::Required->getMessage(),
     //         'access_settings.enrollment_limit.array' => ValidationType::Array->getMessage(),
     //         'access_settings.enrollment_limit.enabled.required' => ValidationType::Required->getMessage(),
+    //         'access_settings.enrollment_limit.enabled.required_with' => ValidationType::RequiredWith->getMessage(),
     //         'access_settings.enrollment_limit.enabled.boolean' => ValidationType::Boolean->getMessage(),
     //         'access_settings.enrollment_limit.limit.required_if' => ValidationType::RequiredIf->getMessage(),
     //         'access_settings.enrollment_limit.limit.missing_if' => ValidationType::MissingIf->getMessage(),
@@ -194,9 +195,9 @@ class CourseRequest extends FormRequest
     //     return [
     //         'page' => FieldName::Page->getMessage(),
     //         'page_size' => FieldName::PageSize->getMessage(),
+    //         'category_id' => FieldName::CategoryId->getMessage(),
     //         'name' => FieldName::Name->getMessage(),
     //         'description' => FieldName::Description->getMessage(),
-    //         'category_id' => FieldName::CategoryId->getMessage(),
     //         'language' => FieldName::Language->getMessage(),
     //         'level' => FieldName::Level->getMessage(),
     //         'timezone' => FieldName::Timezone->getMessage(),

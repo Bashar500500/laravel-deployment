@@ -20,8 +20,6 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
 
     public function all(CourseDto $dto, array $data): object
     {
-        // $instructor = Auth::user();
-
         return (object) $this->model->where('instructor_id', $data['instructor']->id)
             ->with('attachment', 'students')
             ->latest('created_at')
@@ -35,8 +33,6 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
 
     public function allWithFilter(CourseDto $dto, array $data): object
     {
-        // $instructor = Auth::user();
-
         return (object) $this->model->where('instructor_id', $data['instructor']->id)
             ->where('access_settings_access_type', $dto->accessType)
             ->with('attachment', 'students')
@@ -60,9 +56,9 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
         $course = DB::transaction(function () use ($dto, $data) {
             $course = (object) $this->model->create([
                 'instructor_id' => $data['instructorId'],
+                'category_id' => $dto->categoryId,
                 'name' => $dto->name,
                 'description' => $dto->description,
-                'category_id' => $dto->categoryId,
                 'language' => $dto->language,
                 'level' => $dto->level,
                 'timezone' => $dto->timezone,
@@ -112,9 +108,9 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
 
         $course = DB::transaction(function () use ($dto, $model) {
             $course = tap($model)->update([
+                'category_id' => $dto->categoryId ? $dto->categoryId : $model->category_id,
                 'name' => $dto->name ? $dto->name : $model->name,
                 'description' => $dto->description ? $dto->description : $model->description,
-                'category_id' => $dto->categoryId ? $dto->categoryId : $model->category_id,
                 'language' => $dto->language ? $dto->language : $model->language,
                 'level' => $dto->level ? $dto->level : $model->level,
                 'timezone' => $dto->timezone ? $dto->timezone : $model->timezone,
@@ -170,6 +166,8 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
             $groups = $model->groups;
             $learningActivities = $model->learningActivities;
             $events = $model->events;
+            $questions = $model->questions;
+            $projects = $model->projects;
 
             foreach ($learningActivities as $learningActivity)
             {
@@ -190,6 +188,16 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
             {
                 $event->attachments()->delete();
                 Storage::disk('local')->deleteDirectory('Event/' . $event->id);
+            }
+            foreach ($questions as $question)
+            {
+                $question->attachments()->delete();
+                Storage::disk('local')->deleteDirectory('Question/' . $question->id);
+            }
+            foreach ($projects as $project)
+            {
+                $project->attachments()->delete();
+                Storage::disk('local')->deleteDirectory('Project/' . $project->id);
             }
 
             $model->attachments()->delete();

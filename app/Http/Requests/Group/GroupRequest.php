@@ -39,8 +39,8 @@ class GroupRequest extends FormRequest
             'description' => ['sometimes', 'string'],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png,bmp,gif,svg,webp'],
             'capacity' => ['sometimes', 'array'],
-            'capacity.min' => ['sometimes', 'integer', 'gt:0'],
-            'capacity.max' => ['required_with:capacity.min', 'integer', 'gt:capacity.min'],
+            'capacity.min' => ['required_with:capacity', 'integer', 'gt:0'],
+            'capacity.max' => ['required_with:capacity', 'integer', 'gt:capacity.min'],
         ];
     }
 
@@ -78,6 +78,7 @@ class GroupRequest extends FormRequest
     //         'capacity.required' => ValidationType::Required->getMessage(),
     //         'capacity.array' => ValidationType::Array->getMessage(),
     //         'capacity.min.required' => ValidationType::Required->getMessage(),
+    //         'capacity.min.required_with' => ValidationType::RequiredWith->getMessage(),
     //         'capacity.min.integer' => ValidationType::Integer->getMessage(),
     //         'capacity.min.gt' => ValidationType::GreaterThanZero->getMessage(),
     //         'capacity.max.required' => ValidationType::Required->getMessage(),

@@ -17,8 +17,10 @@ use App\Http\Requests\Upload\File\FileUploadRequest;
 use App\Models\Section\Section;
 use App\Models\Event\Event;
 use App\Models\Category\Category;
-use App\Models\Profile\Profile;
 use App\Models\SubCategory\SubCategory;
+use App\Models\Profile\Profile;
+use App\Models\Question\Question;
+use App\Models\Project\Project;
 use Illuminate\Support\Facades\Auth;
 
 class UploadService
@@ -260,6 +262,56 @@ class UploadService
 
             $repository = $this->factory->make(ModelName::AdminProfile);
             return $repository->upload($profile->id, $data);
+        }
+
+        return UploadMessage::Chunk;
+    }
+
+    public function uploadQuestionImage(ImageUploadRequest $request, Question $question): UploadMessage
+    {
+        $dto = UploadDto::fromImageUploadRequest($request);
+
+        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $extension = $dto->image->extension();
+
+        if (!file_exists($chunkDir))
+        {
+            mkdir($chunkDir, 0777, true);
+        }
+
+        $dto->image->move($chunkDir, "chunk_{$dto->dzChunkIndex}");
+
+        if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
+        {
+            $data = $this->mergeChunks(AttachmentType::Image, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+
+            $repository = $this->factory->make(ModelName::Question);
+            return $repository->upload($question->id, $data);
+        }
+
+        return UploadMessage::Chunk;
+    }
+
+    public function uploadProjectFile(FileUploadRequest $request, Project $project): UploadMessage
+    {
+        $dto = UploadDto::fromFileUploadRequest($request);
+
+        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $extension = is_null($dto->file->extension()) ? 'txt' : $dto->file->extension();
+
+        if (!file_exists($chunkDir))
+        {
+            mkdir($chunkDir, 0777, true);
+        }
+
+        $dto->file->move($chunkDir, "chunk_{$dto->dzChunkIndex}");
+
+        if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
+        {
+            $data = $this->mergeChunks(AttachmentType::File, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+
+            $repository = $this->factory->make(ModelName::Project);
+            return $repository->upload($project->id, $data);
         }
 
         return UploadMessage::Chunk;

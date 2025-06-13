@@ -16,4 +16,7 @@ enum AttachmentReferenceField: string
     case EventAttachmentsFile = 'event_attachments_file';
     case EventAttachmentsLink = 'event_attachments_link';
     case UserImage = 'user_image';
+    case QuestionImage = 'question_image';
+    case QuestionVideoLink = 'question_video_link';
+    case ProjectFiles = 'project_files';
 }

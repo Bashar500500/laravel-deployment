@@ -164,6 +164,38 @@ enum FieldName: string
     case GuardName = 'guard_name';
     case Permission = 'permission';
     case Subject = 'subject';
+    case Question = 'question';
+    case OptionA = 'option_a';
+    case OptionB = 'option_b';
+    case OptionC = 'option_c';
+    case OptionD = 'option_d';
+    case CorrectAnswer = 'correct_answer';
+    case CodeSnippets = 'code_snippets';
+    case AnswerExplanation = 'answer_explanation';
+    case QuestionImage = 'question_image';
+    case VideoLink = 'video_link';
+    case LeaderId = 'leader_id';
+    case GroupId = 'group_id';
+    case Priority = 'priority';
+    case Community = 'community';
+    case CommunityEnabled = 'community_enabled';
+    case AccessCommunity = 'access_community';
+    case Course = 'course';
+    case CourseDiscussionsEnabled = 'course_discussions_enabled';
+    case Permissions = 'permissions';
+    case PostEnabled = 'post_enabled';
+    case PollEnabled = 'poll_enabled';
+    case CommentEnabled = 'comment_enabled';
+    case Reactions = 'reactions';
+    case UpvoteEnabled = 'upvote_enabled';
+    case LikeEnabled = 'like_enabled';
+    case ShareEnabled = 'share_enabled';
+    case ImagesEnabled = 'images_enabled';
+    case VideosEnabled = 'videos_enabled';
+    case FilesEnabled = 'files_enabled';
+    case AccessCourseDiscussions = 'access_course_discussions';
+    case CourseDiscussionsLevel = 'course_discussions_level';
+    case InboxCommunication = 'inbox_communication';
 
     public function getMessage(): string
     {

@@ -9,10 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
-use App\Models\User\User;
 use App\Exceptions\CustomException;
-use App\Enums\Trait\ModelName;
-use App\Enums\Exception\ForbiddenExceptionMessage;
 use App\Enums\Upload\UploadMessage;
 
 class GroupRepository extends BaseRepository implements GroupRepositoryInterface
@@ -109,6 +106,14 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
         $model = (object) parent::find($id);
 
         $group = DB::transaction(function () use ($id, $model) {
+            $projects = $model->projects;
+
+            foreach ($projects as $project)
+            {
+                $project->attachments()->delete();
+                Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+            }
+
             $model->attachments()->delete();
             Storage::disk('local')->deleteDirectory('Group/' . $model->id);
             return parent::delete($id);
@@ -119,20 +124,11 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
 
     public function join(int $id, array $data): void
     {
-        $student = User::find($data['studentId']); // get it directly from auth->user
+        $student = $data['student'];
         $model = (object) parent::find($id);
 
-        if (!is_null($student->groups->where('group_id', $id)->first()))
-        {
-            throw CustomException::forbidden(ModelName::Group, ForbiddenExceptionMessage::GroupJoinTwice);
-        }
-        else if ($model->students->count() == $model->capacity_max)
-        {
-            throw CustomException::forbidden(ModelName::Group, ForbiddenExceptionMessage::GroupCapacityMax);
-        }
-
         DB::transaction(function () use ($student, $model) {
-            $student->groups()->where('student_id', $student->id)
+            $student->userCourseGroups()->where('student_id', $student->id)
                 ->where('course_id', $model->course_id)
                 ->update([
                 'group_id' => $model->id,
@@ -142,16 +138,11 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
 
     public function leave(int $id, array $data): void
     {
-        $student = User::find($data['studentId']); // get it directly from auth->user
+        $student = $data['student'];
         $model = (object) parent::find($id);
 
-        if (is_null($student->groups->where('group_id', $id)->first()))
-        {
-            throw CustomException::forbidden(ModelName::Group, ForbiddenExceptionMessage::GroupNotJoined);
-        }
-
         DB::transaction(function () use ($student, $model) {
-            $student->groups()->where('student_id', $student->id)
+            $student->userCourseGroups()->where('student_id', $student->id)
                 ->where('course_id', $model->course_id)
                 ->update([
                 'group_id' => null,

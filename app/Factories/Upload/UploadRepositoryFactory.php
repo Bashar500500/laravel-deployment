@@ -12,6 +12,8 @@ use App\Repositories\Category\CategoryRepository;
 use App\Repositories\SubCategory\SubCategoryRepository;
 use App\Repositories\Profile\UserProfileRepository;
 use App\Repositories\Profile\AdminProfileRepository;
+use App\Repositories\Question\QuestionRepository;
+use App\Repositories\Project\ProjectRepository;
 
 class UploadRepositoryFactory
 {
@@ -19,7 +21,7 @@ class UploadRepositoryFactory
         protected Container $container,
     ) {}
 
-    public function make(ModelName $name): AdminProfileRepository|CategoryRepository|CourseRepository|GroupRepository|LearningActivityRepository|SectionRepository|SubCategoryRepository|UserProfileRepository
+    public function make(ModelName $name): AdminProfileRepository|CategoryRepository|CourseRepository|GroupRepository|LearningActivityRepository|ProjectRepository|QuestionRepository|SectionRepository|SubCategoryRepository|UserProfileRepository
     {
         return match ($name) {
             ModelName::Course => $this->container->make(CourseRepository::class),
@@ -30,6 +32,8 @@ class UploadRepositoryFactory
             ModelName::SubCategory => $this->container->make(SubCategoryRepository::class),
             ModelName::UserProfile => $this->container->make(UserProfileRepository::class),
             ModelName::AdminProfile => $this->container->make(AdminProfileRepository::class),
+            ModelName::Question => $this->container->make(QuestionRepository::class),
+            ModelName::Project => $this->container->make(ProjectRepository::class),
         };
     }
 }

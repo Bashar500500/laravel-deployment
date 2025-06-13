@@ -25,6 +25,8 @@ use App\Models\Grade\Grade;
 use App\Models\Progress\Progress;
 use App\Models\Attendance\Attendance;
 use App\Models\Email\Email;
+use App\Models\Project\Project;
+use App\Models\Ticket\Ticket;
 use App\Models\Notification\Notification;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -96,7 +98,7 @@ class User extends Authenticatable
         return $this->hasMany(UserCourseGroup::class, 'student_id');
     }
 
-    public function courses(): HasManyThrough
+    public function enrolledCourses(): HasManyThrough
     {
         return $this->hasManyThrough(Course::class, UserCourseGroup::class,
             'student_id',
@@ -104,6 +106,11 @@ class User extends Authenticatable
             'id',
             'course_id'
         );
+    }
+
+    public function ownedCourses(): HasMany
+    {
+        return $this->hasMany(Course::class, 'instructor_id');
     }
 
     public function groups(): HasManyThrough
@@ -144,6 +151,16 @@ class User extends Authenticatable
     public function emails(): HasMany
     {
         return $this->hasMany(Email::class, 'user_id');
+    }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class, 'leader_id');
+    }
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'instructor_id');
     }
 
     public function notifications(): MorphMany

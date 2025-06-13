@@ -40,6 +40,10 @@ enum ModelName: string
     case AdminProfile = 'admin_profile';
     case PasswordResetCode = 'password_reset_code';
     case Email = 'email';
+    case Question = 'question';
+    case Project = 'project';
+    case Ticket = 'ticket';
+    case CommunityAccess = 'community_access';
     case NoName = '';
 
     public static function getEnum(string $value): self
@@ -81,6 +85,10 @@ enum ModelName: string
             $value =='AdminProfile' => self::AdminProfile,
             $value =='PasswordResetCode' => self::PasswordResetCode,
             $value =='Email' => self::Email,
+            $value =='Question' => self::Question,
+            $value =='Project' => self::Project,
+            $value =='Ticket' => self::Ticket,
+            $value =='CommunityAccess' => self::CommunityAccess,
         };
     }
 
@@ -123,6 +131,10 @@ enum ModelName: string
             self::AdminProfile => 'AdminProfile',
             self::PasswordResetCode => 'PasswordResetCode',
             self::Email => 'Email',
+            self::Question => 'Question',
+            self::Project => 'Project',
+            self::Ticket => 'Ticket',
+            self::CommunityAccess => 'CommunityAccess',
         };
     }
 

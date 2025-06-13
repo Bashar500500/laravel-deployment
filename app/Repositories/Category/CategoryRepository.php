@@ -102,6 +102,58 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         $model = (object) parent::find($id);
 
         $category = DB::transaction(function () use ($id, $model) {
+            $subCategories = $model->subCategories;
+            $courses = $model->courses;
+
+            foreach ($subCategories as $subCategory)
+            {
+                $subCategory->attachments()->delete();
+                Storage::disk('local')->deleteDirectory('SubCategory/' . $subCategory->id);
+            }
+            foreach ($courses as $course)
+            {
+                $sections = $course->sections;
+                $groups = $course->groups;
+                $learningActivities = $course->learningActivities;
+                $events = $course->events;
+                $questions = $course->questions;
+                $projects = $course->projects;
+
+                foreach ($learningActivities as $learningActivity)
+                {
+                    $learningActivity->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('LearningActivity/' . $learningActivity->id);
+                }
+                foreach ($sections as $section)
+                {
+                    $section->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Section/' . $section->id);
+                }
+                foreach ($groups as $group)
+                {
+                    $group->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Group/' . $group->id);
+                }
+                foreach ($events as $event)
+                {
+                    $event->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Event/' . $event->id);
+                }
+                foreach ($questions as $question)
+                {
+                    $question->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Question/' . $question->id);
+                }
+                foreach ($projects as $project)
+                {
+                    $project->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+                }
+
+                $course->attachments()->delete();
+                Storage::disk('local')->deleteDirectory('Course/' . $course->id);
+            }
+
             $model->attachments()->delete();
             Storage::disk('local')->deleteDirectory('Category/' . $model->id);
             return parent::delete($id);
