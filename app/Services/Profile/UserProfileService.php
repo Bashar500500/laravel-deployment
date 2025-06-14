@@ -4,6 +4,7 @@ namespace App\Services\Profile;
 
 use App\Repositories\Profile\UserProfileRepositoryInterface;
 use App\Http\Requests\Profile\UserProfileRequest;
+use App\Models\Profile\Profile;
 use App\DataTransferObjects\Profile\UserProfileDto;
 use App\Exceptions\CustomException;
 use App\Enums\Trait\ModelName;
@@ -21,7 +22,12 @@ class UserProfileService
         return $this->repository->all($dto);
     }
 
-    public function show(): object
+    public function show(Profile $profile): object
+    {
+        return $this->repository->find($profile->id);
+    }
+
+    public function profile(): object
     {
         return $this->repository->find(Auth::user()->profile->id);
     }

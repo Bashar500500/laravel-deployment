@@ -13,6 +13,7 @@ use App\Enums\Trait\ModelName;
 use App\Enums\User\UserMessage;
 use App\Http\Requests\User\AddUserToCourseRequest;
 use App\Http\Requests\User\RemoveUserFromCourseRequest;
+use App\Models\User\User;
 
 class UserController extends Controller
 {
@@ -35,10 +36,22 @@ class UserController extends Controller
             ->successResponse();
     }
 
-    public function show(): JsonResponse
+    public function show(User $user): JsonResponse
     {
         $data = UserResource::make(
-            $this->service->show(),
+            $this->service->show($user),
+        );
+
+        return $this->controller->setFunctionName(FunctionName::Show)
+            ->setModelName(ModelName::User)
+            ->setData($data)
+            ->successResponse();
+    }
+
+    public function user(): JsonResponse
+    {
+        $data = UserResource::make(
+            $this->service->user(),
         );
 
         return $this->controller->setFunctionName(FunctionName::Show)

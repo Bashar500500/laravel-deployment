@@ -142,6 +142,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('progress', ProgressController::class);
     Route::apiResource('attendance', AttendanceController::class);
     Route::apiResource('profile', UserProfileController::class);
+    Route::get('get-profile', [UserProfileController::class, 'profile']);
     Route::get('view-profile-image', [UserProfileController::class, 'view']);
     Route::get('download-profile-image', [UserProfileController::class, 'download']);
     Route::post('upload-profile-image', [UserProfileController::class, 'upload']);
@@ -152,6 +153,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('upload-admin-profile-image/{adminProfile}', [AdminProfileController::class, 'upload']);
     Route::delete('delete-admin-profile-image/{adminProfile}', [AdminProfileController::class, 'destroyAttachment']);
     Route::apiResource('user', UserController::class);
+    Route::get('get-user', [UserController::class, 'user']);
     Route::post('add-student-to-course', [UserController::class, 'addStudentToCourse']);
     Route::post('remove-student-from-course', [UserController::class, 'removeStudentFromCourse']);
     Route::apiResource('admin-user', AdminController::class);

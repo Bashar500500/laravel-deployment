@@ -14,6 +14,7 @@ use App\Enums\Trait\ModelName;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Http\Requests\Upload\Image\ImageUploadRequest;
 use App\Enums\Upload\UploadMessage;
+use App\Models\Profile\Profile;
 
 class UserProfileController extends Controller
 {
@@ -37,10 +38,22 @@ class UserProfileController extends Controller
             ->successResponse();
     }
 
-    public function show(): JsonResponse
+    public function show(Profile $profile): JsonResponse
     {
         $data = ProfileResource::make(
-            $this->userProfileService->show(),
+            $this->userProfileService->show($profile),
+        );
+
+        return $this->controller->setFunctionName(FunctionName::Show)
+            ->setModelName(ModelName::Profile)
+            ->setData($data)
+            ->successResponse();
+    }
+
+    public function profile(): JsonResponse
+    {
+        $data = ProfileResource::make(
+            $this->userProfileService->profile(),
         );
 
         return $this->controller->setFunctionName(FunctionName::Show)

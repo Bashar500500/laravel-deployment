@@ -3,14 +3,12 @@
 namespace App\Services\User;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Http\Requests\User\UserRequest;
-use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\User\User;
 use App\DataTransferObjects\User\UserDto;
 use App\Http\Requests\User\AddUserToCourseRequest;
 use App\Http\Requests\User\RemoveUserFromCourseRequest;
-use App\DataTransferObjects\Auth\RegisterDto;
 use App\DataTransferObjects\User\UserCourseDto;
 use App\Enums\User\UserMessage;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 
 class UserService
@@ -25,7 +23,12 @@ class UserService
         return $this->repository->all($dto);
     }
 
-    public function show(): object
+    public function show(User $user): object
+    {
+        return $this->repository->find($user->id);
+    }
+
+    public function user(): object
     {
         return $this->repository->find(Auth::user()->id);
     }

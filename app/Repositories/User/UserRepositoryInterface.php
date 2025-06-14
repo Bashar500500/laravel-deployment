@@ -19,7 +19,6 @@ interface UserRepositoryInterface
 
     public function delete(int $id): object;
 
-    // public function create(RegisterDto $dto): User;
     public function resetPassword(PasswordResetCodeDto $dto): void;
 
     public function addStudentToCourse(UserCourseDto $dto): UserMessage;
