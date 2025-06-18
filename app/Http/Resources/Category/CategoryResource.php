@@ -4,6 +4,7 @@ namespace App\Http\Resources\Category;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\SubCategory\SubCategoryResource;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryResource extends JsonResource
@@ -20,6 +21,7 @@ class CategoryResource extends JsonResource
                 $this->prepareAttachmentData($this->id, $this->whenLoaded('attachment')->url)
                 : null,
             'courseCount' => $this->whenLoaded('courses')->count(),
+            'subCategories' => SubCategoryResource::collection($this->whenLoaded('subCategories')->load('attachment')),
         ];
     }
 

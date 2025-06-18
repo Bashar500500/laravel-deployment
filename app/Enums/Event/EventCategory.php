@@ -8,5 +8,5 @@ enum EventCategory: string
     case AssignmentDue = 'Assignment due';
     case Exam = 'Exam';
     case LabSession = 'Lab session';
-    case NotAvaiableHours = 'Not avaiable hours';
+    case NotAvaiableHours = 'Not available hours';
 }
