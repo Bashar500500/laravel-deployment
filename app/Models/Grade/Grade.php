@@ -9,11 +9,11 @@ use App\Enums\Grade\GradeTrend;
 use App\Enums\Grade\GradeResubmission;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User\User;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Grade extends Model
 {
     protected $fillable = [
-        'assignment_id',
         'student_id',
         'due_date',
         'extended_due_date',
@@ -38,13 +38,13 @@ class Grade extends Model
         'resubmission' => GradeResubmission::class,
     ];
 
-    // public function assignment(): BelongsTo
-    // {
-    //     return $this->belongsTo(Assignment::class, 'assignment_id');
-    // }
-
     public function student(): BelongsTo
     {
         return $this->belongsTo(User::class, 'student_id');
+    }
+
+    public function gradeable(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

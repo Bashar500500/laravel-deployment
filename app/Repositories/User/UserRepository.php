@@ -50,6 +50,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 'last_name' => $dto->lastName,
                 'email' => $dto->email,
                 'password' => Hash::make($dto->password),
+                'fcm_token' => $dto->fcmToken,
             ]);
 
             $user['role'] = $user->assignRole($dto->role);
@@ -70,6 +71,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 'last_name' => $dto->lastName ? $dto->lastName : $model->last_name,
                 'email' => $dto->email ? $dto->email : $model->email,
                 'password' => $dto->password ? Hash::make($dto->password) : $model->password,
+                'fcm_token' => $dto->fcmToken ? $dto->fcmToken : $model->fcm_token,
             ]);
 
             return $user;
@@ -86,6 +88,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $profile = $model->profile;
             $projects = $model->projects;
             $ownedCourses = $model->ownedCourses;
+            $badges = $model->badges;
 
             $profile->attachments()->delete();
             Storage::disk('local')->deleteDirectory('Profile/' . $profile->id);
@@ -100,8 +103,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 $groups = $ownedCourse->groups;
                 $learningActivities = $ownedCourse->learningActivities;
                 $events = $ownedCourse->events;
-                $questions = $ownedCourse->questions;
                 $projects = $ownedCourse->projects;
+                $assessments = $ownedCourse->assessments;
+                $assignments = $ownedCourse->assignments;
+                $questionBank = $ownedCourse->questionBank;
+                $questionBankMultipleTypeQuestions = $questionBank->questionBankMultipleTypeQuestions;
+                $questionBankTrueOrFalseQuestions = $questionBank->questionBankTrueOrFalseQuestions;
+                $questionBankShortAnswerQuestions = $questionBank->questionBankShortAnswerQuestions;
+                $questionBankFillInBlankQuestions = $questionBank->questionBankFillInBlankQuestions;
 
                 foreach ($learningActivities as $learningActivity)
                 {
@@ -123,19 +132,66 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                     $event->attachments()->delete();
                     Storage::disk('local')->deleteDirectory('Event/' . $event->id);
                 }
-                foreach ($questions as $question)
-                {
-                    $question->attachments()->delete();
-                    Storage::disk('local')->deleteDirectory('Question/' . $question->id);
-                }
                 foreach ($projects as $project)
                 {
                     $project->attachments()->delete();
                     Storage::disk('local')->deleteDirectory('Project/' . $project->id);
                 }
+                foreach ($assessments as $assessment)
+                {
+                    $assessmentMultipleTypeQuestions = $assessment->assessmentMultipleTypeQuestions;
+                    $assessmentTrueOrFalseQuestions = $assessment->assessmentTrueOrFalseQuestions;
+                    $assessmentFillInBlankQuestions = $assessment->assessmentFillInBlankQuestions;
+
+                    foreach ($assessmentMultipleTypeQuestions as $assessmentMultipleTypeQuestion)
+                    {
+                        $assessmentMultipleTypeQuestion->options()->delete();
+                    }
+                    foreach ($assessmentTrueOrFalseQuestions as $assessmentTrueOrFalseQuestion)
+                    {
+                        $assessmentTrueOrFalseQuestion->options()->delete();
+                    }
+                    foreach ($assessmentFillInBlankQuestions as $assessmentFillInBlankQuestion)
+                    {
+                        $assessmentFillInBlankQuestion->blanks()->delete();
+                    }
+                }
+                foreach ($assignments as $assignment)
+                {
+                    $assignmentSubmits = $assignment->assignmentSubmits;
+
+                    foreach ($assignmentSubmits as $assignmentSubmit)
+                    {
+                        $assignmentSubmit->attachments()->delete();
+                        Storage::disk('local')->deleteDirectory('AssignmentSubmit/' . $assignmentSubmit->id);
+                    }
+                }
+                foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
+                {
+                    $questionBankMultipleTypeQuestion->options()->delete();
+                    $questionBankMultipleTypeQuestion->assessmentQuestionBankQuestions()->delete();
+                }
+                foreach ($questionBankTrueOrFalseQuestions as $questionBankTrueOrFalseQuestion)
+                {
+                    $questionBankTrueOrFalseQuestion->options()->delete();
+                    $questionBankTrueOrFalseQuestion->assessmentQuestionBankQuestions()->delete();
+                }
+                foreach ($questionBankShortAnswerQuestions as $questionBankShortAnswerQuestion)
+                {
+                    $questionBankShortAnswerQuestion->blanks()->delete();
+                    $questionBankShortAnswerQuestion->assessmentQuestionBankQuestions()->delete();
+                }
+                foreach ($questionBankFillInBlankQuestions as $questionBankFillInBlankQuestion)
+                {
+                    $questionBankFillInBlankQuestion->assessmentQuestionBankQuestions()->delete();
+                }
 
                 $ownedCourse->attachments()->delete();
                 Storage::disk('local')->deleteDirectory('Course/' . $ownedCourse->id);
+            }
+            foreach ($badges as $badge)
+            {
+                $badge->challengeRuleBadges()->delete();
             }
 
             return parent::delete($id);
@@ -197,15 +253,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
 
         DB::transaction(function () use ($dto, $student) {
-                $orderNumber = UserCourseGroup::getOrder($dto->courseId);
-                $order = str_pad($orderNumber, 3, "0", STR_PAD_LEFT);
-                $year = Carbon::now()->format('Y');
-                $studentCode = $dto->studentCode . $year . $order;
+            $orderNumber = UserCourseGroup::getOrder($dto->courseId);
+            $order = str_pad($orderNumber, 3, "0", STR_PAD_LEFT);
+            $year = Carbon::now()->format('Y');
+            $studentCode = $dto->studentCode . $year . $order;
 
-                $student->userCourseGroups()->create([
-                    'course_id' => $dto->courseId,
-                    'student_code' => $studentCode,
-                ]);
+            $student->userCourseGroups()->create([
+                'course_id' => $dto->courseId,
+                'student_code' => $studentCode,
+            ]);
         });
 
         return UserMessage::StudentAddedToCourse;

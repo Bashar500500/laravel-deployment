@@ -11,7 +11,7 @@ use App\Models\User\User;
 class Ticket extends Model
 {
     protected $fillable = [
-        'instructor_id',
+        'user_id',
         'date',
         'subject',
         'priority',
@@ -24,8 +24,8 @@ class Ticket extends Model
         'status' => TicketStatus::class,
     ];
 
-    public function instructor(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'instructor_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

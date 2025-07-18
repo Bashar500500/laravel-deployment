@@ -15,7 +15,8 @@ class TicketRepository extends BaseRepository implements TicketRepositoryInterfa
 
     public function all(TicketDto $dto): object
     {
-        return (object) $this->model->latest('created_at')
+        return (object) $this->model->with('user')
+            ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
                 ['*'],
@@ -27,6 +28,7 @@ class TicketRepository extends BaseRepository implements TicketRepositoryInterfa
     public function allWithFilter(TicketDto $dto): object
     {
         return (object) $this->model->where('category', $dto->category)
+            ->with('user')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -38,14 +40,15 @@ class TicketRepository extends BaseRepository implements TicketRepositoryInterfa
 
     public function find(int $id): object
     {
-        return (object) parent::find($id);
+        return (object) parent::find($id)
+            ->load('user');
     }
 
     public function create(TicketDto $dto, array $data): object
     {
         $ticket = DB::transaction(function () use ($dto, $data) {
             $ticket = (object) $this->model->create([
-                'instructor_id' => $data['instructorId'],
+                'user_id' => $data['userId'],
                 'date' => $dto->date,
                 'subject' => $dto->subject,
                 'priority' => $dto->priority,
@@ -75,7 +78,7 @@ class TicketRepository extends BaseRepository implements TicketRepositoryInterfa
             return $ticket;
         });
 
-        return (object) $ticket;
+        return (object) $ticket->load('user');
     }
 
     public function delete(int $id): object
@@ -84,6 +87,6 @@ class TicketRepository extends BaseRepository implements TicketRepositoryInterfa
             return parent::delete($id);
         });
 
-        return (object) $ticket;
+        return (object) $ticket->load('user');
     }
 }

@@ -11,6 +11,9 @@ class LeaveResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'instructorId' => $this->instructor_id,
+            'instructorName' => $this->whenLoaded('instructor')->first_name .
+                ' ' . $this->whenLoaded('instructor')->last_name,
             'type' => $this->type,
             'from' => $this->from,
             'to' => $this->to,

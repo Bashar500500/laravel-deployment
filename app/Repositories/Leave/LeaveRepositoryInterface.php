@@ -10,7 +10,7 @@ interface LeaveRepositoryInterface
 
     public function find(int $id): object;
 
-    public function create(LeaveDto $dto): object;
+    public function create(LeaveDto $dto, array $data): object;
 
     public function update(LeaveDto $dto, int $id): object;
 

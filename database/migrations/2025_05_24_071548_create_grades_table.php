@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('grades', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('assignment_id')->constrained('courses')->cascadeOnDelete();
-            $table->integer('assignment_id');
             $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
             $table->date('due_date');
             $table->date('extended_due_date')->nullable();
@@ -26,9 +24,10 @@ return new class extends Migration
             $table->decimal('class_average');
             $table->string('trend');
             $table->json('trend_data');
-            $table->string('feedback');
+            $table->string('feedback')->nullable();
             $table->string('resubmission');
             $table->date('resubmission_due')->nullable();
+            $table->morphs('gradeable');
             $table->timestamps();
         });
     }

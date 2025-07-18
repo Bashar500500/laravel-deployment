@@ -20,8 +20,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\ScheduleTiming\ScheduleTiming;
 use App\Models\Event\Event;
 use App\Models\Progress\Progress;
-use App\Models\Question\Question;
 use App\Models\Project\Project;
+use App\Models\Assessment\Assessment;
+use App\Models\QuestionBank\QuestionBank;
+use App\Models\Assignment\Assignment;
+use App\Models\ChallengeCourse\ChallengeCourse;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use App\Models\Attachment\Attachment;
@@ -121,14 +124,29 @@ class Course extends Model
         return $this->hasMany(Progress::class, 'course_id');
     }
 
-    public function questions(): HasMany
-    {
-        return $this->hasMany(Question::class, 'course_id');
-    }
-
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class, 'course_id');
+    }
+
+    public function assessments(): HasMany
+    {
+        return $this->hasMany(Assessment::class, 'course_id');
+    }
+
+    public function questionBank(): HasOne
+    {
+        return $this->hasOne(QuestionBank::class, 'course_id');
+    }
+
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(Assignment::class, 'course_id');
+    }
+
+    public function challengeCourses(): HasMany
+    {
+        return $this->hasMany(ChallengeCourse::class, 'course_id');
     }
 
     public function attachments(): MorphMany

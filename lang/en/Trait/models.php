@@ -121,4 +121,55 @@ return [
     'community_access' => [
         'message' => 'Community access'
     ],
+    'assessment' => [
+        'message' => 'assessment'
+    ],
+    'assessment_fill_in_blank_question' => [
+        'message' => 'assessment fill in blank question'
+    ],
+    'assessment_multiple_type_question' => [
+        'message' => 'assessment multiple type question'
+    ],
+    'assessment_short_answer_question' => [
+        'message' => 'assessment short answer question'
+    ],
+    'assessment_true_or_false_question' => [
+        'message' => 'assessment true or false question'
+    ],
+    'question_bank' => [
+        'message' => 'question bank'
+    ],
+    'question_bank_fill_in_blank_question' => [
+        'message' => 'question bank fill in blank question'
+    ],
+    'question_bank_multiple_type_question' => [
+        'message' => 'question bank multiple type question'
+    ],
+    'question_bank_short_answer_question' => [
+        'message' => 'question bank short answer question'
+    ],
+    'question_bank_true_or_false_question' => [
+        'message' => 'question bank true or false question'
+    ],
+    'time_limit' => [
+        'message' => 'time limit'
+    ],
+    'assignment' => [
+        'message' => 'assignment'
+    ],
+    'challenge' => [
+        'message' => 'ahallenge'
+    ],
+    'rule' => [
+        'message' => 'rule'
+    ],
+    'badge' => [
+        'message' => 'badge'
+    ],
+    'blank' => [
+        'message' => 'blank'
+    ],
+    'option' => [
+        'message' => 'option'
+    ],
 ];

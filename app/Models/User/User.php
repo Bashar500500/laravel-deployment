@@ -27,6 +27,16 @@ use App\Models\Attendance\Attendance;
 use App\Models\Email\Email;
 use App\Models\Project\Project;
 use App\Models\Ticket\Ticket;
+use App\Models\AssessmentSubmit\AssessmentSubmit;
+use App\Models\TimeLimit\TimeLimit;
+use App\Models\Challenge\Challenge;
+use App\Models\Badge\Badge;
+use App\Models\AssignmentSubmit\AssignmentSubmit;
+use App\Models\ChallengeUser\ChallengeUser;
+use App\Models\UserAward\UserAward;
+use App\Models\UserRule\UserRule;
+use App\Models\Holiday\Holiday;
+use App\Models\Leave\Leave;
 use App\Models\Notification\Notification;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -160,7 +170,57 @@ class User extends Authenticatable
 
     public function tickets(): HasMany
     {
-        return $this->hasMany(Ticket::class, 'instructor_id');
+        return $this->hasMany(Ticket::class, 'user_id');
+    }
+
+    public function assessmentSubmits(): HasMany
+    {
+        return $this->hasMany(AssessmentSubmit::class, 'student_id');
+    }
+
+    public function timeLimits(): HasMany
+    {
+        return $this->hasMany(TimeLimit::class, 'instructor_id');
+    }
+
+    public function challenges(): HasMany
+    {
+        return $this->hasMany(Challenge::class, 'instructor_id');
+    }
+
+    public function badges(): HasMany
+    {
+        return $this->hasMany(Badge::class, 'instructor_id');
+    }
+
+    public function assignmentSubmits(): HasMany
+    {
+        return $this->hasMany(AssignmentSubmit::class, 'student_id');
+    }
+
+    public function challengeUsers(): HasMany
+    {
+        return $this->hasMany(ChallengeUser::class, 'student_id');
+    }
+
+    public function userAwards(): HasMany
+    {
+        return $this->hasMany(UserAward::class, 'student_id');
+    }
+
+    public function userRules(): HasMany
+    {
+        return $this->hasMany(UserRule::class, 'student_id');
+    }
+
+    public function holidays(): HasMany
+    {
+        return $this->hasMany(Holiday::class, 'instructor_id');
+    }
+
+    public function leaves(): HasMany
+    {
+        return $this->hasMany(Leave::class, 'student_id');
     }
 
     public function notifications(): MorphMany

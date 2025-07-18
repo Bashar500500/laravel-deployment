@@ -17,11 +17,11 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
             $table->integer('progress');
             $table->string('modules');
-            $table->string('time');
-            $table->string('last_active');
-            $table->string('streak');
-            $table->string('skill_level');
-            $table->string('upcomig');
+            $table->string('time')->nullable();
+            $table->string('last_active')->nullable();
+            $table->string('streak')->nullable();
+            $table->string('skill_level')->nullable();
+            $table->string('upcomig')->nullable();
             $table->timestamps();
         });
     }

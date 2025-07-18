@@ -14,6 +14,7 @@ class AdminDto
         public readonly ?string $email,
         public readonly ?string $password,
         public readonly ?UserRole $role,
+        public readonly ?string $fcmToken,
     ) {}
 
     public static function fromIndexRequest(AdminRequest $request): AdminDto
@@ -26,6 +27,7 @@ class AdminDto
             email: null,
             password: null,
             role: null,
+            fcmToken: null,
         );
     }
 
@@ -39,6 +41,7 @@ class AdminDto
             email: $request->validated('email'),
             password: $request->validated('password'),
             role: UserRole::from($request->validated('role')),
+            fcmToken: $request->validated('fcm_token'),
         );
     }
 
@@ -52,6 +55,7 @@ class AdminDto
             email: $request->validated('email'),
             password: $request->validated('password'),
             role: null,
+            fcmToken: $request->validated('fcm_token'),
         );
     }
 }

@@ -15,7 +15,8 @@ class LeaveRepository extends BaseRepository implements LeaveRepositoryInterface
 
     public function all(LeaveDto $dto): object
     {
-        return (object) $this->model->latest('created_at')
+        return (object) $this->model->with('instructor')
+            ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
                 ['*'],
@@ -26,13 +27,14 @@ class LeaveRepository extends BaseRepository implements LeaveRepositoryInterface
 
     public function find(int $id): object
     {
-        return (object) parent::find($id);
+        return (object) parent::find($id)->load('instructor');
     }
 
-    public function create(LeaveDto $dto): object
+    public function create(LeaveDto $dto, array $data): object
     {
-        $leave = DB::transaction(function () use ($dto) {
+        $leave = DB::transaction(function () use ($dto, $data) {
             $leave = (object) $this->model->create([
+                'instructor_id' => $data['instructorId'],
                 'type' => $dto->type,
                 'from' => $dto->from,
                 'to' => $dto->to,
@@ -44,7 +46,7 @@ class LeaveRepository extends BaseRepository implements LeaveRepositoryInterface
             return $leave;
         });
 
-        return (object) $leave;
+        return (object) $leave->load('instructor');
     }
 
     public function update(LeaveDto $dto, int $id): object
@@ -64,7 +66,7 @@ class LeaveRepository extends BaseRepository implements LeaveRepositoryInterface
             return $leave;
         });
 
-        return (object) $leave;
+        return (object) $leave->load('instructor');
     }
 
     public function delete(int $id): object

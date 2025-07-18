@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('leaves', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('instructor_id')->constrained('users')->cascadeOnDelete();
             $table->string('type');
             $table->date('from');
             $table->date('to');

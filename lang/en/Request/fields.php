@@ -238,6 +238,9 @@ return [
     'passing_score' => [
         'message' => 'passing score',
     ],
+    'courses' => [
+        'message' => 'courses',
+    ],
     'rules' => [
         'message' => 'rules',
     ],
@@ -573,5 +576,257 @@ return [
     ],
     'inbox_communication' => [
         'message' => 'inbox communication',
+    ],
+    'time_limit_id' => [
+        'message' => 'time limit id',
+    ],
+    'available_from' => [
+        'message' => 'available from',
+    ],
+    'available_to' => [
+        'message' => 'available to',
+    ],
+    'attempts_allowed' => [
+        'message' => 'attempts allowed',
+    ],
+    'shuffle_questions' => [
+        'message' => 'shuffle questions',
+    ],
+    'feedback_options' => [
+        'message' => 'feedback options',
+    ],
+    'show_correct_answers' => [
+        'message' => 'show correct answers',
+    ],
+    'custom_feedback_message' => [
+        'message' => 'custom feedback message',
+    ],
+    'assessment_id' => [
+        'message' => 'assessment id',
+    ],
+    'text' => [
+        'message' => 'text',
+    ],
+    'points' => [
+        'message' => 'points',
+    ],
+    'required' => [
+        'message' => 'required',
+    ],
+    'blanks' => [
+        'message' => 'blanks',
+    ],
+    'correct_answers' => [
+        'message' => 'correct answers',
+    ],
+    'case_sensitive' => [
+        'message' => 'case sensitive',
+    ],
+    'exact_match' => [
+        'message' => 'exact match',
+    ],
+    'hint' => [
+        'message' => 'hint',
+    ],
+    'display_options' => [
+        'message' => 'display options',
+    ],
+    'blank_style' => [
+        'message' => 'blank style',
+    ],
+    'blank_width' => [
+        'message' => 'blank width',
+    ],
+    'show_word_bank' => [
+        'message' => 'show word bank',
+    ],
+    'show_hints' => [
+        'message' => 'show hints',
+    ],
+    'grading_options' => [
+        'message' => 'grading options',
+    ],
+    'allow_partial_credit' => [
+        'message' => 'allow partial credit',
+    ],
+    'ignore_extra_spaces' => [
+        'message' => 'ignore extra spaces',
+    ],
+    'settings' => [
+        'message' => 'settings',
+    ],
+    'time_limit' => [
+        'message' => 'time limit',
+    ],
+    'question_weight' => [
+        'message' => 'question weight',
+    ],
+    'randomize_options' => [
+        'message' => 'randomize options',
+    ],
+    'correct' => [
+        'message' => 'correct',
+    ],
+    'incorrect' => [
+        'message' => 'incorrect',
+    ],
+    'options' => [
+        'message' => 'options',
+    ],
+    'additional_settings' => [
+        'message' => 'additional settings',
+    ],
+    'randomize_order' => [
+        'message' => 'randomize order',
+    ],
+    'show_in_columns' => [
+        'message' => 'show in columns',
+    ],
+    'answer_type' => [
+        'message' => 'answer type',
+    ],
+    'character_limit' => [
+        'message' => 'character limit',
+    ],
+    'accepted_answers' => [
+        'message' => 'accepted answers',
+    ],
+    'true' => [
+        'message' => 'true',
+    ],
+    'false' => [
+        'message' => 'false',
+    ],
+    'question_bank_id' => [
+        'message' => 'question bank id',
+    ],
+    'duration_minutes' => [
+        'message' => 'duration minutes',
+    ],
+    'grace_time_minutes' => [
+        'message' => 'grace time minutes',
+    ],
+    'extension_time_minutes' => [
+        'message' => 'extension time minutes',
+    ],
+    'show_timer' => [
+        'message' => 'show timer',
+    ],
+    'auto_submit' => [
+        'message' => 'auto submit',
+    ],
+    'allow_extensions' => [
+        'message' => 'allow extensions',
+    ],
+    'warnings' => [
+        'message' => 'warnings',
+    ],
+    'minutes_before' => [
+        'message' => 'minutes before',
+    ],
+    'instructions' => [
+        'message' => 'instructions',
+    ],
+    'submission_settings' => [
+        'message' => 'submission settings',
+    ],
+    'allowed_file_types' => [
+        'message' => 'allowed file types',
+    ],
+    'max_file_size_mb' => [
+        'message' => 'max file size mb',
+    ],
+    'group_assignment' => [
+        'message' => 'group assignment',
+    ],
+    'plagiarism_check' => [
+        'message' => 'plagiarism check',
+    ],
+    'policies' => [
+        'message' => 'policies',
+    ],
+    'late_submission' => [
+        'message' => 'late submission',
+    ],
+    'policy' => [
+        'message' => 'policy',
+    ],
+    'penalty_percentage' => [
+        'message' => 'penalty percentage',
+    ],
+    'cutoff_date' => [
+        'message' => 'cutoff date',
+    ],
+    'badges' => [
+        'message' => 'badges',
+    ],
+    'conditions' => [
+        'message' => 'conditions',
+    ],
+    'duration_days' => [
+        'message' => 'duration days',
+    ],
+    'rewards' => [
+        'message' => 'rewards',
+    ],
+    'bonus_multiplier' => [
+        'message' => 'bonus multiplier',
+    ],
+    'max_participants' => [
+        'message' => 'max participants',
+    ],
+    'team_based' => [
+        'message' => 'team based',
+    ],
+    'frequency' => [
+        'message' => 'frequency',
+    ],
+    'sub_category' => [
+        'message' => 'sub category',
+    ],
+    'icon' => [
+        'message' => 'icon',
+    ],
+    'image_url' => [
+        'message' => 'image url',
+    ],
+    'reward' => [
+        'message' => 'reward',
+    ],
+    'xp' => [
+        'message' => 'xp',
+    ],
+    'answers' => [
+        'message' => 'answers',
+    ],
+    'question_type' => [
+        'message' => 'question type',
+    ],
+    'is_question_bank_question' => [
+        'message' => 'is question bank question',
+    ],
+    'question_id' => [
+        'message' => 'question id',
+    ],
+    'option_ids' => [
+        'message' => 'option ids',
+    ],
+    'blank_id' => [
+        'message' => 'blank id',
+    ],
+    'answer' => [
+        'message' => 'answer',
+    ],
+    'time_spent' => [
+        'message' => 'time spent',
+    ],
+    'file' => [
+        'message' => 'file',
+    ],
+    'score' => [
+        'message' => 'score',
+    ],
+    'fcm_token' => [
+        'message' => 'fcm token',
     ],
 ];

@@ -70,9 +70,6 @@ use App\Repositories\Auth\RegisterRepository;
 use App\Repositories\Auth\PasswordResetCodeRepositoryInterface;
 use App\Repositories\Auth\PasswordResetCodeRepository;
 use App\Models\Auth\PasswordResetCode;
-use App\Repositories\Question\QuestionRepositoryInterface;
-use App\Repositories\Question\QuestionRepository;
-use App\Models\Question\Question;
 use App\Repositories\Project\ProjectRepositoryInterface;
 use App\Repositories\Project\ProjectRepository;
 use App\Models\Project\Project;
@@ -82,6 +79,51 @@ use App\Models\Ticket\Ticket;
 use App\Repositories\CommunityAccess\CommunityAccessRepositoryInterface;
 use App\Repositories\CommunityAccess\CommunityAccessRepository;
 use App\Models\CommunityAccess\CommunityAccess;
+use App\Repositories\Assessment\AssessmentRepositoryInterface;
+use App\Repositories\Assessment\AssessmentRepository;
+use App\Models\Assessment\Assessment;
+use App\Repositories\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestionRepositoryInterface;
+use App\Repositories\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestionRepository;
+use App\Models\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestion;
+use App\Repositories\AssessmentMultipleTypeQuestion\AssessmentMultipleTypeQuestionRepositoryInterface;
+use App\Repositories\AssessmentMultipleTypeQuestion\AssessmentMultipleTypeQuestionRepository;
+use App\Models\AssessmentMultipleTypeQuestion\AssessmentMultipleTypeQuestion;
+use App\Repositories\AssessmentShortAnswerQuestion\AssessmentShortAnswerQuestionRepositoryInterface;
+use App\Repositories\AssessmentShortAnswerQuestion\AssessmentShortAnswerQuestionRepository;
+use App\Models\AssessmentShortAnswerQuestion\AssessmentShortAnswerQuestion;
+use App\Repositories\AssessmentTrueOrFalseQuestion\AssessmentTrueOrFalseQuestionRepositoryInterface;
+use App\Repositories\AssessmentTrueOrFalseQuestion\AssessmentTrueOrFalseQuestionRepository;
+use App\Models\AssessmentTrueOrFalseQuestion\AssessmentTrueOrFalseQuestion;
+use App\Repositories\Assignment\AssignmentRepositoryInterface;
+use App\Repositories\Assignment\AssignmentRepository;
+use App\Models\Assignment\Assignment;
+use App\Repositories\QuestionBank\QuestionBankRepositoryInterface;
+use App\Repositories\QuestionBank\QuestionBankRepository;
+use App\Models\QuestionBank\QuestionBank;
+use App\Repositories\QuestionBankFillInBlankQuestion\QuestionBankFillInBlankQuestionRepositoryInterface;
+use App\Repositories\QuestionBankFillInBlankQuestion\QuestionBankFillInBlankQuestionRepository;
+use App\Models\QuestionBankFillInBlankQuestion\QuestionBankFillInBlankQuestion;
+use App\Repositories\QuestionBankMultipleTypeQuestion\QuestionBankMultipleTypeQuestionRepositoryInterface;
+use App\Repositories\QuestionBankMultipleTypeQuestion\QuestionBankMultipleTypeQuestionRepository;
+use App\Models\QuestionBankMultipleTypeQuestion\QuestionBankMultipleTypeQuestion;
+use App\Repositories\QuestionBankShortAnswerQuestion\QuestionBankShortAnswerQuestionRepositoryInterface;
+use App\Repositories\QuestionBankShortAnswerQuestion\QuestionBankShortAnswerQuestionRepository;
+use App\Models\QuestionBankShortAnswerQuestion\QuestionBankShortAnswerQuestion;
+use App\Repositories\QuestionBankTrueOrFalseQuestion\QuestionBankTrueOrFalseQuestionRepositoryInterface;
+use App\Repositories\QuestionBankTrueOrFalseQuestion\QuestionBankTrueOrFalseQuestionRepository;
+use App\Models\QuestionBankTrueOrFalseQuestion\QuestionBankTrueOrFalseQuestion;
+use App\Repositories\TimeLimit\TimeLimitRepositoryInterface;
+use App\Repositories\TimeLimit\TimeLimitRepository;
+use App\Models\TimeLimit\TimeLimit;
+use App\Repositories\Challenge\ChallengeRepositoryInterface;
+use App\Repositories\Challenge\ChallengeRepository;
+use App\Models\Challenge\Challenge;
+use App\Repositories\Rule\RuleRepositoryInterface;
+use App\Repositories\Rule\RuleRepository;
+use App\Models\Rule\Rule;
+use App\Repositories\Badge\BadgeRepositoryInterface;
+use App\Repositories\Badge\BadgeRepository;
+use App\Models\Badge\Badge;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -205,11 +247,6 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind(QuestionRepositoryInterface::class, function (Container $app) {
-            return new QuestionRepository($app->make(Question::class),
-            );
-        });
-
         $this->app->bind(ProjectRepositoryInterface::class, function (Container $app) {
             return new ProjectRepository($app->make(Project::class),
             );
@@ -222,6 +259,81 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(CommunityAccessRepositoryInterface::class, function (Container $app) {
             return new CommunityAccessRepository($app->make(CommunityAccess::class),
+            );
+        });
+
+        $this->app->bind(AssessmentRepositoryInterface::class, function (Container $app) {
+            return new AssessmentRepository($app->make(Assessment::class),
+            );
+        });
+
+        $this->app->bind(AssessmentFillInBlankQuestionRepositoryInterface::class, function (Container $app) {
+            return new AssessmentFillInBlankQuestionRepository($app->make(AssessmentFillInBlankQuestion::class),
+            );
+        });
+
+        $this->app->bind(AssessmentMultipleTypeQuestionRepositoryInterface::class, function (Container $app) {
+            return new AssessmentMultipleTypeQuestionRepository($app->make(AssessmentMultipleTypeQuestion::class),
+            );
+        });
+
+        $this->app->bind(AssessmentShortAnswerQuestionRepositoryInterface::class, function (Container $app) {
+            return new AssessmentShortAnswerQuestionRepository($app->make(AssessmentShortAnswerQuestion::class),
+            );
+        });
+
+        $this->app->bind(AssessmentTrueOrFalseQuestionRepositoryInterface::class, function (Container $app) {
+            return new AssessmentTrueOrFalseQuestionRepository($app->make(AssessmentTrueOrFalseQuestion::class),
+            );
+        });
+
+        $this->app->bind(AssignmentRepositoryInterface::class, function (Container $app) {
+            return new AssignmentRepository($app->make(Assignment::class),
+            );
+        });
+
+        $this->app->bind(QuestionBankRepositoryInterface::class, function (Container $app) {
+            return new QuestionBankRepository($app->make(QuestionBank::class),
+            );
+        });
+
+        $this->app->bind(QuestionBankFillInBlankQuestionRepositoryInterface::class, function (Container $app) {
+            return new QuestionBankFillInBlankQuestionRepository($app->make(QuestionBankFillInBlankQuestion::class),
+            );
+        });
+
+        $this->app->bind(QuestionBankMultipleTypeQuestionRepositoryInterface::class, function (Container $app) {
+            return new QuestionBankMultipleTypeQuestionRepository($app->make(QuestionBankMultipleTypeQuestion::class),
+            );
+        });
+
+        $this->app->bind(QuestionBankShortAnswerQuestionRepositoryInterface::class, function (Container $app) {
+            return new QuestionBankShortAnswerQuestionRepository($app->make(QuestionBankShortAnswerQuestion::class),
+            );
+        });
+
+        $this->app->bind(QuestionBankTrueOrFalseQuestionRepositoryInterface::class, function (Container $app) {
+            return new QuestionBankTrueOrFalseQuestionRepository($app->make(QuestionBankTrueOrFalseQuestion::class),
+            );
+        });
+
+        $this->app->bind(TimeLimitRepositoryInterface::class, function (Container $app) {
+            return new TimeLimitRepository($app->make(TimeLimit::class),
+            );
+        });
+
+        $this->app->bind(ChallengeRepositoryInterface::class, function (Container $app) {
+            return new ChallengeRepository($app->make(Challenge::class),
+            );
+        });
+
+        $this->app->bind(RuleRepositoryInterface::class, function (Container $app) {
+            return new RuleRepository($app->make(Rule::class),
+            );
+        });
+
+        $this->app->bind(BadgeRepositoryInterface::class, function (Container $app) {
+            return new BadgeRepository($app->make(Badge::class),
             );
         });
     }

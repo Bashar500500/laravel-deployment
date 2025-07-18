@@ -49,7 +49,7 @@ class TicketService
     private function prepareStoreData(): array
     {
         return [
-            'instructorId' => Auth::user()->id,
+            'userId' => Auth::user()->id,
         ];
     }
 }

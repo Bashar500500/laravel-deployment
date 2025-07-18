@@ -54,14 +54,7 @@ class UserService
     {
         $dto = UserCourseDto::fromAddStudentToCourseRequest($request);
         $message = $this->repository->addStudentToCourse($dto);
-
-        switch ($message)
-        {
-            case UserMessage::StudentAddedToCourse:
-                return $message;
-            default:
-                return $message;
-        }
+        return $message;
     }
 
     public function removeStudentFromCourse(RemoveUserFromCourseRequest $request): void

@@ -23,6 +23,24 @@ enum FunctionName: string
     case Revoke = 'revoke';
     case AddStudentToCourse = 'student_added_to_course';
     case RemoveStudentFromCourse = 'remove_added_from_course';
+    case AddAssessmentFillInBlankQuestionToQuestionBank = 'add_assessment_fill_in_blank_question_to_question_bank';
+    case AddAssessmentMultipleTypeQuestionToQuestionBank = 'add_assessment_multiple_type_question_to_question_bank';
+    case AddAssessmentShortAnswerQuestionToQuestionBank = 'add_assessment_short_answer_question_to_question_bank';
+    case AddAssessmentTrueOrFalseQuestionToQuestionBank = 'add_assessment_true_or_false_question_to_question_bank';
+    case AddQuestionBankFillInBlankQuestionToAssessment = 'add_question_bank_fill_in_blank_question_to_assessment';
+    case RemoveQuestionBankFillInBlankQuestionFromAssessment = 'remove_question_bank_fill_in_blank_question_from_assessment';
+    case AddQuestionBankMultipleTypeQuestionToAssessment = 'add_question_bank_multiple_type_question_to_assessment';
+    case RemoveQuestionBankMultipleTypeQuestionFromAssessment = 'remove_question_bank_multiple_type_question_from_assessment';
+    case AddQuestionBankShortAnswerQuestionToAssessment = 'add_question_bank_short_answer_question_to_assessment';
+    case RemoveQuestionBankShortAnswerQuestionFromAssessment = 'remove_question_bank_short_answer_question_from_assessment';
+    case AddQuestionBankTrueOrFalseQuestionToAssessment = 'add_question_bank_true_or_false_question_to_assessment';
+    case RemoveQuestionBankTrueOrFalseQuestionFromAssessment = 'remove_question_bank_true_or_false_question_from_assessment';
+    case Submit = 'submit';
+    case StartTimer = 'start_timer';
+    case PauseTimer = 'pause_timer';
+    case ResumeTimer = 'resume_timer';
+    case SubmitTimer = 'submit_timer';
+    case TimerStatus = 'timer_status';
 
     public function getMessage(): string
     {

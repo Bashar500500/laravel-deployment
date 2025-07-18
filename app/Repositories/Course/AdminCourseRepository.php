@@ -164,8 +164,14 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
             $groups = $model->groups;
             $learningActivities = $model->learningActivities;
             $events = $model->events;
-            $questions = $model->questions;
             $projects = $model->projects;
+            $assessments = $model->assessments;
+            $assignments = $model->assignments;
+            $questionBank = $model->questionBank;
+            $questionBankMultipleTypeQuestions = $questionBank->questionBankMultipleTypeQuestions;
+            $questionBankTrueOrFalseQuestions = $questionBank->questionBankTrueOrFalseQuestions;
+            $questionBankShortAnswerQuestions = $questionBank->questionBankShortAnswerQuestions;
+            $questionBankFillInBlankQuestions = $questionBank->questionBankFillInBlankQuestions;
 
             foreach ($learningActivities as $learningActivity)
             {
@@ -187,15 +193,58 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                 $event->attachments()->delete();
                 Storage::disk('local')->deleteDirectory('Event/' . $event->id);
             }
-            foreach ($questions as $question)
-            {
-                $question->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Question/' . $question->id);
-            }
             foreach ($projects as $project)
             {
                 $project->attachments()->delete();
                 Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+            }
+            foreach ($assessments as $assessment)
+            {
+                $assessmentMultipleTypeQuestions = $assessment->assessmentMultipleTypeQuestions;
+                $assessmentTrueOrFalseQuestions = $assessment->assessmentTrueOrFalseQuestions;
+                $assessmentFillInBlankQuestions = $assessment->assessmentFillInBlankQuestions;
+
+                foreach ($assessmentMultipleTypeQuestions as $assessmentMultipleTypeQuestion)
+                {
+                    $assessmentMultipleTypeQuestion->options()->delete();
+                }
+                foreach ($assessmentTrueOrFalseQuestions as $assessmentTrueOrFalseQuestion)
+                {
+                    $assessmentTrueOrFalseQuestion->options()->delete();
+                }
+                foreach ($assessmentFillInBlankQuestions as $assessmentFillInBlankQuestion)
+                {
+                    $assessmentFillInBlankQuestion->blanks()->delete();
+                }
+            }
+            foreach ($assignments as $assignment)
+            {
+                $assignmentSubmits = $assignment->assignmentSubmits;
+
+                foreach ($assignmentSubmits as $assignmentSubmit)
+                {
+                    $assignmentSubmit->attachments()->delete();
+                    Storage::disk('local')->deleteDirectory('AssignmentSubmit/' . $assignmentSubmit->id);
+                }
+            }
+            foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
+            {
+                $questionBankMultipleTypeQuestion->options()->delete();
+                $questionBankMultipleTypeQuestion->assessmentQuestionBankQuestions()->delete();
+            }
+            foreach ($questionBankTrueOrFalseQuestions as $questionBankTrueOrFalseQuestion)
+            {
+                $questionBankTrueOrFalseQuestion->options()->delete();
+                $questionBankTrueOrFalseQuestion->assessmentQuestionBankQuestions()->delete();
+            }
+            foreach ($questionBankShortAnswerQuestions as $questionBankShortAnswerQuestion)
+            {
+                $questionBankShortAnswerQuestion->blanks()->delete();
+                $questionBankShortAnswerQuestion->assessmentQuestionBankQuestions()->delete();
+            }
+            foreach ($questionBankFillInBlankQuestions as $questionBankFillInBlankQuestion)
+            {
+                $questionBankFillInBlankQuestion->assessmentQuestionBankQuestions()->delete();
             }
 
             $model->attachments()->delete();

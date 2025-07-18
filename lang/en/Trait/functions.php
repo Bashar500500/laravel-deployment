@@ -58,4 +58,58 @@ return [
     'remove_added_from_course' => [
         'message' => ' removed from course successfully.'
     ],
+    'add_assessment_fill_in_blank_question_to_question_bank' => [
+        'message' => ' added to question bank successfully.'
+    ],
+    'add_assessment_multiple_type_question_to_question_bank' => [
+        'message' => ' added to question bank successfully.'
+    ],
+    'add_assessment_short_answer_question_to_question_bank' => [
+        'message' => ' added to question bank successfully.'
+    ],
+    'add_assessment_true_or_false_question_to_question_bank' => [
+        'message' => ' added to question bank successfully.'
+    ],
+    'add_question_bank_fill_in_blank_question_to_assessment' => [
+        'message' => ' added to assessment successfully.'
+    ],
+    'remove_question_bank_fill_in_blank_question_from_assessment' => [
+        'message' => ' removed from assessment successfully.'
+    ],
+    'add_question_bank_multiple_type_question_to_assessment' => [
+        'message' => ' added to assessment successfully.'
+    ],
+    'remove_question_bank_multiple_type_question_from_assessment' => [
+        'message' => ' removed from assessment successfully.'
+    ],
+    'add_question_bank_short_answer_question_to_assessment' => [
+        'message' => ' added to assessment successfully.'
+    ],
+    'remove_question_bank_short_answer_question_from_assessment' => [
+        'message' => ' removed from assessment successfully.'
+    ],
+    'add_question_bank_true_or_false_question_to_assessment' => [
+        'message' => ' added to assessment successfully.'
+    ],
+    'remove_question_bank_true_or_false_question_from_assessment' => [
+        'message' => ' removed from assessment successfully.'
+    ],
+    'submit' => [
+        'message' => ' submitted successfully.'
+    ],
+    'start_timer' => [
+        'message' => ' timer started successfully.'
+    ],
+    'pause_timer' => [
+        'message' => ' timer paused successfully.'
+    ],
+    'resume_timer' => [
+        'message' => ' timer resumed successfully.'
+    ],
+    'submit_timer' => [
+        'message' => ' timer submitted successfully.'
+    ],
+    'timer_status' => [
+        'message' => ' timer status retrieved successfully.'
+    ],
 ];

@@ -11,7 +11,9 @@ class TicketResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'instructorId' => $this->instructor_id,
+            'userId' => $this->user_id,
+            'userName' => $this->whenLoaded('user')->first_name .
+                ' ' . $this->whenLoaded('user')->last_name,
             'date' => $this->date,
             'subject' => $this->subject,
             'priority' => $this->priority,

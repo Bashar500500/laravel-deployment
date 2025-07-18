@@ -11,6 +11,9 @@ class HolidayResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'instructorId' => $this->instructor_id,
+            'instructorName' => $this->whenLoaded('instructor')->first_name .
+                ' ' . $this->whenLoaded('instructor')->last_name,
             'title' => $this->title,
             'date' => $this->date,
             'day' => $this->day,

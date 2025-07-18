@@ -30,9 +30,4 @@ class ScheduleTiming extends Model
     {
         return $this->belongsTo(Course::class, 'course_id');
     }
-
-    // public function instructorAvailableTimings(): HasMany
-    // {
-    //     return $this->hasMany(InstructorAvailableTiming::class, 'schedule_timing_id');
-    // }
 }

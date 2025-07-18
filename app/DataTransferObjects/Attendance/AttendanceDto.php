@@ -17,9 +17,9 @@ class AttendanceDto
     public static function fromIndexRequest(AttendanceRequest $request): AttendanceDto
     {
         return new self(
+            sectionId: $request->validated('section_id'),
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
-            sectionId: null,
             studentId: null,
             isPresent: null,
         );

@@ -34,4 +34,61 @@ return [
     'project_group_not_in_course' => [
         'description' => 'The project group does not exists in course. Try again with correct data.'
     ],
+    'assessment_fill_in_blank_question' => [
+        'description' => 'The assessment fill in blank question is already exists in the question bank. Try again with correct data.'
+    ],
+    'assessment_multiple_type_question' => [
+        'description' => 'The assessment multiple type question is already exists in the question bank. Try again with correct data.'
+    ],
+    'assessment_short_answer_question' => [
+        'description' => 'The assessment short answer question is already exists in the question bank. Try again with correct data.'
+    ],
+    'assessment_true_or_false_question' => [
+        'description' => 'The assessment true or false question is already exists in the question bank. Try again with correct data.'
+    ],
+    'question_bank_fill_in_blank_question' => [
+        'description' => 'The question bank fill in blank question is already exists in the assessment. Try again with correct data.'
+    ],
+    'question_bank_multiple_type_question' => [
+        'description' => 'The question bank multiple type question is already exists in the assessment. Try again with correct data.'
+    ],
+    'question_bank_short_answer_question' => [
+        'description' => 'The question bank short answer question is already exists in the assessment. Try again with correct data.'
+    ],
+    'question_bank_true_or_false_question' => [
+        'description' => 'The question bank true or false question is already exists in the assessment. Try again with correct data.'
+    ],
+    'assessment_attempts_allowed' => [
+        'description' => 'Assessment attempts allowed is reached. Try again with correct data.'
+    ],
+    'assignment_no_submission' => [
+        'description' => 'Assignment can not be submitted. Try again with correct data.'
+    ],
+    'assignment_submission_type_conflict' => [
+        'description' => 'Assignment submission type conflict. Try again with correct data.'
+    ],
+    'assignment_submission_file_size' => [
+        'description' => 'Assignment submission file size not correct. Try again with correct data.'
+    ],
+    'assignment_submission_file_conflict' => [
+        'description' => 'Assignment submission file conflict. Try again with correct data.'
+    ],
+    'assignment_no_late_submission' => [
+        'description' => 'Assignment no late submission after due date. Try again with correct data.'
+    ],
+    'assignment_submission_cutoff_date' => [
+        'description' => 'Assignment submission after cutoff date. Try again with correct data.'
+    ],
+    'timer_already_started' => [
+        'description' => 'Assessment timer already started. Try again with correct data.'
+    ],
+    'assessment_not_available' => [
+        'description' => 'Assessment not available today. Try again with correct data.'
+    ],
+    'challenge_user_exsits' => [
+        'description' => 'Student already exsits in challenge. Try again with correct data.'
+    ],
+    'challenge_has_max_participants' => [
+        'description' => 'challenge reached max participants. Try again with correct data.'
+    ],
 ];

@@ -44,6 +44,25 @@ enum ModelName: string
     case Project = 'project';
     case Ticket = 'ticket';
     case CommunityAccess = 'community_access';
+    case Assessment = 'assessment';
+    case AssessmentFillInBlankQuestion = 'assessment_fill_in_blank_question';
+    case AssessmentMultipleTypeQuestion = 'assessment_multiple_type_question';
+    case AssessmentShortAnswerQuestion = 'assessment_short_answer_question';
+    case AssessmentTrueOrFalseQuestion = 'assessment_true_or_false_question';
+    case QuestionBank = 'question_bank';
+    case QuestionBankFillInBlankQuestion = 'question_bank_fill_in_blank_question';
+    case QuestionBankMultipleTypeQuestion = 'question_bank_multiple_type_question';
+    case QuestionBankShortAnswerQuestion = 'question_bank_short_answer_question';
+    case QuestionBankTrueOrFalseQuestion = 'question_bank_true_or_false_question';
+    case TimeLimit = 'time_limit';
+    case Assignment = 'assignment';
+    case Challenge = 'challenge';
+    case Rule = 'rule';
+    case Badge = 'badge';
+    case AssessmentSubmit = 'assessment_submit';
+    case AssignmentSubmit = 'assignment_submit';
+    case Blank = 'blank';
+    case Option = 'option';
     case NoName = '';
 
     public static function getEnum(string $value): self
@@ -89,6 +108,25 @@ enum ModelName: string
             $value =='Project' => self::Project,
             $value =='Ticket' => self::Ticket,
             $value =='CommunityAccess' => self::CommunityAccess,
+            $value =='Assessment' => self::Assessment,
+            $value =='AssessmentFillInBlankQuestion' => self::AssessmentFillInBlankQuestion,
+            $value =='AssessmentMultipleTypeQuestion' => self::AssessmentMultipleTypeQuestion,
+            $value =='AssessmentShortAnswerQuestion' => self::AssessmentShortAnswerQuestion,
+            $value =='AssessmentTrueOrFalseQuestion' => self::AssessmentTrueOrFalseQuestion,
+            $value =='QuestionBank' => self::QuestionBank,
+            $value =='QuestionBankFillInBlankQuestion' => self::QuestionBankFillInBlankQuestion,
+            $value =='QuestionBankMultipleTypeQuestion' => self::QuestionBankMultipleTypeQuestion,
+            $value =='QuestionBankShortAnswerQuestion' => self::QuestionBankShortAnswerQuestion,
+            $value =='QuestionBankTrueOrFalseQuestion' => self::QuestionBankTrueOrFalseQuestion,
+            $value =='TimeLimit' => self::TimeLimit,
+            $value =='Assignment' => self::Assignment,
+            $value =='Challenge' => self::Challenge,
+            $value =='Rule' => self::Rule,
+            $value =='Badge' => self::Badge,
+            $value =='AssessmentSubmit' => self::AssessmentSubmit,
+            $value =='AssignmentSubmit' => self::AssignmentSubmit,
+            $value =='Blank' => self::Blank,
+            $value =='Option' => self::Option,
         };
     }
 
@@ -135,6 +173,25 @@ enum ModelName: string
             self::Project => 'Project',
             self::Ticket => 'Ticket',
             self::CommunityAccess => 'CommunityAccess',
+            self::Assessment => 'Assessment',
+            self::AssessmentFillInBlankQuestion => 'AssessmentFillInBlankQuestion',
+            self::AssessmentMultipleTypeQuestion => 'AssessmentMultipleTypeQuestion',
+            self::AssessmentShortAnswerQuestion => 'AssessmentShortAnswerQuestion',
+            self::AssessmentTrueOrFalseQuestion => 'AssessmentTrueOrFalseQuestion',
+            self::QuestionBank => 'QuestionBank',
+            self::QuestionBankFillInBlankQuestion => 'QuestionBankFillInBlankQuestion',
+            self::QuestionBankMultipleTypeQuestion => 'QuestionBankMultipleTypeQuestion',
+            self::QuestionBankShortAnswerQuestion => 'QuestionBankShortAnswerQuestion',
+            self::QuestionBankTrueOrFalseQuestion => 'QuestionBankTrueOrFalseQuestion',
+            self::TimeLimit => 'TimeLimit',
+            self::Assignment => 'Assignment',
+            self::Challenge => 'Challenge',
+            self::Rule => 'Rule',
+            self::Badge => 'Badge',
+            self::AssessmentSubmit => 'AssessmentSubmit',
+            self::AssignmentSubmit => 'AssignmentSubmit',
+            self::Blank => 'Blank',
+            self::Option => 'Option',
         };
     }
 

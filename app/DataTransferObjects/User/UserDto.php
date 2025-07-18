@@ -14,6 +14,7 @@ class UserDto
         public readonly ?string $email,
         public readonly ?string $password,
         public readonly ?UserRole $role,
+        public readonly ?string $fcmToken,
     ) {}
 
     public static function fromIndexRequest(UserRequest $request): UserDto
@@ -26,6 +27,7 @@ class UserDto
             email: null,
             password: null,
             role: null,
+            fcmToken: null,
         );
     }
 
@@ -39,6 +41,7 @@ class UserDto
             email: $request->validated('email'),
             password: $request->validated('password'),
             role: UserRole::from($request->validated('role')),
+            fcmToken: $request->validated('fcm_token'),
         );
     }
 
@@ -52,6 +55,7 @@ class UserDto
             email: $request->validated('email'),
             password: $request->validated('password'),
             role: null,
+            fcmToken: $request->validated('fcm_token'),
         );
     }
 }

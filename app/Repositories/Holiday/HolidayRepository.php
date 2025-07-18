@@ -15,7 +15,8 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
 
     public function all(HolidayDto $dto): object
     {
-        return (object) $this->model->latest('created_at')
+        return (object) $this->model->with('instructor')
+            ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
                 ['*'],
@@ -26,13 +27,15 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
 
     public function find(int $id): object
     {
-        return (object) parent::find($id);
+        return (object) parent::find($id)
+            ->load('instructor');
     }
 
-    public function create(HolidayDto $dto): object
+    public function create(HolidayDto $dto, array $data): object
     {
-        $holiday = DB::transaction(function () use ($dto) {
+        $holiday = DB::transaction(function () use ($dto, $data) {
             $holiday = (object) $this->model->create([
+                'instructor_id' => $data['instructorId'],
                 'title' => $dto->title,
                 'date' => $dto->date,
                 'day' => $dto->day,
@@ -41,7 +44,7 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
             return $holiday;
         });
 
-        return (object) $holiday;
+        return (object) $holiday->load('instructor');
     }
 
     public function update(HolidayDto $dto, int $id): object
@@ -58,7 +61,7 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
             return $holiday;
         });
 
-        return (object) $holiday;
+        return (object) $holiday->load('instructor');
     }
 
     public function delete(int $id): object

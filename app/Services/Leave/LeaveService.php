@@ -6,6 +6,7 @@ use App\Repositories\Leave\LeaveRepositoryInterface;
 use App\Http\Requests\Leave\LeaveRequest;
 use App\Models\Leave\Leave;
 use App\DataTransferObjects\Leave\LeaveDto;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveService
 {
@@ -27,7 +28,8 @@ class LeaveService
     public function store(LeaveRequest $request): object
     {
         $dto = LeaveDto::fromStoreRequest($request);
-        return $this->repository->create($dto);
+        $data = $this->prepareStoreData();
+        return $this->repository->create($dto, $data);
     }
 
     public function update(LeaveRequest $request, Leave $leave): object
@@ -39,5 +41,12 @@ class LeaveService
     public function destroy(Leave $leave): object
     {
         return $this->repository->delete($leave->id);
+    }
+
+    private function prepareStoreData(): array
+    {
+        return [
+            'instructorId' => Auth::user()->id,
+        ];
     }
 }

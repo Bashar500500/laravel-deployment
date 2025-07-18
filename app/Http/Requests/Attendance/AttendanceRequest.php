@@ -15,6 +15,7 @@ class AttendanceRequest extends FormRequest
 
     protected function onIndex() {
         return [
+            'section_id' => ['required', 'exists:sections,id'],
             'page' => ['required', 'integer', 'gt:0'],
             'page_size' => ['sometimes', 'integer', 'gt:0'],
         ];
@@ -53,13 +54,13 @@ class AttendanceRequest extends FormRequest
     // public function messages(): array
     // {
     //     return [
+    //         'section_id.required' => ValidationType::Required->getMessage(),
+    //         'section_id.exists' => ValidationType::Exists->getMessage(),
     //         'page.required' => ValidationType::Required->getMessage(),
     //         'page.integer' => ValidationType::Integer->getMessage(),
     //         'page.gt' => ValidationType::GreaterThanZero->getMessage(),
     //         'page_size.integer' => ValidationType::Integer->getMessage(),
     //         'page_size.gt' => ValidationType::GreaterThanZero->getMessage(),
-    //         'section_id.required' => ValidationType::Required->getMessage(),
-    //         'section_id.exists' => ValidationType::Exists->getMessage(),
     //         'student_id.required' => ValidationType::Required->getMessage(),
     //         'student_id.exists' => ValidationType::Exists->getMessage(),
     //         'is_present.required' => ValidationType::Required->getMessage(),
@@ -70,9 +71,9 @@ class AttendanceRequest extends FormRequest
     // public function attributes(): array
     // {
     //     return [
+    //         'section_id' => FieldName::SectionId->getMessage(),
     //         'page' => FieldName::Page->getMessage(),
     //         'page_size' => FieldName::PageSize->getMessage(),
-    //         'section_id' => FieldName::SectionId->getMessage(),
     //         'student_id' => FieldName::StudentId->getMessage(),
     //         'is_present' => FieldName::IsPresent->getMessage(),
     //     ];

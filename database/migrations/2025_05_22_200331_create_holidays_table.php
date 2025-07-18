@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('holidays', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('instructor_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
             $table->date('date');
             $table->string('day');

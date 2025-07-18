@@ -29,6 +29,7 @@ class UserRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', new Enum(UserRole::class)],
+            'fcm_token' => ['sometimes', 'string'],
         ];
     }
 
@@ -38,6 +39,7 @@ class UserRequest extends FormRequest
             'last_name' => ['sometimes', 'string', 'max:255'],
             'email' => ['sometimes', 'string', 'email', 'unique:users,email'],
             'password' => ['sometimes', 'string', 'min:8', 'confirmed'],
+            'fcm_token' => ['sometimes', 'string'],
         ];
     }
 
@@ -81,6 +83,7 @@ class UserRequest extends FormRequest
     //         'password.confirmed' => ValidationType::Confirmed->getMessage(),
     //         'role.required' => ValidationType::Required->getMessage(),
     //         'role.Illuminate\Validation\Rules\Enum' => ValidationType::Enum->getMessage(),
+    //         'fcm_token.string' => ValidationType::String->getMessage(),
     //     ];
     // }
 
@@ -94,6 +97,7 @@ class UserRequest extends FormRequest
     //         'email' => FieldName::Email->getMessage(),
     //         'password' => FieldName::Password->getMessage(),
     //         'role' => FieldName::Role->getMessage(),
+    //         'fcm_token' => FieldName::FcmToken->getMessage(),
     //     ];
     // }
 }

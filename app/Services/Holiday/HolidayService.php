@@ -6,6 +6,7 @@ use App\Repositories\Holiday\HolidayRepositoryInterface;
 use App\Http\Requests\Holiday\HolidayRequest;
 use App\Models\Holiday\Holiday;
 use App\DataTransferObjects\Holiday\HolidayDto;
+use Illuminate\Support\Facades\Auth;
 
 class HolidayService
 {
@@ -27,7 +28,8 @@ class HolidayService
     public function store(HolidayRequest $request): object
     {
         $dto = HolidayDto::fromStoreRequest($request);
-        return $this->repository->create($dto);
+        $data = $this->prepareStoreData();
+        return $this->repository->create($dto, $data);
     }
 
     public function update(HolidayRequest $request, Holiday $holiday): object
@@ -39,5 +41,12 @@ class HolidayService
     public function destroy(Holiday $holiday): object
     {
         return $this->repository->delete($holiday->id);
+    }
+
+    private function prepareStoreData(): array
+    {
+        return [
+            'instructorId' => Auth::user()->id,
+        ];
     }
 }
