@@ -29,7 +29,7 @@ class LearningActivityController extends Controller
 
     public function index(LearningActivityRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('section_id'));
+        // $this->authorize('index', [LearningActivity::class, $request->validated('section_id')]);
 
         $data = LearningActivityResource::collection(
             $this->learningActivityService->index($request),
@@ -57,7 +57,7 @@ class LearningActivityController extends Controller
 
     public function store(LearningActivityRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', LearningActivity::class);
 
         $data = LearningActivityResource::make(
             $this->learningActivityService->store($request),

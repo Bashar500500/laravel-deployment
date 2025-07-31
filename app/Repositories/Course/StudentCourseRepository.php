@@ -18,7 +18,11 @@ class StudentCourseRepository extends BaseRepository implements CourseRepository
 
     public function all(CourseDto $dto, array $data): object
     {
-        return (object) $this->model->whereIn('id', $data['student']->courses->select('id'))
+        if ($data['student']->courses && $data['student']->courses->count() > 0)
+        {
+            $courses = $data['student']->courses->pluck('id');
+
+            return (object) $this->model->whereIn('id', $courses)
             ->where('status', CourseStatus::Published)
             ->with('attachment', 'students')
             ->latest('created_at')
@@ -28,20 +32,35 @@ class StudentCourseRepository extends BaseRepository implements CourseRepository
                 'page',
                 $dto->currentPage,
             );
+        }
+        else
+        {
+            return (object) collect();
+        }
     }
 
     public function allWithFilter(CourseDto $dto, array $data): object
     {
-        return (object) $this->model->whereIn('id', $data['student']->courses->select('id'))
-            ->where('access_settings_access_type', $dto->accessType)
-            ->with('attachment', 'students')
-            ->latest('created_at')
-            ->simplePaginate(
-                $dto->pageSize,
-                ['*'],
-                'page',
-                $dto->currentPage,
-            );
+        if ($data['student']->courses && $data['student']->courses->count() > 0)
+        {
+            $courses = $data['student']->courses->pluck('id');
+
+            return (object) $this->model->whereIn('id', $courses)
+                ->where('status', CourseStatus::Published)
+                ->where('access_settings_access_type', $dto->accessType)
+                ->with('attachment', 'students')
+                ->latest('created_at')
+                ->simplePaginate(
+                    $dto->pageSize,
+                    ['*'],
+                    'page',
+                    $dto->currentPage,
+                );
+        }
+        else
+        {
+            return (object) collect();
+        }
     }
 
     public function find(int $id): object

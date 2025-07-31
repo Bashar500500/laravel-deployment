@@ -23,7 +23,7 @@ class TimeLimitController extends Controller
 
     public function index(TimeLimitRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', TimeLimit::class);
 
         $data = TimeLimitResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class TimeLimitController extends Controller
 
     public function store(TimeLimitRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', TimeLimit::class);
 
         $data = TimeLimitResource::make(
             $this->service->store($request),

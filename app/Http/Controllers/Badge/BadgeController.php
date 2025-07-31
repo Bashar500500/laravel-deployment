@@ -23,7 +23,7 @@ class BadgeController extends Controller
 
     public function index(BadgeRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', Badge::class);
 
         $data = BadgeResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class BadgeController extends Controller
 
     public function store(BadgeRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Badge::class);
 
         $data = BadgeResource::make(
             $this->service->store($request),

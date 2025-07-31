@@ -17,7 +17,7 @@ class AssessmentPolicy
         }
     }
 
-    public function index(User $user, int $courseId): bool
+    public function index(User $user, string $model, int $courseId): bool
     {
         return ($this->checkIfEnrolled($user, $courseId) ||
             $this->checkIfOwned($user, $courseId));
@@ -46,7 +46,7 @@ class AssessmentPolicy
             $this->checkIfOwned($user, $assessment->course->id));
     }
 
-    public function submit(User $user, int  $assessmentId): bool
+    public function submit(User $user, string $model, int $assessmentId): bool
     {
         $assessment = Assessment::find($assessmentId);
 
@@ -86,13 +86,13 @@ class AssessmentPolicy
 
     private function checkIfEnrolled(User $user, int $courseId): bool
     {
-        $exists = $user->enrolledCourses()->where('id', $courseId)->first();
+        $exists = $user->enrolledCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 
     private function checkIfOwned(User $user, int $courseId): bool
     {
-        $exists = $user->ownedCourses()->where('id', $courseId)->first();
+        $exists = $user->ownedCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 

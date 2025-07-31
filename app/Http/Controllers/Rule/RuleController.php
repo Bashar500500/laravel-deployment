@@ -47,7 +47,7 @@ class RuleController extends Controller
 
     public function store(RuleRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Rule::class);
 
         $data = RuleResource::make(
             $this->service->store($request),

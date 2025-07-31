@@ -63,7 +63,7 @@ class CourseRequest extends FormRequest
 
     protected function onUpdate() {
         return [
-            'category_id' => ['required', 'exists:categories,id'],
+            'category_id' => ['sometimes', 'exists:categories,id'],
             'name' => ['sometimes', 'string'],
             'description' => ['sometimes', 'string'],
             'language' => ['sometimes', new Enum(CourseLanguage::class)],

@@ -24,7 +24,7 @@ class QuestionBankFillInBlankQuestionController extends Controller
 
     public function index(QuestionBankFillInBlankQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('question_bank_id'));
+        // $this->authorize('index', [QuestionBankFillInBlankQuestion::class, $request->validated('question_bank_id')]);
 
         $data = QuestionBankFillInBlankQuestionResource::collection(
             $this->service->index($request),
@@ -52,7 +52,7 @@ class QuestionBankFillInBlankQuestionController extends Controller
 
     public function store(QuestionBankFillInBlankQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', QuestionBankFillInBlankQuestion::class);
 
         $data = QuestionBankFillInBlankQuestionResource::make(
             $this->service->store($request),

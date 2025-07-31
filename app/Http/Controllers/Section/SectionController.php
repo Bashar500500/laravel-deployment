@@ -28,7 +28,7 @@ class SectionController extends Controller
 
     public function index(SectionRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('course_id'));
+        // $this->authorize('index', [Section::class, $request->validated('course_id')]);
 
         $data = SectionResource::collection(
             $this->sectionService->index($request),
@@ -56,7 +56,7 @@ class SectionController extends Controller
 
     public function store(SectionRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Section::class);
 
         $data = SectionResource::make(
             $this->sectionService->store($request),

@@ -22,7 +22,7 @@ return [
         'description, :Model' => 'A :Model with this data not found. You cannot retrive it.'
     ],
     '500' => [
-        'message, :Model' => ':Model not found.',
+        'message, :Model' => 'Server error.',
         'description, :Model' => 'A :Model is down. Try again later.'
     ],
 ];

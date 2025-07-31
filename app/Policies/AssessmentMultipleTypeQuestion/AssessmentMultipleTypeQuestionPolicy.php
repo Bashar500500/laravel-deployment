@@ -8,7 +8,8 @@ use Illuminate\Auth\Access\Response;
 use App\Models\Assessment\Assessment;
 
 class AssessmentMultipleTypeQuestionPolicy
-{public function before(User $user, $ability)
+{
+    public function before(User $user, $ability)
     {
         $role = $user->getRoleNames();
         if ($role[0] == 'admin')
@@ -21,7 +22,7 @@ class AssessmentMultipleTypeQuestionPolicy
         }
     }
 
-    public function index(User $user, int $assessmentId): bool
+    public function index(User $user, string $model, int $assessmentId): bool
     {
         $assessment = Assessment::find($assessmentId);
 
@@ -55,7 +56,7 @@ class AssessmentMultipleTypeQuestionPolicy
 
     private function checkIfOwned(User $user, int $courseId): bool
     {
-        $exists = $user->ownedCourses()->where('id', $courseId)->first();
+        $exists = $user->ownedCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 

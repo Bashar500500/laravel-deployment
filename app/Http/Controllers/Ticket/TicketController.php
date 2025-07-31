@@ -23,7 +23,7 @@ class TicketController extends Controller
 
     public function index(TicketRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', Ticket::class);
 
         $data = (object) TicketResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class TicketController extends Controller
 
     public function store(TicketRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Ticket::class);
 
         $data = TicketResource::make(
             $this->service->store($request),

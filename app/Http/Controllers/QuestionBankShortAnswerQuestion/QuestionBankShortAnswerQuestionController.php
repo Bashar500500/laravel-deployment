@@ -24,7 +24,7 @@ class QuestionBankShortAnswerQuestionController extends Controller
 
     public function index(QuestionBankShortAnswerQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('question_bank_id'));
+        // $this->authorize('index', [QuestionBankShortAnswerQuestion::class, $request->validated('question_bank_id')]);
 
         $data = QuestionBankShortAnswerQuestionResource::collection(
             $this->service->index($request),
@@ -52,7 +52,7 @@ class QuestionBankShortAnswerQuestionController extends Controller
 
     public function store(QuestionBankShortAnswerQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', QuestionBankShortAnswerQuestion::class);
 
         $data = QuestionBankShortAnswerQuestionResource::make(
             $this->service->store($request),

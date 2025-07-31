@@ -28,7 +28,7 @@ class EventController extends Controller
 
     public function index(EventRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('course_id'));
+        // $this->authorize('index', [Event::class, $request->validated('course_id')]);
 
         $data = EventResource::collection(
             $this->eventService->index($request),
@@ -56,7 +56,7 @@ class EventController extends Controller
 
     public function store(EventRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Event::class);
 
         $data = EventResource::make(
             $this->eventService->store($request),

@@ -23,7 +23,7 @@ class AssessmentSubmitController extends Controller
 
     public function index(AssessmentSubmitRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('assessment_id'));
+        // $this->authorize('index', [AssessmentSubmit::class, $request->validated('assessment_id')]);
 
         $data = AssessmentSubmitResource::collection(
             $this->service->index($request),

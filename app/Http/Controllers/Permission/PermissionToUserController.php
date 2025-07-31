@@ -7,7 +7,7 @@ use App\Enums\Trait\FunctionName;
 use App\Enums\Trait\ModelName;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Response\ResponseController;
-use App\Http\Requests\Permission\PermissionToUserRequest;
+use App\Http\Requests\Permission\PermissionUserRequest;
 use App\Services\Permission\PermissionService;
 use Illuminate\Http\Request;
 
@@ -20,7 +20,7 @@ class PermissionToUserController extends Controller
     ) {
         parent::__construct($controller);
     }
-    public function assignPermission(PermissionToUserRequest $request)
+    public function assignPermission(PermissionUserRequest $request)
     {
         $permission =$this->service->assignPermissionToUser($request);
         return $this->controller
@@ -30,9 +30,9 @@ class PermissionToUserController extends Controller
         ->successResponse();
     }
 
-    public function revokePermission(PermissionToUserRequest $request)
+    public function revokePermission(PermissionUserRequest $request)
     {
-        $permission =$this->service->revokePermissionToUser($request);
+        $permission =$this->service->revokePermissionFromUser($request);
         return $this->controller
         ->setFunctionName(FunctionName::Revoke)
         ->setModelName(ModelName::Permission)

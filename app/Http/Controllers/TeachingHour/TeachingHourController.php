@@ -23,7 +23,7 @@ class TeachingHourController extends Controller
 
     public function index(TeachingHourRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', TeachingHour::class);
 
         $data = TeachingHourResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class TeachingHourController extends Controller
 
     public function store(TeachingHourRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', TeachingHour::class);
 
         $data = TeachingHourResource::make(
             $this->service->store($request),

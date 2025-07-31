@@ -25,7 +25,7 @@ class AssignmentController extends Controller
 
     public function index(AssignmentRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('course_id'));
+        // $this->authorize('index', [Assignment::class, $request->validated('course_id')]);
 
         $data = AssignmentResource::collection(
             $this->service->index($request),
@@ -53,7 +53,7 @@ class AssignmentController extends Controller
 
     public function store(AssignmentRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Assignment::class);
 
         $data = AssignmentResource::make(
             $this->service->store($request),
@@ -95,7 +95,7 @@ class AssignmentController extends Controller
 
     public function submit(AssignmentSubmitRequest $request): JsonResponse
     {
-        // $this->authorize('submit', $request->validated('assignment_id'));
+        // $this->authorize('submit', [Assignment::class, $request->validated('assignment_id')]);
 
         $data = AssignmentSubmitResource::make(
             $this->service->submit($request),

@@ -23,7 +23,7 @@ class GradeController extends Controller
 
     public function index(GradeRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', Grade::class);
 
         $data = GradeResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class GradeController extends Controller
 
     public function store(GradeRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Grade::class);
 
         $data = GradeResource::make(
             $this->service->store($request),

@@ -23,7 +23,7 @@ class CommunityAccessController extends Controller
 
     public function index(CommunityAccessRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', CommunityAccess::class);
 
         $data = (object) CommunityAccessResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class CommunityAccessController extends Controller
 
     public function store(CommunityAccessRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', CommunityAccess::class);
 
         $data = CommunityAccessResource::make(
             $this->service->store($request),

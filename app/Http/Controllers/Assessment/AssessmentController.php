@@ -25,7 +25,7 @@ class AssessmentController extends Controller
 
     public function index(AssessmentRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('course_id'));
+        // $this->authorize('index', [Assessment::class, $request->validated('course_id')]);
 
         $data = AssessmentResource::collection(
             $this->service->index($request),
@@ -41,6 +41,8 @@ class AssessmentController extends Controller
     {
         // $this->authorize('show', $assessment);
 
+        dd('pass');
+
         $data = AssessmentResource::make(
             $this->service->show($assessment),
         );
@@ -53,7 +55,7 @@ class AssessmentController extends Controller
 
     public function store(AssessmentRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Assessment::class);
 
         $data = AssessmentResource::make(
             $this->service->store($request),
@@ -95,7 +97,7 @@ class AssessmentController extends Controller
 
     public function submit(AssessmentSubmitRequest $request): JsonResponse
     {
-        // $this->authorize('submit', $request->validated('assessment_id'));
+        // $this->authorize('submit', [Assessment::class, $request->validated('assessment_id')]);
 
         $data = AssessmentSubmitResource::make(
             $this->service->submit($request),

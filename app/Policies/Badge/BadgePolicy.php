@@ -47,7 +47,7 @@ class BadgePolicy
 
     private function checkIfEnrolled(User $user, Badge $badge): bool
     {
-        $exists = $user->enrolledCourses()->where('instructor_id', $badge->instructor_id)->first();
+        $exists = $user->enrolledCourses->where('instructor_id', $badge->instructor_id)->first();
         return $exists ? true : false;
     }
 

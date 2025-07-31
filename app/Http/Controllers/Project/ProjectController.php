@@ -28,7 +28,7 @@ class ProjectController extends Controller
 
     public function index(ProjectRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('course_id'));
+        // $this->authorize('index', [Project::class, $request->validated('course_id')]);
 
         $data = ProjectResource::collection(
             $this->projectService->index($request),
@@ -56,7 +56,7 @@ class ProjectController extends Controller
 
     public function store(ProjectRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Project::class);
 
         $data = ProjectResource::make(
             $this->projectService->store($request),

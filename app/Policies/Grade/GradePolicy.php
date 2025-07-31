@@ -47,7 +47,7 @@ class GradePolicy
 
     private function checkIfOwned(User $user, int $courseId): bool
     {
-        $exists = $user->ownedCourses()->where('id', $courseId)->first();
+        $exists = $user->ownedCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 

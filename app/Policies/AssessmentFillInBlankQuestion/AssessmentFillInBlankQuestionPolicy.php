@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\AssessmentMultipleTypeQuestion;
+namespace App\Policies\AssessmentFillInBlankQuestion;
 
 use App\Models\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestion;
 use App\Models\User\User;
@@ -22,7 +22,7 @@ class AssessmentFillInBlankQuestionPolicy
         }
     }
 
-    public function index(User $user, int $assessmentId): bool
+    public function index(User $user, string $model, int $assessmentId): bool
     {
         $assessment = Assessment::find($assessmentId);
 
@@ -56,7 +56,7 @@ class AssessmentFillInBlankQuestionPolicy
 
     private function checkIfOwned(User $user, int $courseId): bool
     {
-        $exists = $user->ownedCourses()->where('id', $courseId)->first();
+        $exists = $user->ownedCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 

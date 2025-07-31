@@ -28,7 +28,7 @@ class AdminProfileController extends Controller
 
     public function index(AdminProfileRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('adminIndex', Profile::class);
 
         $data = ProfileResource::collection(
             $this->adminProfileService->index($request),
@@ -42,7 +42,7 @@ class AdminProfileController extends Controller
 
     public function show(Profile $adminProfile): JsonResponse
     {
-        // $this->authorize('show', $adminProfile);
+        // $this->authorize('adminShow', $adminProfile);
 
         $data = ProfileResource::make(
             $this->adminProfileService->show($adminProfile),
@@ -56,7 +56,7 @@ class AdminProfileController extends Controller
 
     public function store(AdminProfileRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('adminStore', Profile::class);
 
         $data = ProfileResource::make(
             $this->adminProfileService->store($request),
@@ -70,7 +70,7 @@ class AdminProfileController extends Controller
 
     public function update(AdminProfileRequest $request, Profile $adminProfile): JsonResponse
     {
-        // $this->authorize('update', $adminProfile);
+        // $this->authorize('adminUpdate', $adminProfile);
 
         $data = ProfileResource::make(
             $this->adminProfileService->update($request, $adminProfile),
@@ -84,7 +84,7 @@ class AdminProfileController extends Controller
 
     public function destroy(Profile $adminProfile): JsonResponse
     {
-        // $this->authorize('destroy', $adminProfile);
+        // $this->authorize('adminDestroy', $adminProfile);
 
         $data = ProfileResource::make(
             $this->adminProfileService->destroy($adminProfile),
@@ -98,7 +98,7 @@ class AdminProfileController extends Controller
 
     public function view(Profile $adminProfile): BinaryFileResponse
     {
-        // $this->authorize('view', $adminProfile);
+        // $this->authorize('adminView', $adminProfile);
 
         $file = $this->adminProfileService->view($adminProfile);
 
@@ -108,7 +108,7 @@ class AdminProfileController extends Controller
 
     public function download(Profile $adminProfile): BinaryFileResponse
     {
-        // $this->authorize('download', $adminProfile);
+        // $this->authorize('adminDownload', $adminProfile);
 
         $file = $this->adminProfileService->download($adminProfile);
 
@@ -118,7 +118,7 @@ class AdminProfileController extends Controller
 
     public function upload(ImageUploadRequest $request, Profile $adminProfile): JsonResponse
     {
-        // $this->authorize('upload', $adminProfile);
+        // $this->authorize('adminUpload', $adminProfile);
 
         $message = $this->uploadService->uploadAdminProfileImage($request, $adminProfile);
 
@@ -136,7 +136,7 @@ class AdminProfileController extends Controller
 
     public function destroyAttachment(Profile $adminProfile): JsonResponse
     {
-        // $this->authorize('destroyAttachment', $adminProfile);
+        // $this->authorize('adminDestroyAttachment', $adminProfile);
 
         $this->adminProfileService->destroyAttachment($adminProfile);
 

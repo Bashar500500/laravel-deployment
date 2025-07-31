@@ -23,7 +23,7 @@ class ChallengeController extends Controller
 
     public function index(ChallengeRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', Challenge::class);
 
         $data = ChallengeResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class ChallengeController extends Controller
 
     public function store(ChallengeRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Challenge::class);
 
         $data = ChallengeResource::make(
             $this->service->store($request),

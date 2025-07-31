@@ -124,6 +124,47 @@ use App\Models\Rule\Rule;
 use App\Repositories\Badge\BadgeRepositoryInterface;
 use App\Repositories\Badge\BadgeRepository;
 use App\Models\Badge\Badge;
+use Illuminate\Support\Facades\Gate;
+use App\Models\AssessmentSubmit\AssessmentSubmit;
+use App\Models\AssignmentSubmit\AssignmentSubmit;
+use App\Models\Course\Course;
+use App\Policies\Assessment\AssessmentPolicy;
+use App\Policies\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestionPolicy;
+use App\Policies\AssessmentMultipleTypeQuestion\AssessmentMultipleTypeQuestionPolicy;
+use App\Policies\AssessmentShortAnswerQuestion\AssessmentShortAnswerQuestionPolicy;
+use App\Policies\AssessmentSubmit\AssessmentSubmitPolicy;
+use App\Policies\AssessmentTrueOrFalseQuestion\AssessmentTrueOrFalseQuestionPolicy;
+use App\Policies\Assignment\AssignmentPolicy;
+use App\Policies\AssignmentSubmit\AssignmentSubmitPolicy;
+use App\Policies\Attendance\AttendancePolicy;
+use App\Policies\Badge\BadgePolicy;
+use App\Policies\Category\CategoryPolicy;
+use App\Policies\Challenge\ChallengePolicy;
+use App\Policies\CommunityAccess\CommunityAccessPolicy;
+use App\Policies\Course\CoursePolicy;
+use App\Policies\Event\EventPolicy;
+use App\Policies\Grade\GradePolicy;
+use App\Policies\Group\GroupPolicy;
+use App\Policies\Holiday\HolidayPolicy;
+use App\Policies\LearningActivity\LearningActivityPolicy;
+use App\Policies\Leave\LeavePolicy;
+use App\Policies\Policy\PolicyPolicy;
+use App\Policies\Profile\AdminAndUserProfilePolicy;
+use App\Policies\Progress\ProgressPolicy;
+use App\Policies\Project\ProjectPolicy;
+use App\Policies\QuestionBank\QuestionBankPolicy;
+use App\Policies\QuestionBankFillInBlankQuestion\QuestionBankFillInBlankQuestionPolicy;
+use App\Policies\QuestionBankMultipleTypeQuestion\QuestionBankMultipleTypeQuestionPolicy;
+use App\Policies\QuestionBankShortAnswerQuestion\QuestionBankShortAnswerQuestionPolicy;
+use App\Policies\QuestionBankTrueOrFalseQuestion\QuestionBankTrueOrFalseQuestionPolicy;
+use App\Policies\Rule\RulePolicy;
+use App\Policies\ScheduleTiming\ScheduleTimingPolicy;
+use App\Policies\Section\SectionPolicy;
+use App\Policies\SubCategory\SubCategoryPolicy;
+use App\Policies\TeachingHour\TeachingHourPolicy;
+use App\Policies\Ticket\TicketPolicy;
+use App\Policies\TimeLimit\TimeLimitPolicy;
+use App\Policies\User\AdminAndUserPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -338,11 +379,53 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
+    protected $policies = [
+        Assessment::class => AssessmentPolicy::class,
+        AssessmentFillInBlankQuestion::class => AssessmentFillInBlankQuestionPolicy::class,
+        AssessmentMultipleTypeQuestion::class => AssessmentMultipleTypeQuestionPolicy::class,
+        AssessmentShortAnswerQuestion::class => AssessmentShortAnswerQuestionPolicy::class,
+        AssessmentSubmit::class => AssessmentSubmitPolicy::class,
+        AssessmentTrueOrFalseQuestion::class => AssessmentTrueOrFalseQuestionPolicy::class,
+        Assignment::class => AssignmentPolicy::class,
+        AssignmentSubmit::class => AssignmentSubmitPolicy::class,
+        Attendance::class => AttendancePolicy::class,
+        Badge::class => BadgePolicy::class,
+        Category::class => CategoryPolicy::class,
+        Challenge::class => ChallengePolicy::class,
+        CommunityAccess::class => CommunityAccessPolicy::class,
+        Course::class => CoursePolicy::class,
+        Event::class => EventPolicy::class,
+        Grade::class => GradePolicy::class,
+        Group::class => GroupPolicy::class,
+        Holiday::class => HolidayPolicy::class,
+        LearningActivity::class => LearningActivityPolicy::class,
+        Leave::class => LeavePolicy::class,
+        Policy::class => PolicyPolicy::class,
+        Profile::class => AdminAndUserProfilePolicy::class,
+        Progress::class => ProgressPolicy::class,
+        Project::class => ProjectPolicy::class,
+        QuestionBank::class => QuestionBankPolicy::class,
+        QuestionBankFillInBlankQuestion::class => QuestionBankFillInBlankQuestionPolicy::class,
+        QuestionBankMultipleTypeQuestion::class => QuestionBankMultipleTypeQuestionPolicy::class,
+        QuestionBankShortAnswerQuestion::class => QuestionBankShortAnswerQuestionPolicy::class,
+        QuestionBankTrueOrFalseQuestion::class => QuestionBankTrueOrFalseQuestionPolicy::class,
+        Rule::class => RulePolicy::class,
+        ScheduleTiming::class => ScheduleTimingPolicy::class,
+        Section::class => SectionPolicy::class,
+        SubCategory::class => SubCategoryPolicy::class,
+        TeachingHour::class => TeachingHourPolicy::class,
+        Ticket::class => TicketPolicy::class,
+        TimeLimit::class => TimeLimitPolicy::class,
+        User::class => AdminAndUserPolicy::class,
+    ];
+
     /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
-        //
+        foreach ($this->policies as $model => $policy) {
+            Gate::policy($model, $policy);
+        }
     }
 }

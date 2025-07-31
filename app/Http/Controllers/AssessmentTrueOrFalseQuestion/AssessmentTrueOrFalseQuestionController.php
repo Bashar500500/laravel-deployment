@@ -23,7 +23,7 @@ class AssessmentTrueOrFalseQuestionController extends Controller
 
     public function index(AssessmentTrueOrFalseQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('assessment_id'));
+        // $this->authorize('index', [AssessmentTrueOrFalseQuestion::class, $request->validated('assessment_id')]);
 
         $data = AssessmentTrueOrFalseQuestionResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class AssessmentTrueOrFalseQuestionController extends Controller
 
     public function store(AssessmentTrueOrFalseQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', AssessmentTrueOrFalseQuestion::class);
 
         $data = AssessmentTrueOrFalseQuestionResource::make(
             $this->service->store($request),

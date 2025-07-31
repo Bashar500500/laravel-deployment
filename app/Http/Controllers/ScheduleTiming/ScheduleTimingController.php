@@ -23,7 +23,7 @@ class ScheduleTimingController extends Controller
 
     public function index(ScheduleTimingRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', ScheduleTiming::class);
 
         $data = ScheduleTimingResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class ScheduleTimingController extends Controller
 
     public function store(ScheduleTimingRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', ScheduleTiming::class);
 
         $data = ScheduleTimingResource::make(
             $this->service->store($request),

@@ -18,7 +18,7 @@ class AssignmentSubmitPolicy
         }
     }
 
-    public function index(User $user, int $assignmentId): bool
+    public function index(User $user, string $model, int $assignmentId): bool
     {
         $assignment = Assignment::find($assignmentId);
 
@@ -58,13 +58,13 @@ class AssignmentSubmitPolicy
 
     private function checkIfEnrolled(User $user, int $courseId): bool
     {
-        $exists = $user->enrolledCourses()->where('id', $courseId)->first();
+        $exists = $user->enrolledCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 
     private function checkIfOwned(User $user, int $courseId): bool
     {
-        $exists = $user->ownedCourses()->where('id', $courseId)->first();
+        $exists = $user->ownedCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 

@@ -23,7 +23,7 @@ class ProgressController extends Controller
 
     public function index(ProgressRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', Progress::class);
 
         $data = ProgressResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class ProgressController extends Controller
 
     public function store(ProgressRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Progress::class);
 
         $data = ProgressResource::make(
             $this->service->store($request),

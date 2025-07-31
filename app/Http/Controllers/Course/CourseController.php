@@ -28,7 +28,7 @@ class CourseController extends Controller
 
     public function index(CourseRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', Course::class);
 
         $data = CourseResource::collection(
             $this->courseService->index($request),
@@ -56,7 +56,7 @@ class CourseController extends Controller
 
     public function store(CourseRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Course::class);
 
         $data = CourseResource::make(
             $this->courseService->store($request),

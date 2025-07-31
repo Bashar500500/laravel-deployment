@@ -28,7 +28,7 @@ class GroupController extends Controller
 
     public function index(GroupRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('course_id'));
+        // $this->authorize('index', [Group::class, $request->validated('course_id')]);
 
         $data = GroupResource::collection(
             $this->groupService->index($request),
@@ -56,7 +56,7 @@ class GroupController extends Controller
 
     public function store(GroupRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Group::class);
 
         $data = GroupResource::make(
             $this->groupService->store($request),

@@ -23,7 +23,7 @@ class PolicyController extends Controller
 
     public function index(PolicyRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', Policy::class);
 
         $data = (object) PolicyResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class PolicyController extends Controller
 
     public function store(PolicyRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Policy::class);
 
         $data = PolicyResource::make(
             $this->service->store($request),

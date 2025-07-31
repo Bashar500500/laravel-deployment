@@ -59,7 +59,7 @@ class ChallengePolicy
 
     private function checkIfEnrolled(User $user, Challenge $challenge): bool
     {
-        $exists = $user->enrolledCourses()->where('instructor_id', $challenge->instructor_id)->first();
+        $exists = $user->enrolledCourses->where('instructor_id', $challenge->instructor_id)->first();
         return $exists ? true : false;
     }
 

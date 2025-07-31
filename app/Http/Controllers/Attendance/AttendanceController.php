@@ -23,7 +23,7 @@ class AttendanceController extends Controller
 
     public function index(AttendanceRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('section_id'));
+        // $this->authorize('index', [Attendance::class, $request->validated('section_id')]);
 
         $data = AttendanceResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class AttendanceController extends Controller
 
     public function store(AttendanceRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Attendance::class);
 
         $data = AttendanceResource::make(
             $this->service->store($request),

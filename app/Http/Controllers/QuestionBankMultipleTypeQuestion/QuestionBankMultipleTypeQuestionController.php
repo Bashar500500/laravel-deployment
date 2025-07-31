@@ -24,7 +24,7 @@ class QuestionBankMultipleTypeQuestionController extends Controller
 
     public function index(QuestionBankMultipleTypeQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('question_bank_id'));
+        // $this->authorize('index', [QuestionBankMultipleTypeQuestion::class, $request->validated('question_bank_id')]);
 
         $data = QuestionBankMultipleTypeQuestionResource::collection(
             $this->service->index($request),
@@ -52,7 +52,7 @@ class QuestionBankMultipleTypeQuestionController extends Controller
 
     public function store(QuestionBankMultipleTypeQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', QuestionBankMultipleTypeQuestion::class);
 
         $data = QuestionBankMultipleTypeQuestionResource::make(
             $this->service->store($request),

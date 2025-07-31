@@ -21,7 +21,7 @@ class QuestionBankPolicy
         }
     }
 
-    public function index(User $user, int $courseId): bool
+    public function index(User $user, string $model, int $courseId): bool
     {
         return $this->checkIfOwned($user, $courseId);
     }
@@ -44,7 +44,7 @@ class QuestionBankPolicy
 
     private function checkIfOwned(User $user, int $courseId): bool
     {
-        $exists = $user->ownedCourses()->where('id', $courseId)->first();
+        $exists = $user->ownedCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 

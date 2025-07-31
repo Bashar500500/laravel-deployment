@@ -28,7 +28,7 @@ class SubCategoryController extends Controller
 
     public function index(SubCategoryRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', SubCategory::class);
 
         $data = SubCategoryResource::collection(
             $this->subCategoryService->index($request),
@@ -56,7 +56,7 @@ class SubCategoryController extends Controller
 
     public function store(SubCategoryRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', SubCategory::class);
 
         $data = SubCategoryResource::make(
             $this->subCategoryService->store($request),

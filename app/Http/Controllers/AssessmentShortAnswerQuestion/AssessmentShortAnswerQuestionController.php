@@ -23,7 +23,7 @@ class AssessmentShortAnswerQuestionController extends Controller
 
     public function index(AssessmentShortAnswerQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('assessment_id'));
+        // $this->authorize('index', [AssessmentShortAnswerQuestion::class, $request->validated('assessment_id')]);
 
         $data = AssessmentShortAnswerQuestionResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class AssessmentShortAnswerQuestionController extends Controller
 
     public function store(AssessmentShortAnswerQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', AssessmentShortAnswerQuestion::class);
 
         $data = AssessmentShortAnswerQuestionResource::make(
             $this->service->store($request),

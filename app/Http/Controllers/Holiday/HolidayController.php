@@ -23,7 +23,7 @@ class HolidayController extends Controller
 
     public function index(HolidayRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', Holiday::class);
 
         $data = HolidayResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class HolidayController extends Controller
 
     public function store(HolidayRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Holiday::class);
 
         $data = HolidayResource::make(
             $this->service->store($request),

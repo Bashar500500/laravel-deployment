@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Exceptions\CustomException;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -45,6 +47,20 @@ return Application::configure(basePath: dirname(__DIR__))
                 $exception->errors(),
             );
         });
+
+        // $exceptions->renderable(function (AuthenticationException $exception) {
+        //     throw CustomException::forbidden(
+        //         $exception->getMessage(),
+        //         $exception->errors(),
+        //     );
+        // });
+
+        // $exceptions->renderable(function (AuthorizationException $exception) {
+        //     throw CustomException::unauthorized(
+        //         $exception->getMessage(),
+        //         $exception->errors(),
+        //     );
+        // });
 
         // $exceptions->renderable(function (Exception $exception) {
         //     throw CustomException::internalServerError();

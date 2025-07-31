@@ -28,7 +28,7 @@ class CategoryController extends Controller
 
     public function index(CategoryRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('index', Category::class);
 
         $data = CategoryResource::collection(
             $this->categoryService->index($request),
@@ -56,7 +56,7 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', Category::class);
 
         $data = CategoryResource::make(
             $this->categoryService->store($request),

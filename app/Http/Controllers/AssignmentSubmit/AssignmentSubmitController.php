@@ -24,7 +24,7 @@ class AssignmentSubmitController extends Controller
 
     public function index(AssignmentSubmitRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('assignment_id'));
+        // $this->authorize('index', [AssignmentSubmit::class, $request->validated('assignment_id')]);
 
         $data = AssignmentSubmitResource::collection(
             $this->service->index($request),

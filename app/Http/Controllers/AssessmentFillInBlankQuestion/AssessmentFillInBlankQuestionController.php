@@ -23,7 +23,7 @@ class AssessmentFillInBlankQuestionController extends Controller
 
     public function index(AssessmentFillInBlankQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('assessment_id'));
+        // $this->authorize('index', [AssessmentFillInBlankQuestion::class, $request->validated('assessment_id')]);
 
         $data = AssessmentFillInBlankQuestionResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class AssessmentFillInBlankQuestionController extends Controller
 
     public function store(AssessmentFillInBlankQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', AssessmentFillInBlankQuestion::class);
 
         $data = AssessmentFillInBlankQuestionResource::make(
             $this->service->store($request),

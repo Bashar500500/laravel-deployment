@@ -22,7 +22,7 @@ class AttendancePolicy
         }
     }
 
-    public function index(User $user, int $sectionId): bool
+    public function index(User $user, string $model, int $sectionId): bool
     {
         $section = Section::find($sectionId);
 
@@ -51,7 +51,7 @@ class AttendancePolicy
 
     private function checkIfOwned(User $user, int $courseId): bool
     {
-        $exists = $user->ownedCourses()->where('id', $courseId)->first();
+        $exists = $user->ownedCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 

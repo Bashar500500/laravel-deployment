@@ -26,7 +26,7 @@ class UserController extends Controller
 
     public function index(UserRequest $request): JsonResponse
     {
-        // $this->authorize('index');
+        // $this->authorize('userIndex', User::class);
 
         $data = UserResource::collection(
             $this->service->index($request),
@@ -40,8 +40,6 @@ class UserController extends Controller
 
     public function show(User $user): JsonResponse
     {
-        // $this->authorize('show', $user->id);
-
         $data = UserResource::make(
             $this->service->show($user),
         );
@@ -78,8 +76,6 @@ class UserController extends Controller
 
     public function update(UserRequest $request): JsonResponse
     {
-        // $this->authorize('update', $user->id);
-
         $data = UserResource::make(
             $this->service->update($request),
         );
@@ -92,8 +88,6 @@ class UserController extends Controller
 
     public function destroy(): JsonResponse
     {
-        // $this->authorize('destroy', $user->id);
-
         $data = UserResource::make(
             $this->service->destroy(),
         );
@@ -106,6 +100,8 @@ class UserController extends Controller
 
     public function addStudentToCourse(AddUserToCourseRequest $request): JsonResponse
     {
+        // $this->authorize('addStudentToCourse', [User::class, $request->validated('course_id')]);
+
         $message = $this->service->addStudentToCourse($request);
 
         return match ($message) {
@@ -122,6 +118,8 @@ class UserController extends Controller
 
     public function removeStudentFromCourse(RemoveUserFromCourseRequest $request): JsonResponse
     {
+        // $this->authorize('removeStudentFromCourse', [User::class, $request->validated('student_code')]);
+
         $this->service->removeStudentFromCourse($request);
 
         return $this->controller->setFunctionName(FunctionName::RemoveStudentFromCourse)

@@ -23,7 +23,7 @@ class AssessmentMultipleTypeQuestionController extends Controller
 
     public function index(AssessmentMultipleTypeQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('assessment_id'));
+        // $this->authorize('index', [AssessmentMultipleTypeQuestion::class, $request->validated('assessment_id')]);
 
         $data = AssessmentMultipleTypeQuestionResource::collection(
             $this->service->index($request),
@@ -51,7 +51,7 @@ class AssessmentMultipleTypeQuestionController extends Controller
 
     public function store(AssessmentMultipleTypeQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', AssessmentMultipleTypeQuestion::class);
 
         $data = AssessmentMultipleTypeQuestionResource::make(
             $this->service->store($request),

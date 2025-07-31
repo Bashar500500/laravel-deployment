@@ -22,7 +22,7 @@ class QuestionBankShortAnswerQuestionPolicy
         }
     }
 
-    public function index(User $user, int $questionBankId): bool
+    public function index(User $user, string $model, int $questionBankId): bool
     {
         $questionBank = QuestionBank::find($questionBankId);
 
@@ -61,7 +61,7 @@ class QuestionBankShortAnswerQuestionPolicy
 
     private function checkIfOwned(User $user, int $courseId): bool
     {
-        $exists = $user->ownedCourses()->where('id', $courseId)->first();
+        $exists = $user->ownedCourses->where('id', $courseId)->first();
         return $exists ? true : false;
     }
 

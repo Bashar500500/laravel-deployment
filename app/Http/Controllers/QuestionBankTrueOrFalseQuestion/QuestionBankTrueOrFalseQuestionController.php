@@ -24,7 +24,7 @@ class QuestionBankTrueOrFalseQuestionController extends Controller
 
     public function index(QuestionBankTrueOrFalseQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('index', $request->validated('question_bank_id'));
+        // $this->authorize('index', [QuestionBankTrueOrFalseQuestion::class, $request->validated('question_bank_id')]);
 
         $data = QuestionBankTrueOrFalseQuestionResource::collection(
             $this->service->index($request),
@@ -52,7 +52,7 @@ class QuestionBankTrueOrFalseQuestionController extends Controller
 
     public function store(QuestionBankTrueOrFalseQuestionRequest $request): JsonResponse
     {
-        // $this->authorize('store');
+        // $this->authorize('store', QuestionBankTrueOrFalseQuestion::class);
 
         $data = QuestionBankTrueOrFalseQuestionResource::make(
             $this->service->store($request),
