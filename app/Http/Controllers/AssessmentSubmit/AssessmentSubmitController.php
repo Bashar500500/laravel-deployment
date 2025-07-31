@@ -23,6 +23,8 @@ class AssessmentSubmitController extends Controller
 
     public function index(AssessmentSubmitRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('assessment_id'));
+
         $data = AssessmentSubmitResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class AssessmentSubmitController extends Controller
 
     public function show(AssessmentSubmit $assessmentSubmit): JsonResponse
     {
+        // $this->authorize('show', $assessmentSubmit);
+
         $data = AssessmentSubmitResource::make(
             $this->service->show($assessmentSubmit),
         );
@@ -47,6 +51,8 @@ class AssessmentSubmitController extends Controller
 
     public function update(AssessmentSubmitRequest $request, AssessmentSubmit $assessmentSubmit): JsonResponse
     {
+        // $this->authorize('update', $assessmentSubmit);
+
         $data = AssessmentSubmitResource::make(
             $this->service->update($request, $assessmentSubmit),
         );
@@ -59,6 +65,8 @@ class AssessmentSubmitController extends Controller
 
     public function destroy(AssessmentSubmit $assessmentSubmit): JsonResponse
     {
+        // $this->authorize('destroy', $assessmentSubmit);
+
         $data = AssessmentSubmitResource::make(
             $this->service->destroy($assessmentSubmit),
         );

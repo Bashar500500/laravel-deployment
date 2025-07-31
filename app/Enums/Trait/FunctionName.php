@@ -41,6 +41,7 @@ enum FunctionName: string
     case ResumeTimer = 'resume_timer';
     case SubmitTimer = 'submit_timer';
     case TimerStatus = 'timer_status';
+    case Analytics = 'analytics';
 
     public function getMessage(): string
     {

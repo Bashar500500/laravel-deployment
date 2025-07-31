@@ -829,4 +829,7 @@ return [
     'fcm_token' => [
         'message' => 'fcm token',
     ],
+    'year' => [
+        'message' => 'year',
+    ],
 ];

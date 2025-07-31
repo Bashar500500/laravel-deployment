@@ -56,7 +56,7 @@ return [
         'message' => 'Category'
     ],
     'sub_category' => [
-        'message' => 'SubCategory'
+        'message' => 'Sub category'
     ],
     'password_reset' => [
         'message' => 'Password reset'
@@ -109,9 +109,6 @@ return [
     'email' => [
         'message' => 'Email'
     ],
-    'question' => [
-        'message' => 'Question'
-    ],
     'project' => [
         'message' => 'Project'
     ],
@@ -122,54 +119,57 @@ return [
         'message' => 'Community access'
     ],
     'assessment' => [
-        'message' => 'assessment'
+        'message' => 'Assessment'
     ],
     'assessment_fill_in_blank_question' => [
-        'message' => 'assessment fill in blank question'
+        'message' => 'Assessment fill in blank question'
     ],
     'assessment_multiple_type_question' => [
-        'message' => 'assessment multiple type question'
+        'message' => 'Assessment multiple type question'
     ],
     'assessment_short_answer_question' => [
-        'message' => 'assessment short answer question'
+        'message' => 'Assessment short answer question'
     ],
     'assessment_true_or_false_question' => [
-        'message' => 'assessment true or false question'
+        'message' => 'Assessment true or false question'
     ],
     'question_bank' => [
-        'message' => 'question bank'
+        'message' => 'Question bank'
     ],
     'question_bank_fill_in_blank_question' => [
-        'message' => 'question bank fill in blank question'
+        'message' => 'Question bank fill in blank question'
     ],
     'question_bank_multiple_type_question' => [
-        'message' => 'question bank multiple type question'
+        'message' => 'Question bank multiple type question'
     ],
     'question_bank_short_answer_question' => [
-        'message' => 'question bank short answer question'
+        'message' => 'Question bank short answer question'
     ],
     'question_bank_true_or_false_question' => [
-        'message' => 'question bank true or false question'
+        'message' => 'Question bank true or false question'
     ],
     'time_limit' => [
-        'message' => 'time limit'
+        'message' => 'Time limit'
     ],
     'assignment' => [
-        'message' => 'assignment'
+        'message' => 'Assignment'
     ],
     'challenge' => [
-        'message' => 'ahallenge'
+        'message' => 'Challenge'
     ],
     'rule' => [
-        'message' => 'rule'
+        'message' => 'Rule'
     ],
     'badge' => [
-        'message' => 'badge'
+        'message' => 'Badge'
     ],
     'blank' => [
-        'message' => 'blank'
+        'message' => 'Blank'
     ],
     'option' => [
-        'message' => 'option'
+        'message' => 'Option'
+    ],
+    'analytics' => [
+        'message' => 'Analytics'
     ],
 ];

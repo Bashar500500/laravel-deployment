@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('FILESYSTEM_DISK', 'local'),
+    'default' => env('FILESYSTEM_DISK', 'supabase'),
 
     /*
     |--------------------------------------------------------------------------
@@ -58,6 +58,16 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'report' => false,
+        ],
+
+        'supabase' => [
+            'driver' => 's3',
+            'key' => '4f8d35e9d9dc8d9c8478d2ab9ca2c1cf',
+            'secret' => 'a019f46a8fc6a2c7f49f7a5eabcce2e8acca45cce9e8eae26a33a2b631dbb396',
+            'region' => 'eu-central-1',
+            'bucket' => 'files',
+            'endpoint' => 'https://omymvavsbwwcugzzzeuq.supabase.co/storage/v1/s3',
+            'use_path_style_endpoint' => true,
         ],
 
     ],

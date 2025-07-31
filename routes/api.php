@@ -48,6 +48,8 @@ use App\Http\Controllers\QuestionBankTrueOrFalseQuestion\QuestionBankTrueOrFalse
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\TimeLimit\TimeLimitController;
 
+use Illuminate\Support\Facades\Storage;use Illuminate\Http\Request;
+
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
@@ -261,3 +263,12 @@ Route::middleware(['auth:api'])->group(function () {
 // Route::post('group/{group}', [GroupController::class, 'update']);
 // Route::post('section/{section}', [SectionController::class, 'update']);
 // Route::post('learning_activity/{learningActivity}', [LearningActivityController::class, 'update']);
+
+
+
+
+Route::post('/private-image', function (Request $request) {
+    $file = $request->file('file');
+    $path = Storage::disk('supabase')->putFile('Section/' . 1 . '/Files', $file);
+    return response()->json(['path' => $path]);
+});

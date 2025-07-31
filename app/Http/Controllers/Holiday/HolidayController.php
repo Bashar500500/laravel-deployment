@@ -23,6 +23,8 @@ class HolidayController extends Controller
 
     public function index(HolidayRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = HolidayResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class HolidayController extends Controller
 
     public function show(Holiday $holiday): JsonResponse
     {
+        // $this->authorize('show', $holiday);
+
         $data = HolidayResource::make(
             $this->service->show($holiday),
         );
@@ -47,6 +51,8 @@ class HolidayController extends Controller
 
     public function store(HolidayRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = HolidayResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class HolidayController extends Controller
 
     public function update(HolidayRequest $request, Holiday $holiday): JsonResponse
     {
+        // $this->authorize('update', $holiday);
+
         $data = HolidayResource::make(
             $this->service->update($request, $holiday),
         );
@@ -71,6 +79,8 @@ class HolidayController extends Controller
 
     public function destroy(Holiday $holiday): JsonResponse
     {
+        // $this->authorize('destroy', $holiday);
+
         $data = HolidayResource::make(
             $this->service->destroy($holiday),
         );

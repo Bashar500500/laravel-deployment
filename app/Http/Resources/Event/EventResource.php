@@ -20,6 +20,8 @@ class EventResource extends JsonResource
             'category' => $this->category,
             'recurrence' => $this->recurrence,
             'description' => $this->description,
+            'attachments' => $this->whenLoaded('attachments')->count() == 0 ?
+                null : EventAttachmentsResource::makeJson($this),
         ];
     }
 }

@@ -56,14 +56,8 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
             {
                 foreach ($dto->files as $file)
                 {
-                    match (is_null($file->extension())) {
-                        true => $storedFile = Storage::disk('local')->putFileAs('Project/' . $project->id . '/Files',
-                                $file,
-                                str()->uuid() . '.txt'),
-                        false => $storedFile = Storage::disk('local')->putFileAs('Project/' . $project->id . '/Files',
-                                $file,
-                                str()->uuid() . '.' . $file->extension()),
-                    };
+                    $storedFile = Storage::disk('supabase')->putFile('Project/' . $project->id . '/Files',
+                        $file);
 
                     $project->attachment()->create([
                         'reference_field' => AttachmentReferenceField::ProjectFiles,
@@ -93,19 +87,17 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
 
             if ($dto->files)
             {
-                $project->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+                $attachments = $project->attachments;
+                foreach ($attachments as $attachment)
+                {
+                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                }
+                $attachments->delete();
 
                 foreach ($dto->files as $file)
                 {
-                    match (is_null($file->extension())) {
-                        true => $storedFile = Storage::disk('local')->putFileAs('Project/' . $project->id . '/Files',
-                                $file,
-                                str()->uuid() . '.txt'),
-                        false => $storedFile = Storage::disk('local')->putFileAs('Project/' . $project->id . '/Files',
-                                $file,
-                                str()->uuid() . '.' . $file->extension()),
-                    };
+                    $storedFile = Storage::disk('supabase')->putFile('Project/' . $project->id . '/Files',
+                        $file);
 
                     $project->attachment()->create([
                         'reference_field' => AttachmentReferenceField::ProjectFiles,
@@ -126,8 +118,12 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
         $model = (object) parent::find($id);
 
         $project = DB::transaction(function () use ($id, $model) {
-            $model->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('Project/' . $model->id);
+            $attachments = $model->attachments;
+            foreach ($attachments as $attachment)
+            {
+                Storage::disk('supabase')->delete('Project/' . $model->id . '/Files/' . $attachment->url);
+            }
+            $attachments->delete();
             return parent::delete($id);
         });
 
@@ -136,23 +132,30 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
 
     public function view(int $id, string $fileName): string
     {
-        $file = Storage::disk('local')->path('Project/' . $id . '/Files/' . $fileName);
+        $model = (object) parent::find($id);
 
-        if (!file_exists($file))
+        $exists = Storage::disk('supabase')->exists('Project/' . $model->id . '/Files/' . $fileName);
+
+        if (! $exists)
         {
             throw CustomException::notFound('File');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Project/' . $model->id . '/Files/' . $fileName);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $fileName);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function download(int $id): string
     {
         $model = (object) parent::find($id);
+        $attachments = $model->attachments;
 
-        $files = Storage::disk('local')->files('Project/' . $id . '/Files');
-
-        if (count($files) == 0)
+        if (count($attachments) == 0)
         {
             throw CustomException::notFound('Files');
         }
@@ -162,9 +165,13 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
         $zipPath = storage_path('app/private/' . $zipName);
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
-            foreach ($files as $file) {
-                $path = Storage::disk('local')->path($file);
-                $zip->addFromString(basename($path), file_get_contents($path));
+            foreach ($attachments as $attachment) {
+                $file = Storage::disk('supabase')->exists('Project/' . $model->id . '/Files/' . $attachment->url);
+                $encoded = base64_encode($file);
+                $decoded = base64_decode($encoded);
+                $tempPath = storage_path('app/private/' . $attachment->url);
+                file_put_contents($tempPath, $decoded);
+                $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
             }
             $zip->close();
         }
@@ -177,9 +184,8 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
-            $storedFile = Storage::disk('local')->putFileAs('Project/' . $model->id . '/Files',
-                $data['file'],
-                basename($data['file']));
+            $storedFile = Storage::disk('supabase')->putFile('Project/' . $model->id . '/Files',
+                $data['file']);
 
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
@@ -197,7 +203,16 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
     public function deleteAttachment(int $id, string $fileName): void
     {
         $model = (object) parent::find($id);
-        $model->attachments()->where('url', $fileName)->delete();
-        Storage::disk('local')->delete('Project/' . $model->id . '/Files/' . $fileName);
+
+        $exists = Storage::disk('supabase')->exists('Project/' . $model->id . '/Files/' . $fileName);
+
+        if (! $exists)
+        {
+            throw CustomException::notFound('File');
+        }
+
+        $attachment = $model->attachments()->where('url', $fileName)->first();
+        Storage::disk('supabase')->delete('Project/' . $model->id . '/Files/' . $attachment->url);
+        $attachment->delete();
     }
 }

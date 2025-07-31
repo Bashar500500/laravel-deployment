@@ -112,4 +112,7 @@ return [
     'timer_status' => [
         'message' => ' timer status retrieved successfully.'
     ],
+    'analytics' => [
+        'message' => ' retrieved successfully.'
+    ],
 ];

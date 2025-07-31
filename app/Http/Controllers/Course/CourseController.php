@@ -28,6 +28,8 @@ class CourseController extends Controller
 
     public function index(CourseRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = CourseResource::collection(
             $this->courseService->index($request),
         );
@@ -40,6 +42,8 @@ class CourseController extends Controller
 
     public function show(Course $course): JsonResponse
     {
+        // $this->authorize('show', $course);
+
         $data = CourseResource::make(
             $this->courseService->show($course),
         );
@@ -52,6 +56,8 @@ class CourseController extends Controller
 
     public function store(CourseRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = CourseResource::make(
             $this->courseService->store($request),
         );
@@ -64,6 +70,8 @@ class CourseController extends Controller
 
     public function update(CourseRequest $request, Course $course): JsonResponse
     {
+        // $this->authorize('update', $course);
+
         $data = CourseResource::make(
             $this->courseService->update($request, $course),
         );
@@ -76,6 +84,8 @@ class CourseController extends Controller
 
     public function destroy(Course $course): JsonResponse
     {
+        // $this->authorize('destroy', $course);
+
         $data = CourseResource::make(
             $this->courseService->destroy($course),
         );
@@ -88,6 +98,8 @@ class CourseController extends Controller
 
     public function view(Course $course): BinaryFileResponse
     {
+        // $this->authorize('view', $course);
+
         $file = $this->courseService->view($course);
 
         return $this->controller->setFile($file)
@@ -96,6 +108,8 @@ class CourseController extends Controller
 
     public function download(Course $course): BinaryFileResponse
     {
+        // $this->authorize('download', $course);
+
         $file = $this->courseService->download($course);
 
         return $this->controller->setFile($file)
@@ -104,6 +118,8 @@ class CourseController extends Controller
 
     public function upload(ImageUploadRequest $request, Course $course): JsonResponse
     {
+        // $this->authorize('upload', $course);
+
         $message = $this->uploadService->uploadCourseImage($request, $course);
 
         return match ($message) {
@@ -120,6 +136,8 @@ class CourseController extends Controller
 
     public function destroyAttachment(Course $course): JsonResponse
     {
+        // $this->authorize('destroyAttachment', $course);
+
         $this->courseService->destroyAttachment($course);
 
         return $this->controller->setFunctionName(FunctionName::Delete)

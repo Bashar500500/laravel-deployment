@@ -23,6 +23,8 @@ class GradeController extends Controller
 
     public function index(GradeRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = GradeResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class GradeController extends Controller
 
     public function show(Grade $grade): JsonResponse
     {
+        // $this->authorize('show', $grade);
+
         $data = GradeResource::make(
             $this->service->show($grade),
         );
@@ -47,6 +51,8 @@ class GradeController extends Controller
 
     public function store(GradeRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = GradeResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class GradeController extends Controller
 
     public function update(GradeRequest $request, Grade $grade): JsonResponse
     {
+        // $this->authorize('update', $grade);
+
         $data = GradeResource::make(
             $this->service->update($request, $grade),
         );
@@ -71,6 +79,8 @@ class GradeController extends Controller
 
     public function destroy(Grade $grade): JsonResponse
     {
+        // $this->authorize('destroy', $grade);
+
         $data = GradeResource::make(
             $this->service->destroy($grade),
         );

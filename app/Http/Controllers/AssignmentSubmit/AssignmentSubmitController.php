@@ -24,6 +24,8 @@ class AssignmentSubmitController extends Controller
 
     public function index(AssignmentSubmitRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('assignment_id'));
+
         $data = AssignmentSubmitResource::collection(
             $this->service->index($request),
         );
@@ -36,6 +38,8 @@ class AssignmentSubmitController extends Controller
 
     public function show(AssignmentSubmit $assignmentSubmit): JsonResponse
     {
+        // $this->authorize('show', $assignmentSubmit);
+
         $data = AssignmentSubmitResource::make(
             $this->service->show($assignmentSubmit),
         );
@@ -48,6 +52,8 @@ class AssignmentSubmitController extends Controller
 
     public function update(AssignmentSubmitRequest $request, AssignmentSubmit $assignmentSubmit): JsonResponse
     {
+        // $this->authorize('update', $assignmentSubmit);
+
         $data = AssignmentSubmitResource::make(
             $this->service->update($request, $assignmentSubmit),
         );
@@ -60,6 +66,8 @@ class AssignmentSubmitController extends Controller
 
     public function destroy(AssignmentSubmit $assignmentSubmit): JsonResponse
     {
+        // $this->authorize('destroy', $assignmentSubmit);
+
         $data = AssignmentSubmitResource::make(
             $this->service->destroy($assignmentSubmit),
         );
@@ -72,6 +80,8 @@ class AssignmentSubmitController extends Controller
 
     public function view(AssignmentSubmit $assignmentSubmit, string $fileName): BinaryFileResponse
     {
+        // $this->authorize('view', $assignmentSubmit);
+
         $file = $this->service->view($assignmentSubmit, $fileName);
 
         return $this->controller->setFile($file)
@@ -80,6 +90,8 @@ class AssignmentSubmitController extends Controller
 
     public function download(AssignmentSubmit $assignmentSubmit): BinaryFileResponse
     {
+        // $this->authorize('download', $assignmentSubmit);
+
         $zip = $this->service->download($assignmentSubmit);
 
         return $this->controller->setZip($zip)

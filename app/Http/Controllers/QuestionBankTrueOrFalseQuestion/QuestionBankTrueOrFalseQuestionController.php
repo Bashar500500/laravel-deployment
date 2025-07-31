@@ -24,6 +24,8 @@ class QuestionBankTrueOrFalseQuestionController extends Controller
 
     public function index(QuestionBankTrueOrFalseQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('question_bank_id'));
+
         $data = QuestionBankTrueOrFalseQuestionResource::collection(
             $this->service->index($request),
         );
@@ -36,6 +38,8 @@ class QuestionBankTrueOrFalseQuestionController extends Controller
 
     public function show(QuestionBankTrueOrFalseQuestion $question): JsonResponse
     {
+        // $this->authorize('show', $question);
+
         $data = QuestionBankTrueOrFalseQuestionResource::make(
             $this->service->show($question),
         );
@@ -48,6 +52,8 @@ class QuestionBankTrueOrFalseQuestionController extends Controller
 
     public function store(QuestionBankTrueOrFalseQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = QuestionBankTrueOrFalseQuestionResource::make(
             $this->service->store($request),
         );
@@ -60,6 +66,8 @@ class QuestionBankTrueOrFalseQuestionController extends Controller
 
     public function update(QuestionBankTrueOrFalseQuestionRequest $request, QuestionBankTrueOrFalseQuestion $question): JsonResponse
     {
+        // $this->authorize('update', $question);
+
         $data = QuestionBankTrueOrFalseQuestionResource::make(
             $this->service->update($request, $question),
         );
@@ -72,6 +80,8 @@ class QuestionBankTrueOrFalseQuestionController extends Controller
 
     public function destroy(QuestionBankTrueOrFalseQuestion $question): JsonResponse
     {
+        // $this->authorize('destroy', $question);
+
         $data = QuestionBankTrueOrFalseQuestionResource::make(
             $this->service->destroy($question),
         );
@@ -84,6 +94,8 @@ class QuestionBankTrueOrFalseQuestionController extends Controller
 
     public function addQuestionBankTrueOrFalseQuestionToAssessment(AddOrRemoveQuestionBankTrueOrFalseQuestionToOrFromAssessmentRequest $request, QuestionBankTrueOrFalseQuestion $question): JsonResponse
     {
+        // $this->authorize('addQuestionBankTrueOrFalseQuestionToAssessment', $question);
+
         $this->service->addQuestionBankTrueOrFalseQuestionToAssessment($request, $question);
 
         return $this->controller->setFunctionName(FunctionName::AddQuestionBankTrueOrFalseQuestionToAssessment)
@@ -94,6 +106,8 @@ class QuestionBankTrueOrFalseQuestionController extends Controller
 
     public function removeQuestionBankTrueOrFalseQuestionFromAssessment(AddOrRemoveQuestionBankTrueOrFalseQuestionToOrFromAssessmentRequest $request, QuestionBankTrueOrFalseQuestion $question): JsonResponse
     {
+        // $this->authorize('removeQuestionBankTrueOrFalseQuestionFromAssessment', $question);
+
         $this->service->removeQuestionBankTrueOrFalseQuestionFromAssessment($request, $question);
 
         return $this->controller->setFunctionName(FunctionName::RemoveQuestionBankTrueOrFalseQuestionFromAssessment)

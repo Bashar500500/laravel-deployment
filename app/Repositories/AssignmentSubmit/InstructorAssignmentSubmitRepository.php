@@ -78,8 +78,12 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
         $model = (object) parent::find($id);
 
         $assignmentSubmit = DB::transaction(function () use ($id, $model) {
-            $model->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('AssignmentSubmit/' . $model->id);
+            $attachments = $model->attachments;
+            foreach ($attachments as $attachment)
+            {
+                Storage::disk('supabase')->delete('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $attachment->url);
+            }
+            $attachments->delete();
             return parent::delete($id);
         });
 
@@ -90,23 +94,28 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('AssignmentSubmit/' . $id . '/Files/' . $model->student_id . '/' . $fileName);
+        $exists = Storage::disk('supabase')->exists('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $fileName);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('File');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $fileName);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $fileName);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function download(int $id): string
     {
         $model = (object) parent::find($id);
+        $attachments = $model->attachments;
 
-        $files = Storage::disk('local')->files('AssignmentSubmit/' . $id . '/Files/' . $model->student_id);
-
-        if (count($files) == 0)
+        if (count($attachments) == 0)
         {
             throw CustomException::notFound('Files');
         }
@@ -116,9 +125,13 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
         $zipPath = storage_path('app/private/' . $zipName);
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
-            foreach ($files as $file) {
-                $path = Storage::disk('local')->path($file);
-                $zip->addFromString(basename($path), file_get_contents($path));
+            foreach ($attachments as $attachment) {
+                $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $attachment->url);
+                $encoded = base64_encode($file);
+                $decoded = base64_decode($encoded);
+                $tempPath = storage_path('app/private/' . $attachment->url);
+                file_put_contents($tempPath, $decoded);
+                $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
             }
             $zip->close();
         }

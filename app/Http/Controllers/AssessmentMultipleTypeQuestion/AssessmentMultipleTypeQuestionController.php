@@ -23,6 +23,8 @@ class AssessmentMultipleTypeQuestionController extends Controller
 
     public function index(AssessmentMultipleTypeQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('assessment_id'));
+
         $data = AssessmentMultipleTypeQuestionResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class AssessmentMultipleTypeQuestionController extends Controller
 
     public function show(AssessmentMultipleTypeQuestion $question): JsonResponse
     {
+        // $this->authorize('show', $question);
+
         $data = AssessmentMultipleTypeQuestionResource::make(
             $this->service->show($question),
         );
@@ -47,6 +51,8 @@ class AssessmentMultipleTypeQuestionController extends Controller
 
     public function store(AssessmentMultipleTypeQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = AssessmentMultipleTypeQuestionResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class AssessmentMultipleTypeQuestionController extends Controller
 
     public function update(AssessmentMultipleTypeQuestionRequest $request, AssessmentMultipleTypeQuestion $question): JsonResponse
     {
+        // $this->authorize('update', $question);
+
         $data = AssessmentMultipleTypeQuestionResource::make(
             $this->service->update($request, $question),
         );
@@ -71,6 +79,8 @@ class AssessmentMultipleTypeQuestionController extends Controller
 
     public function destroy(AssessmentMultipleTypeQuestion $question): JsonResponse
     {
+        // $this->authorize('destroy', $question);
+
         $data = AssessmentMultipleTypeQuestionResource::make(
             $this->service->destroy($question),
         );
@@ -83,6 +93,8 @@ class AssessmentMultipleTypeQuestionController extends Controller
 
     public function addAssessmentMultipleTypeQuestionToQuestionBank(AssessmentMultipleTypeQuestion $question): JsonResponse
     {
+        // $this->authorize('addAssessmentMultipleTypeQuestionToQuestionBank', $question);
+
         $this->service->addAssessmentMultipleTypeQuestionToQuestionBank($question);
 
         return $this->controller->setFunctionName(FunctionName::AddAssessmentMultipleTypeQuestionToQuestionBank)

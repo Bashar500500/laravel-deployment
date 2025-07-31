@@ -21,7 +21,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
 
     public function all(EventDto $dto): object
     {
-        return (object) $this->model->with('course')
+        return (object) $this->model->with('course', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -34,7 +34,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
     public function allWithFilter(EventDto $dto): object
     {
         return (object) $this->model->where('recurrence', $dto->recurrence)
-            ->with('course')
+            ->with('course', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -47,7 +47,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('course');
+            ->load('course', 'attachments');
     }
 
     public function create(EventDto $dto): object
@@ -69,14 +69,8 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
             {
                 foreach ($dto->eventAttachmentsDto->files as $file)
                 {
-                    match (is_null($file->extension())) {
-                        true => $storedFile = Storage::disk('local')->putFileAs('Event/' . $event->id . '/Files',
-                                $file,
-                                str()->uuid() . '.txt'),
-                        false => $storedFile = Storage::disk('local')->putFileAs('Event/' . $event->id . '/Files',
-                                $file,
-                                str()->uuid() . '.' . $file->extension()),
-                    };
+                    $storedFile = Storage::disk('supabase')->putFile('Event/' . $event->id . '/Files',
+                        $file);
 
                     $event->attachment()->create([
                         'reference_field' => AttachmentReferenceField::EventAttachmentsFile,
@@ -101,7 +95,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
             return $event;
         });
 
-        return (object) $event->load('course');
+        return (object) $event->load('course', 'attachments');
     }
 
     public function update(EventDto $dto, int $id): object
@@ -122,19 +116,17 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
 
             if ($dto->eventAttachmentsDto->files)
             {
-                $event->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->delete();
-                Storage::disk('local')->deleteDirectory('Event/' . $event->id);
+                $attachments = $event->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->all();
+                foreach ($attachments as $attachment)
+                {
+                    Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment->url);
+                }
+                $attachments->delete();
 
                 foreach ($dto->eventAttachmentsDto->files as $file)
                 {
-                    match (is_null($file->extension())) {
-                        true => $storedFile = Storage::disk('local')->putFileAs('Event/' . $event->id . '/Files',
-                                $file,
-                                str()->uuid() . '.txt'),
-                        false => $storedFile = Storage::disk('local')->putFileAs('Event/' . $event->id . '/Files',
-                                $file,
-                                str()->uuid() . '.' . $file->extension()),
-                    };
+                    $storedFile = Storage::disk('supabase')->putFile('Event/' . $event->id . '/Files',
+                        $file);
 
                     $event->attachment()->create([
                         'reference_field' => AttachmentReferenceField::EventAttachmentsFile,
@@ -161,7 +153,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
             return $event;
         });
 
-        return (object) $event->load('course');
+        return (object) $event->load('course', 'attachments');
     }
 
     public function delete(int $id): object
@@ -169,8 +161,17 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
         $model = (object) parent::find($id);
 
         $event = DB::transaction(function () use ($id, $model) {
-            $model->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('Event/' . $model->id);
+            $attachments = $model->attachments;
+            foreach ($attachments as $attachment)
+            {
+                switch ($attachment->reference_field)
+                {
+                    case AttachmentReferenceField::EventAttachmentsFile:
+                        Storage::disk('supabase')->delete('Event/' . $model->id . '/Files/' . $attachment->url);
+                        break;
+                }
+            }
+            $attachments->delete();
             return parent::delete($id);
         });
 
@@ -179,23 +180,30 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
 
     public function view(int $id, string $fileName): string
     {
-        $file = Storage::disk('local')->path('Event/' . $id . '/Files/' . $fileName);
+        $model = (object) parent::find($id);
 
-        if (!file_exists($file))
+        $exists = Storage::disk('supabase')->exists('Event/' . $model->id . '/Files/' . $fileName);
+
+        if (! $exists)
         {
             throw CustomException::notFound('File');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Event/' . $model->id . '/Files/' . $fileName);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $fileName);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function download(int $id): string
     {
         $model = (object) parent::find($id);
+        $attachments = $model->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->get();
 
-        $files = Storage::disk('local')->files('Event/' . $id . '/Files');
-
-        if (count($files) == 0)
+        if (count($attachments) == 0)
         {
             throw CustomException::notFound('Files');
         }
@@ -205,9 +213,13 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
         $zipPath = storage_path('app/private/' . $zipName);
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
-            foreach ($files as $file) {
-                $path = Storage::disk('local')->path($file);
-                $zip->addFromString(basename($path), file_get_contents($path));
+            foreach ($attachments as $attachment) {
+                $file = Storage::disk('supabase')->get('Event/' . $model->id . '/Files/' . $attachment->url);
+                $encoded = base64_encode($file);
+                $decoded = base64_decode($encoded);
+                $tempPath = storage_path('app/private/' . $attachment->url);
+                file_put_contents($tempPath, $decoded);
+                $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
             }
             $zip->close();
         }
@@ -220,9 +232,8 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
-            $storedFile = Storage::disk('local')->putFileAs('Event/' . $model->id . '/Files',
-                $data['file'],
-                basename($data['file']));
+            $storedFile = Storage::disk('supabase')->putFile('Event/' . $model->id . '/Files',
+                $data['file']);
 
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
@@ -240,7 +251,16 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
     public function deleteAttachment(int $id, string $fileName): void
     {
         $model = (object) parent::find($id);
-        $model->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->where('url', $fileName)->delete();
-        Storage::disk('local')->delete('Event/' . $model->id . '/Files/' . $fileName);
+
+        $exists = Storage::disk('supabase')->exists('Event/' . $model->id . '/Files/' . $fileName);
+
+        if (! $exists)
+        {
+            throw CustomException::notFound('File');
+        }
+
+        $attachment = $model->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->where('url', $fileName)->first();
+        Storage::disk('supabase')->delete('Event/' . $model->id . '/Files/' . $attachment->url);
+        $attachment->delete();
     }
 }

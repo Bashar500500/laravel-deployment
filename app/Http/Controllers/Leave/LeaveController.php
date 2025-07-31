@@ -23,6 +23,8 @@ class LeaveController extends Controller
 
     public function index(LeaveRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = LeaveResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class LeaveController extends Controller
 
     public function show(Leave $leave): JsonResponse
     {
+        // $this->authorize('show', $leave);
+
         $data = LeaveResource::make(
             $this->service->show($leave),
         );
@@ -47,6 +51,8 @@ class LeaveController extends Controller
 
     public function store(LeaveRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = LeaveResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class LeaveController extends Controller
 
     public function update(LeaveRequest $request, Leave $leave): JsonResponse
     {
+        // $this->authorize('update', $leave);
+
         $data = LeaveResource::make(
             $this->service->update($request, $leave),
         );
@@ -71,6 +79,8 @@ class LeaveController extends Controller
 
     public function destroy(Leave $leave): JsonResponse
     {
+        // $this->authorize('destroy', $leave);
+
         $data = LeaveResource::make(
             $this->service->destroy($leave),
         );

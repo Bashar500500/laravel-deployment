@@ -23,6 +23,8 @@ class TeachingHourController extends Controller
 
     public function index(TeachingHourRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = TeachingHourResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class TeachingHourController extends Controller
 
     public function show(TeachingHour $teachingHour): JsonResponse
     {
+        // $this->authorize('show', $teachingHour);
+
         $data = TeachingHourResource::make(
             $this->service->show($teachingHour),
         );
@@ -47,6 +51,8 @@ class TeachingHourController extends Controller
 
     public function store(TeachingHourRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = TeachingHourResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class TeachingHourController extends Controller
 
     public function update(TeachingHourRequest $request, TeachingHour $teachingHour): JsonResponse
     {
+        // $this->authorize('update', $teachingHour);
+
         $data = TeachingHourResource::make(
             $this->service->update($request, $teachingHour),
         );
@@ -71,6 +79,8 @@ class TeachingHourController extends Controller
 
     public function destroy(TeachingHour $teachingHour): JsonResponse
     {
+        // $this->authorize('destroy', $teachingHour);
+
         $data = TeachingHourResource::make(
             $this->service->destroy($teachingHour),
         );

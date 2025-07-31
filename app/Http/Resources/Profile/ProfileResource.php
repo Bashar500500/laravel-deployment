@@ -36,9 +36,9 @@ class ProfileResource extends JsonResource
 
     private function prepareAttachmentData(int $id, string $url): string
     {
-        $file = Storage::disk('local')->path('Profile/' . $id . '/Images/' . $url);
-        $data = base64_encode(file_get_contents($file));
-        $metadata = mime_content_type($file);
-        return 'data:' . $metadata . ';base64,' . $data;
+        $file = Storage::disk('supabase')->get('Profile/' . $id . '/Images/' . $url);
+        $encoded = base64_encode($file);
+        $mimeType = Storage::disk('supabase')->mimeType('Profile/' . $id . '/Images/' . $url);
+        return 'data:' . $mimeType . ';base64,' . $encoded;
     }
 }

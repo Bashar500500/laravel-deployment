@@ -23,6 +23,8 @@ class ProgressController extends Controller
 
     public function index(ProgressRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = ProgressResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class ProgressController extends Controller
 
     public function show(Progress $progress): JsonResponse
     {
+        // $this->authorize('show', $progress);
+
         $data = ProgressResource::make(
             $this->service->show($progress),
         );
@@ -47,6 +51,8 @@ class ProgressController extends Controller
 
     public function store(ProgressRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = ProgressResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class ProgressController extends Controller
 
     public function update(ProgressRequest $request, Progress $progress): JsonResponse
     {
+        // $this->authorize('update', $progress);
+
         $data = ProgressResource::make(
             $this->service->update($request, $progress),
         );
@@ -71,6 +79,8 @@ class ProgressController extends Controller
 
     public function destroy(Progress $progress): JsonResponse
     {
+        // $this->authorize('destroy', $progress);
+
         $data = ProgressResource::make(
             $this->service->destroy($progress),
         );

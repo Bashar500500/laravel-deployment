@@ -29,6 +29,8 @@ class LearningActivityController extends Controller
 
     public function index(LearningActivityRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('section_id'));
+
         $data = LearningActivityResource::collection(
             $this->learningActivityService->index($request),
         );
@@ -41,6 +43,8 @@ class LearningActivityController extends Controller
 
     public function show(LearningActivity $learningActivity): JsonResponse
     {
+        // $this->authorize('show', $learningActivity);
+
         $data = LearningActivityResource::make(
             $this->learningActivityService->show($learningActivity),
         );
@@ -53,6 +57,8 @@ class LearningActivityController extends Controller
 
     public function store(LearningActivityRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = LearningActivityResource::make(
             $this->learningActivityService->store($request),
         );
@@ -65,6 +71,8 @@ class LearningActivityController extends Controller
 
     public function update(LearningActivityRequest $request, LearningActivity $learningActivity): JsonResponse
     {
+        // $this->authorize('update', $learningActivity);
+
         $data = LearningActivityResource::make(
             $this->learningActivityService->update($request, $learningActivity),
         );
@@ -77,6 +85,8 @@ class LearningActivityController extends Controller
 
     public function destroy(LearningActivity $learningActivity): JsonResponse
     {
+        // $this->authorize('destroy', $learningActivity);
+
         $data = LearningActivityResource::make(
             $this->learningActivityService->destroy($learningActivity),
         );
@@ -89,6 +99,8 @@ class LearningActivityController extends Controller
 
     public function view(LearningActivity $learningActivity): BinaryFileResponse
     {
+        // $this->authorize('view', $learningActivity);
+
         $file = $this->learningActivityService->view($learningActivity);
 
         return $this->controller->setFile($file)
@@ -97,6 +109,8 @@ class LearningActivityController extends Controller
 
     public function download(LearningActivity $learningActivity): BinaryFileResponse
     {
+        // $this->authorize('download', $learningActivity);
+
         $file = $this->learningActivityService->download($learningActivity);
 
         return $this->controller->setFile($file)
@@ -105,6 +119,8 @@ class LearningActivityController extends Controller
 
     public function upload(ContentUploadRequest $request, LearningActivity $learningActivity): JsonResponse
     {
+        // $this->authorize('upload', $learningActivity);
+
         $message = $this->uploadService->uploadLearningActivityContent($request, $learningActivity);
 
         return match ($message) {
@@ -125,6 +141,8 @@ class LearningActivityController extends Controller
 
     public function destroyAttachment(LearningActivity $learningActivity): JsonResponse
     {
+        // $this->authorize('destroyAttachment', $learningActivity);
+
         $this->learningActivityService->destroyAttachment($learningActivity);
 
         return match ($learningActivity->content_type) {

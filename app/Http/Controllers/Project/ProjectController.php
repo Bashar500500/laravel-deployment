@@ -28,6 +28,8 @@ class ProjectController extends Controller
 
     public function index(ProjectRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('course_id'));
+
         $data = ProjectResource::collection(
             $this->projectService->index($request),
         );
@@ -40,6 +42,8 @@ class ProjectController extends Controller
 
     public function show(Project $project): JsonResponse
     {
+        // $this->authorize('show', $project);
+
         $data = ProjectResource::make(
             $this->projectService->show($project),
         );
@@ -52,6 +56,8 @@ class ProjectController extends Controller
 
     public function store(ProjectRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = ProjectResource::make(
             $this->projectService->store($request),
         );
@@ -64,6 +70,8 @@ class ProjectController extends Controller
 
     public function update(ProjectRequest $request, Project $project): JsonResponse
     {
+        // $this->authorize('update', $project);
+
         $data = ProjectResource::make(
             $this->projectService->update($request, $project),
         );
@@ -76,6 +84,8 @@ class ProjectController extends Controller
 
     public function destroy(Project $project): JsonResponse
     {
+        // $this->authorize('destroy', $project);
+
         $data = ProjectResource::make(
             $this->projectService->destroy($project),
         );
@@ -88,6 +98,8 @@ class ProjectController extends Controller
 
     public function view(Project $project, string $fileName): BinaryFileResponse
     {
+        // $this->authorize('view', $project);
+
         $file = $this->projectService->view($project, $fileName);
 
         return $this->controller->setFile($file)
@@ -96,6 +108,8 @@ class ProjectController extends Controller
 
     public function download(Project $project): BinaryFileResponse
     {
+        // $this->authorize('download', $project);
+
         $zip = $this->projectService->download($project);
 
         return $this->controller->setZip($zip)
@@ -104,6 +118,8 @@ class ProjectController extends Controller
 
     public function upload(FileUploadRequest $request, Project $project): JsonResponse
     {
+        // $this->authorize('upload', $project);
+
         $message = $this->uploadService->uploadProjectFile($request, $project);
 
         return match ($message) {
@@ -120,6 +136,8 @@ class ProjectController extends Controller
 
     public function destroyAttachment(Project $project, string $fileName): JsonResponse
     {
+        // $this->authorize('destroyAttachment', $project);
+
         $this->projectService->destroyAttachment($project, $fileName);
 
         return $this->controller->setFunctionName(FunctionName::Delete)

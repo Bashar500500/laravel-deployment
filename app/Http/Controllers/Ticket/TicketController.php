@@ -23,6 +23,8 @@ class TicketController extends Controller
 
     public function index(TicketRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = (object) TicketResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket): JsonResponse
     {
+        // $this->authorize('show', $ticket);
+
         $data = TicketResource::make(
             $this->service->show($ticket),
         );
@@ -47,6 +51,8 @@ class TicketController extends Controller
 
     public function store(TicketRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = TicketResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class TicketController extends Controller
 
     public function update(TicketRequest $request, Ticket $ticket): JsonResponse
     {
+        // $this->authorize('update', $ticket);
+
         $data = TicketResource::make(
             $this->service->update($request, $ticket),
         );
@@ -71,6 +79,8 @@ class TicketController extends Controller
 
     public function destroy(Ticket $ticket): JsonResponse
     {
+        // $this->authorize('destroy', $ticket);
+
         $data = TicketResource::make(
             $this->service->destroy($ticket),
         );

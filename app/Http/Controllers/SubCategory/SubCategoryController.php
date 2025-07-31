@@ -28,6 +28,8 @@ class SubCategoryController extends Controller
 
     public function index(SubCategoryRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = SubCategoryResource::collection(
             $this->subCategoryService->index($request),
         );
@@ -40,6 +42,8 @@ class SubCategoryController extends Controller
 
     public function show(SubCategory $subCategory): JsonResponse
     {
+        // $this->authorize('show', $subCategory);
+
         $data = SubCategoryResource::make(
             $this->subCategoryService->show($subCategory),
         );
@@ -52,6 +56,8 @@ class SubCategoryController extends Controller
 
     public function store(SubCategoryRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = SubCategoryResource::make(
             $this->subCategoryService->store($request),
         );
@@ -64,6 +70,8 @@ class SubCategoryController extends Controller
 
     public function update(SubCategoryRequest $request, SubCategory $subCategory): JsonResponse
     {
+        // $this->authorize('update', $subCategory);
+
         $data = SubCategoryResource::make(
             $this->subCategoryService->update($request, $subCategory),
         );
@@ -76,6 +84,8 @@ class SubCategoryController extends Controller
 
     public function destroy(SubCategory $subCategory): JsonResponse
     {
+        // $this->authorize('destroy', $subCategory);
+
         $data = SubCategoryResource::make(
             $this->subCategoryService->destroy($subCategory),
         );
@@ -88,6 +98,8 @@ class SubCategoryController extends Controller
 
     public function view(SubCategory $subCategory): BinaryFileResponse
     {
+        // $this->authorize('view', $subCategory);
+
         $file = $this->subCategoryService->view($subCategory);
 
         return $this->controller->setFile($file)
@@ -96,6 +108,8 @@ class SubCategoryController extends Controller
 
     public function download(SubCategory $subCategory): BinaryFileResponse
     {
+        // $this->authorize('download', $subCategory);
+
         $file = $this->subCategoryService->download($subCategory);
 
         return $this->controller->setFile($file)
@@ -104,6 +118,8 @@ class SubCategoryController extends Controller
 
     public function upload(ImageUploadRequest $request, SubCategory $subCategory): JsonResponse
     {
+        // $this->authorize('upload', $subCategory);
+
         $message = $this->uploadService->uploadSubCategoryImage($request, $subCategory);
 
         return match ($message) {
@@ -120,6 +136,8 @@ class SubCategoryController extends Controller
 
     public function destroyAttachment(SubCategory $subCategory): JsonResponse
     {
+        // $this->authorize('destroyAttachment', $subCategory);
+
         $this->subCategoryService->destroyAttachment($subCategory);
 
         return $this->controller->setFunctionName(FunctionName::Delete)

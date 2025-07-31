@@ -28,6 +28,8 @@ class CategoryController extends Controller
 
     public function index(CategoryRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = CategoryResource::collection(
             $this->categoryService->index($request),
         );
@@ -40,6 +42,8 @@ class CategoryController extends Controller
 
     public function show(Category $category): JsonResponse
     {
+        // $this->authorize('show', $category);
+
         $data = CategoryResource::make(
             $this->categoryService->show($category),
         );
@@ -52,6 +56,8 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = CategoryResource::make(
             $this->categoryService->store($request),
         );
@@ -64,6 +70,8 @@ class CategoryController extends Controller
 
     public function update(CategoryRequest $request, Category $category): JsonResponse
     {
+        // $this->authorize('update', $category);
+
         $data = CategoryResource::make(
             $this->categoryService->update($request, $category),
         );
@@ -76,6 +84,8 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): JsonResponse
     {
+        // $this->authorize('destroy', $category);
+
         $data = CategoryResource::make(
             $this->categoryService->destroy($category),
         );
@@ -88,6 +98,8 @@ class CategoryController extends Controller
 
     public function view(Category $category): BinaryFileResponse
     {
+        // $this->authorize('view', $category);
+
         $file = $this->categoryService->view($category);
 
         return $this->controller->setFile($file)
@@ -96,6 +108,8 @@ class CategoryController extends Controller
 
     public function download(Category $category): BinaryFileResponse
     {
+        // $this->authorize('download', $category);
+
         $file = $this->categoryService->download($category);
 
         return $this->controller->setFile($file)
@@ -104,6 +118,8 @@ class CategoryController extends Controller
 
     public function upload(ImageUploadRequest $request, Category $category): JsonResponse
     {
+        // $this->authorize('upload', $category);
+
         $message = $this->uploadService->uploadCategoryImage($request, $category);
 
         return match ($message) {
@@ -120,6 +136,8 @@ class CategoryController extends Controller
 
     public function destroyAttachment(Category $category): JsonResponse
     {
+        // $this->authorize('destroyAttachment', $category);
+
         $this->categoryService->destroyAttachment($category);
 
         return $this->controller->setFunctionName(FunctionName::Delete)

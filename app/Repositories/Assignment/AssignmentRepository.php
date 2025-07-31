@@ -122,8 +122,12 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
 
             foreach ($assignmentSubmits as $assignmentSubmit)
             {
-                $assignmentSubmit->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('AssignmentSubmit/' . $assignmentSubmit->id);
+                $attachments = $assignmentSubmit->attachments;
+                foreach ($attachments as $attachment)
+                {
+                    Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment->url);
+                }
+                $attachments->delete();
             }
 
             return parent::delete($id);
@@ -254,14 +258,8 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
 
             if ($dto->file)
             {
-                match (is_null($dto->file->extension())) {
-                    true => $storedFile = Storage::disk('local')->putFileAs('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $data['studentId'],
-                            $dto->file,
-                            str()->uuid() . '.txt'),
-                    false => $storedFile = Storage::disk('local')->putFileAs('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $data['studentId'],
-                            $dto->file,
-                            str()->uuid() . '.' . $dto->file->extension()),
-                };
+                $storedFile = Storage::disk('supabase')->putFile('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $data['studentId'],
+                    $dto->file);
 
                 $assignmentSubmit->attachment()->create([
                     'reference_field' => AttachmentReferenceField::AssignmentSubmitFile,

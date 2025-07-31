@@ -23,6 +23,8 @@ class ChallengeController extends Controller
 
     public function index(ChallengeRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = ChallengeResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class ChallengeController extends Controller
 
     public function show(Challenge $challenge): JsonResponse
     {
+        // $this->authorize('show', $challenge);
+
         $data = ChallengeResource::make(
             $this->service->show($challenge),
         );
@@ -47,6 +51,8 @@ class ChallengeController extends Controller
 
     public function store(ChallengeRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = ChallengeResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class ChallengeController extends Controller
 
     public function update(ChallengeRequest $request, Challenge $challenge): JsonResponse
     {
+        // $this->authorize('update', $challenge);
+
         $data = ChallengeResource::make(
             $this->service->update($request, $challenge),
         );
@@ -71,6 +79,8 @@ class ChallengeController extends Controller
 
     public function destroy(Challenge $challenge): JsonResponse
     {
+        // $this->authorize('destroy', $challenge);
+
         $data = ChallengeResource::make(
             $this->service->destroy($challenge),
         );
@@ -83,6 +93,8 @@ class ChallengeController extends Controller
 
     public function join(Challenge $challenge): JsonResponse
     {
+        // $this->authorize('join', $challenge);
+
         $this->service->join($challenge);
 
         return $this->controller->setFunctionName(FunctionName::Join)
@@ -93,6 +105,8 @@ class ChallengeController extends Controller
 
     public function leave(Challenge $challenge): JsonResponse
     {
+        // $this->authorize('leave', $challenge);
+
         $this->service->leave($challenge);
 
         return $this->controller->setFunctionName(FunctionName::Leave)

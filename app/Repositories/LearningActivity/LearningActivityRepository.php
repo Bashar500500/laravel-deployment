@@ -70,9 +70,8 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 switch ($dto->learningActivityContentDto->type)
                 {
                     case LearningActivityContentType::Pdf:
-                        $storedFile = Storage::disk('local')->putFileAs('LearningActivity/' . $learningActivity->id . '/Pdfs',
-                            $dto->learningActivityContentDto->pdf,
-                            str()->uuid() . '.' . $dto->learningActivityContentDto->pdf->extension());
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Pdfs',
+                            $dto->learningActivityContentDto->pdf);
 
                         $learningActivity->attachment()->create([
                             'reference_field' => AttachmentReferenceField::LearningActivityPdfContentFile,
@@ -81,9 +80,8 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                         ]);
                         break;
                     default:
-                        $storedFile = Storage::disk('local')->putFileAs('LearningActivity/' . $learningActivity->id . '/Videos',
-                            $dto->learningActivityContentDto->video,
-                            str()->uuid() . '.' . $dto->learningActivityContentDto->video->extension());
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Videos',
+                            $dto->learningActivityContentDto->video);
 
                         $learningActivity->attachment()->create([
                             'reference_field' => AttachmentReferenceField::LearningActivityVideoContentFile,
@@ -130,15 +128,15 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
             if (!is_null($dto->learningActivityContentDto->pdf) ||
                 !is_null($dto->learningActivityContentDto->video))
             {
-                $learningActivity->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('LearningActivity/' . $learningActivity->id);
 
                 switch ($dto->learningActivityContentDto->type)
                 {
                     case LearningActivityContentType::Pdf:
-                        $storedFile = Storage::disk('local')->putFileAs('LearningActivity/' . $learningActivity->id . '/Pdfs',
-                            $dto->learningActivityContentDto->pdf,
-                            str()->uuid() . '.' . $dto->learningActivityContentDto->pdf->extension());
+                        $learningActivity->attachments()->delete();
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $learningActivity->attachment->url);
+
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Pdfs',
+                            $dto->learningActivityContentDto->pdf);
 
                         $learningActivity->attachment()->create([
                             'reference_field' => AttachmentReferenceField::LearningActivityPdfContentFile,
@@ -147,9 +145,11 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                         ]);
                         break;
                     default:
-                        $storedFile = Storage::disk('local')->putFileAs('LearningActivity/' . $learningActivity->id . '/Videos',
-                            $dto->learningActivityContentDto->video,
-                            str()->uuid() . '.' . $dto->learningActivityContentDto->video->extension());
+                        $learningActivity->attachments()->delete();
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $learningActivity->attachment->url);
+
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Videos',
+                            $dto->learningActivityContentDto->video);
 
                         $learningActivity->attachment()->create([
                             'reference_field' => AttachmentReferenceField::LearningActivityVideoContentFile,
@@ -171,8 +171,17 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
         $model = (object) parent::find($id);
 
         $learningActivity = DB::transaction(function () use ($id, $model) {
-            $model->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('LearningActivity/' . $model->id);
+            $attachment = $model->attachment;
+            switch ($attachment->type)
+            {
+                case AttachmentType::Pdf:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $attachment->url);
+                    break;
+                default:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $attachment->url);
+                    break;
+            }
+            $attachment->delete();
             return parent::delete($id);
         });
 
@@ -186,26 +195,38 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
         switch ($model->attachment->type)
         {
             case AttachmentType::Pdf:
-                $file = Storage::disk('local')->path('LearningActivity/' . $id . '/Pdfs/' . $model->attachment->url);
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
 
-                if (!file_exists($file))
+                if (! $exists)
                 {
                     throw CustomException::notFound('Pdf');
                 }
 
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
+                $encoded = base64_encode($file);
+                $decoded = base64_decode($encoded);
+                $tempPath = storage_path('app/private/' . $model->attachment->url);
+                file_put_contents($tempPath, $decoded);
+
                 break;
             default:
-                $file = Storage::disk('local')->path('LearningActivity/' . $id . '/Videos/' . $model->attachment->url);
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
 
-                if (!file_exists($file))
+                if (! $exists)
                 {
                     throw CustomException::notFound('Video');
                 }
 
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
+                $encoded = base64_encode($file);
+                $decoded = base64_decode($encoded);
+                $tempPath = storage_path('app/private/' . $model->attachment->url);
+                file_put_contents($tempPath, $decoded);
+
                 break;
         }
 
-        return $file;
+        return $tempPath;
     }
 
     public function download(int $id): string
@@ -215,26 +236,38 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
         switch ($model->attachment->type)
         {
             case AttachmentType::Pdf:
-                $file = Storage::disk('local')->path('LearningActivity/' . $id . '/Pdfs/' . $model->attachment->url);
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
 
-                if (!file_exists($file))
+                if (! $exists)
                 {
                     throw CustomException::notFound('Pdf');
                 }
 
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
+                $encoded = base64_encode($file);
+                $decoded = base64_decode($encoded);
+                $tempPath = storage_path('app/private/' . $model->attachment->url);
+                file_put_contents($tempPath, $decoded);
+
                 break;
             default:
-                $file = Storage::disk('local')->path('LearningActivity/' . $id . '/Videos/' . $model->attachment->url);
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
 
-                if (!file_exists($file))
+                if (! $exists)
                 {
                     throw CustomException::notFound('Video');
                 }
 
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
+                $encoded = base64_encode($file);
+                $decoded = base64_decode($encoded);
+                $tempPath = storage_path('app/private/' . $model->attachment->url);
+                file_put_contents($tempPath, $decoded);
+
                 break;
         }
 
-        return $file;
+        return $tempPath;
     }
 
     public function upload(int $id, array $data): UploadMessage
@@ -242,20 +275,14 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
         $model = (object) parent::find($id);
 
         $message = DB::transaction(function () use ($data, $model) {
-            $exists = Storage::disk('local')->exists('LearningActivity/' . $model->id);
-
-            if ($exists)
-            {
-                $model->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('LearningActivity/' . $model->id);
-            }
-
             switch ($model->content_type)
             {
                 case LearningActivityContentType::Pdf:
-                    $storedFile = Storage::disk('local')->putFileAs('LearningActivity/' . $model->id . '/Pdfs',
-                        $data['pdf'],
-                        basename($data['pdf']));
+                    $model->attachments()->delete();
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
+
+                    $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $model->id . '/Pdfs',
+                        $data['pdf']);
 
                     array_map('unlink', glob("{$data['finalDir']}/*"));
                     rmdir($data['finalDir']);
@@ -268,9 +295,11 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
 
                     return UploadMessage::Pdf;
                 default:
-                    $storedFile = Storage::disk('local')->putFileAs('LearningActivity/' . $model->id . '/Videos',
-                        $data['video'],
-                        basename($data['video']));
+                    $model->attachments()->delete();
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
+
+                    $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $model->id . '/Videos',
+                        $data['video']);
 
                     array_map('unlink', glob("{$data['finalDir']}/*"));
                     rmdir($data['finalDir']);
@@ -291,7 +320,19 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
     public function deleteAttachment(int $id): void
     {
         $model = (object) parent::find($id);
+
+        switch ($model->attachment->type)
+        {
+            case AttachmentType::Pdf:
+                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
+
+                break;
+            default:
+                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
+
+                break;
+        }
+
         $model->attachments()->delete();
-        Storage::disk('local')->deleteDirectory('LearningActivity/' . $model->id);
     }
 }

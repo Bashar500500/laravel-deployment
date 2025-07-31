@@ -37,6 +37,8 @@ use App\Models\UserAward\UserAward;
 use App\Models\UserRule\UserRule;
 use App\Models\Holiday\Holiday;
 use App\Models\Leave\Leave;
+use App\Models\Section\Section;
+use App\Models\Event\Event;
 use App\Models\Notification\Notification;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -220,7 +222,27 @@ class User extends Authenticatable
 
     public function leaves(): HasMany
     {
-        return $this->hasMany(Leave::class, 'student_id');
+        return $this->hasMany(Leave::class, 'instructor_id');
+    }
+
+    public function sections(): HasManyThrough
+    {
+        return $this->hasManyThrough(Section::class, Course::class,
+            'instructor_id',
+            'id',
+            'course_id',
+            'id'
+        );
+    }
+
+    public function events(): HasManyThrough
+    {
+        return $this->hasManyThrough(Event::class, Course::class,
+            'instructor_id',
+            'id',
+            'course_id',
+            'id'
+        );
     }
 
     public function notifications(): MorphMany

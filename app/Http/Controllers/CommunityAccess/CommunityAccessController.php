@@ -23,6 +23,8 @@ class CommunityAccessController extends Controller
 
     public function index(CommunityAccessRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = (object) CommunityAccessResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class CommunityAccessController extends Controller
 
     public function show(CommunityAccess $communityAccess): JsonResponse
     {
+        // $this->authorize('show', $communityAccess);
+
         $data = CommunityAccessResource::make(
             $this->service->show($communityAccess),
         );
@@ -47,6 +51,8 @@ class CommunityAccessController extends Controller
 
     public function store(CommunityAccessRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = CommunityAccessResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class CommunityAccessController extends Controller
 
     public function update(CommunityAccessRequest $request, CommunityAccess $communityAccess): JsonResponse
     {
+        // $this->authorize('update', $communityAccess);
+
         $data = CommunityAccessResource::make(
             $this->service->update($request, $communityAccess),
         );
@@ -71,6 +79,8 @@ class CommunityAccessController extends Controller
 
     public function destroy(CommunityAccess $communityAccess): JsonResponse
     {
+        // $this->authorize('destroy', $communityAccess);
+
         $data = CommunityAccessResource::make(
             $this->service->destroy($communityAccess),
         );

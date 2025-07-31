@@ -34,7 +34,7 @@ class UploadService
         $dto = UploadDto::fromImageUploadRequest($request);
 
         $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
-        $extension = $dto->image->extension();
+        $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
         {
@@ -59,7 +59,7 @@ class UploadService
         $dto = UploadDto::fromImageUploadRequest($request);
 
         $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
-        $extension = $dto->image->extension();
+        $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
         {
@@ -86,13 +86,13 @@ class UploadService
             case LearningActivityContentType::Pdf:
                 $dto = UploadDto::fromPdfUploadRequest($request, $learningActivity);
                 $type = AttachmentType::Pdf;
-                $extension = $dto->pdf->extension();
+                $extension = $dto->pdf->getClientOriginalExtension();
                 $file = $dto->pdf;
                 break;
             default:
                 $dto = UploadDto::fromVideoUploadRequest($request, $learningActivity);
                 $type = AttachmentType::Video;
-                $extension = $dto->video->extension();
+                $extension = $dto->video->getClientOriginalExtension();
                 $file = $dto->video;
                 break;
         };
@@ -122,7 +122,7 @@ class UploadService
         $dto = UploadDto::fromFileUploadRequest($request);
 
         $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
-        $extension = is_null($dto->file->extension()) ? 'txt' : $dto->file->extension();
+        $extension = $dto->file->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
         {
@@ -147,7 +147,7 @@ class UploadService
         $dto = UploadDto::fromFileUploadRequest($request);
 
         $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
-        $extension = is_null($dto->file->extension()) ? 'txt' : $dto->file->extension();
+        $extension = $dto->file->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
         {
@@ -172,7 +172,7 @@ class UploadService
         $dto = UploadDto::fromImageUploadRequest($request);
 
         $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
-        $extension = $dto->image->extension();
+        $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
         {
@@ -197,7 +197,7 @@ class UploadService
         $dto = UploadDto::fromImageUploadRequest($request);
 
         $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
-        $extension = $dto->image->extension();
+        $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
         {
@@ -222,7 +222,7 @@ class UploadService
         $dto = UploadDto::fromImageUploadRequest($request);
 
         $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
-        $extension = $dto->image->extension();
+        $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
         {
@@ -247,7 +247,7 @@ class UploadService
         $dto = UploadDto::fromImageUploadRequest($request);
 
         $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
-        $extension = $dto->image->extension();
+        $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
         {
@@ -272,7 +272,7 @@ class UploadService
         $dto = UploadDto::fromFileUploadRequest($request);
 
         $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
-        $extension = is_null($dto->file->extension()) ? 'txt' : $dto->file->extension();
+        $extension = $dto->file->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
         {

@@ -21,7 +21,8 @@ class SectionResource extends JsonResource
             'primaryInstructorId' => $this->whenLoaded('course')->instructor->id,
             'groups' => SectionGroupResource::collection($this->whenLoaded('groups')),
             'activities' => LearningActivityResource::collection($this->whenLoaded('learningActivities')->load('attachment')),
-            'resources' => $this->whenLoaded('attachments')->count() == 0 ? null : SectionResourcesResource::makeJson($this),
+            'resources' => $this->whenLoaded('attachments')->count() == 0 ?
+                null : SectionResourcesResource::makeJson($this),
         ];
     }
 }

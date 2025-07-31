@@ -23,6 +23,8 @@ class ScheduleTimingController extends Controller
 
     public function index(ScheduleTimingRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = ScheduleTimingResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class ScheduleTimingController extends Controller
 
     public function show(ScheduleTiming $scheduleTiming): JsonResponse
     {
+        // $this->authorize('show', $scheduleTiming);
+
         $data = ScheduleTimingResource::make(
             $this->service->show($scheduleTiming),
         );
@@ -47,6 +51,8 @@ class ScheduleTimingController extends Controller
 
     public function store(ScheduleTimingRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = ScheduleTimingResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class ScheduleTimingController extends Controller
 
     public function update(ScheduleTimingRequest $request, ScheduleTiming $scheduleTiming): JsonResponse
     {
+        // $this->authorize('update', $scheduleTiming);
+
         $data = ScheduleTimingResource::make(
             $this->service->update($request, $scheduleTiming),
         );
@@ -71,6 +79,8 @@ class ScheduleTimingController extends Controller
 
     public function destroy(ScheduleTiming $scheduleTiming): JsonResponse
     {
+        // $this->authorize('destroy', $scheduleTiming);
+
         $data = ScheduleTimingResource::make(
             $this->service->destroy($scheduleTiming),
         );

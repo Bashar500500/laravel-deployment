@@ -18,6 +18,8 @@ use App\Enums\Exception\ForbiddenExceptionMessage;
 use App\Enums\User\UserMessage;
 use App\DataTransferObjects\Auth\PasswordResetCodeDto;
 use App\Jobs\GlobalServiceHandlerJob;
+use App\Enums\Attachment\AttachmentReferenceField;
+use App\Enums\Attachment\AttachmentType;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -90,12 +92,18 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $ownedCourses = $model->ownedCourses;
             $badges = $model->badges;
 
-            $profile->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('Profile/' . $profile->id);
+            $attachment = $profile->attachment;
+            Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $attachment->url);
+            $attachment->delete();
+
             foreach ($projects as $project)
             {
-                $project->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+                $attachments = $project->attachments;
+                foreach ($attachments as $attachment)
+                {
+                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                }
+                $attachments->delete();
             }
             foreach ($ownedCourses as $ownedCourse)
             {
@@ -114,28 +122,60 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
                 foreach ($learningActivities as $learningActivity)
                 {
-                    $learningActivity->attachments()->delete();
-                    Storage::disk('local')->deleteDirectory('LearningActivity/' . $learningActivity->id);
+                    $attachment = $learningActivity->attachment;
+                    switch ($attachment->type)
+                    {
+                        case AttachmentType::Pdf:
+                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment->url);
+                            break;
+                        default:
+                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment->url);
+                            break;
+                    }
+                    $attachment->delete();
                 }
                 foreach ($sections as $section)
                 {
-                    $section->attachments()->delete();
-                    Storage::disk('local')->deleteDirectory('Section/' . $section->id);
+                    $attachments = $section->attachments;
+                    foreach ($attachments as $attachment)
+                    {
+                        switch ($attachment->reference_field)
+                        {
+                            case AttachmentReferenceField::SectionResourcesFile:
+                                Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment->url);
+                                break;
+                        }
+                    }
+                    $attachments->delete();
                 }
                 foreach ($groups as $group)
                 {
-                    $group->attachments()->delete();
-                    Storage::disk('local')->deleteDirectory('Group/' . $group->id);
+                    $attachment = $group->attachment;
+                    Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment->url);
+                    $attachment->delete();
                 }
                 foreach ($events as $event)
                 {
-                    $event->attachments()->delete();
-                    Storage::disk('local')->deleteDirectory('Event/' . $event->id);
+                    $attachments = $event->attachments;
+                    foreach ($attachments as $attachment)
+                    {
+                        switch ($attachment->reference_field)
+                        {
+                            case AttachmentReferenceField::EventAttachmentsFile:
+                                Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment->url);
+                                break;
+                        }
+                    }
+                    $attachments->delete();
                 }
                 foreach ($projects as $project)
                 {
-                    $project->attachments()->delete();
-                    Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+                    $attachments = $project->attachments;
+                    foreach ($attachments as $attachment)
+                    {
+                        Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                    }
+                    $attachments->delete();
                 }
                 foreach ($assessments as $assessment)
                 {
@@ -162,8 +202,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
                     foreach ($assignmentSubmits as $assignmentSubmit)
                     {
-                        $assignmentSubmit->attachments()->delete();
-                        Storage::disk('local')->deleteDirectory('AssignmentSubmit/' . $assignmentSubmit->id);
+                        $attachments = $assignmentSubmit->attachments;
+                        foreach ($attachments as $attachment)
+                        {
+                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment->url);
+                        }
+                        $attachments->delete();
                     }
                 }
                 foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
@@ -186,8 +230,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                     $questionBankFillInBlankQuestion->assessmentQuestionBankQuestions()->delete();
                 }
 
-                $ownedCourse->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Course/' . $ownedCourse->id);
+                $attachment = $ownedCourse->attachment;
+                Storage::disk('supabase')->delete('Course/' . $ownedCourse->id . '/Images/' . $attachment->url);
+                $attachment->delete();
             }
             foreach ($badges as $badge)
             {

@@ -63,6 +63,7 @@ enum ModelName: string
     case AssignmentSubmit = 'assignment_submit';
     case Blank = 'blank';
     case Option = 'option';
+    case Analytics = 'analytics';
     case NoName = '';
 
     public static function getEnum(string $value): self
@@ -127,6 +128,7 @@ enum ModelName: string
             $value =='AssignmentSubmit' => self::AssignmentSubmit,
             $value =='Blank' => self::Blank,
             $value =='Option' => self::Option,
+            $value =='Analytics' => self::Analytics,
         };
     }
 
@@ -192,6 +194,7 @@ enum ModelName: string
             self::AssignmentSubmit => 'AssignmentSubmit',
             self::Blank => 'Blank',
             self::Option => 'Option',
+            self::Analytics => 'Analytics',
         };
     }
 

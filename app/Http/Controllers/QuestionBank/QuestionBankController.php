@@ -23,6 +23,8 @@ class QuestionBankController extends Controller
 
     public function index(QuestionBankRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('course_id'));
+
         $data = QuestionBankResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class QuestionBankController extends Controller
 
     public function show(QuestionBank $questionBank): JsonResponse
     {
+        // $this->authorize('show', $questionBank);
+
         $data = QuestionBankResource::make(
             $this->service->show($questionBank),
         );
@@ -47,6 +51,8 @@ class QuestionBankController extends Controller
 
     public function store(QuestionBankRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = QuestionBankResource::make(
             $this->service->store($request),
         );
@@ -71,6 +77,8 @@ class QuestionBankController extends Controller
 
     public function destroy(QuestionBank $questionBank): JsonResponse
     {
+        // $this->authorize('destroy', $questionBank);
+
         $data = QuestionBankResource::make(
             $this->service->destroy($questionBank),
         );

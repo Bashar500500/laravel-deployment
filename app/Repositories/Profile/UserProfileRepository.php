@@ -59,9 +59,8 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
 
             if ($dto->userImage)
             {
-                $storedFile = Storage::disk('local')->putFileAs('Profile/' . $profile->id . '/Images',
-                    $dto->userImage,
-                    str()->uuid() . '.' . $dto->userImage->extension());
+                $storedFile = Storage::disk('supabase')->putFile('Profile/' . $profile->id . '/Images',
+                    $dto->userImage);
 
                 $profile->attachment()->create([
                     'reference_field' => AttachmentReferenceField::UserImage,
@@ -99,11 +98,10 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
             if ($dto->userImage)
             {
                 $profile->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Profile/' . $profile->id);
+                Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $profile->attachment->url);
 
-                $storedFile = Storage::disk('local')->putFileAs('Profile/' . $profile->id . '/Images',
-                    $dto->userImage,
-                    str()->uuid() . '.' . $dto->userImage->extension());
+                $storedFile = Storage::disk('supabase')->putFile('Profile/' . $profile->id . '/Images',
+                    $dto->userImage);
 
                 $profile->attachment()->create([
                     'reference_field' => AttachmentReferenceField::UserImage,
@@ -123,8 +121,9 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
         $model = (object) parent::find($id);
 
         $profile = DB::transaction(function () use ($id, $model) {
-            $model->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('Profile/' . $model->id);
+            $attachment = $model->attachment;
+            Storage::disk('supabase')->delete('Profile/' . $model->id . '/Images/' . $attachment->url);
+            $attachment->delete();
             return parent::delete($id);
         });
 
@@ -135,28 +134,40 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('Profile/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Profile/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Profile/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function download(int $id): string
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('Profile/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Profile/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Profile/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function upload(int $id, array $data): UploadMessage
@@ -164,17 +175,11 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
-            $exists = Storage::disk('local')->exists('Profile/' . $model->id);
+            $model->attachments()->delete();
+            Storage::disk('supabase')->delete('Profile/' . $model->id . '/Images/' . $model->attachment->url);
 
-            if ($exists)
-            {
-                $model->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Profile/' . $model->id);
-            }
-
-            $storedFile = Storage::disk('local')->putFileAs('Profile/' . $model->id . '/Images',
-                $data['image'],
-                basename($data['image']));
+            $storedFile = Storage::disk('supabase')->putFile('Profile/' . $model->id . '/Images',
+                $data['image']);
 
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
@@ -193,6 +198,6 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
     {
         $model = (object) parent::find($id);
         $model->attachments()->delete();
-        Storage::disk('local')->deleteDirectory('Group/' . $model->id);
+        Storage::disk('supabase')->deleteDirectory('Group/' . $model->id . '/Images/' . $model->attachment->url);
     }
 }

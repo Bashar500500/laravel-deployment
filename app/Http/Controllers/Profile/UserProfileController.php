@@ -28,6 +28,8 @@ class UserProfileController extends Controller
 
     public function index(UserProfileRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = ProfileResource::collection(
             $this->userProfileService->index($request),
         );
@@ -40,6 +42,8 @@ class UserProfileController extends Controller
 
     public function show(Profile $profile): JsonResponse
     {
+        // $this->authorize('show', $profile);
+
         $data = ProfileResource::make(
             $this->userProfileService->show($profile),
         );
@@ -76,6 +80,8 @@ class UserProfileController extends Controller
 
     public function update(UserProfileRequest $request): JsonResponse
     {
+        // $this->authorize('update', $profile);
+
         $data = ProfileResource::make(
             $this->userProfileService->update($request),
         );
@@ -88,6 +94,8 @@ class UserProfileController extends Controller
 
     public function destroy(): JsonResponse
     {
+        // $this->authorize('destroy', $profile);
+
         $data = ProfileResource::make(
             $this->userProfileService->destroy(),
         );
@@ -100,6 +108,8 @@ class UserProfileController extends Controller
 
     public function view(): BinaryFileResponse
     {
+        // $this->authorize('view', $profile);
+
         $file = $this->userProfileService->view();
 
         return $this->controller->setFile($file)
@@ -108,6 +118,8 @@ class UserProfileController extends Controller
 
     public function download(): BinaryFileResponse
     {
+        // $this->authorize('download', $profile);
+
         $file = $this->userProfileService->download();
 
         return $this->controller->setFile($file)
@@ -116,6 +128,8 @@ class UserProfileController extends Controller
 
     public function upload(ImageUploadRequest $request): JsonResponse
     {
+        // $this->authorize('upload', $profile);
+
         $message = $this->uploadService->uploadUserProfileImage($request);
 
         return match ($message) {
@@ -132,6 +146,8 @@ class UserProfileController extends Controller
 
     public function destroyAttachment(): JsonResponse
     {
+        // $this->authorize('destroyAttachment', $profile);
+
         $this->userProfileService->destroyAttachment();
 
         return $this->controller->setFunctionName(FunctionName::Delete)

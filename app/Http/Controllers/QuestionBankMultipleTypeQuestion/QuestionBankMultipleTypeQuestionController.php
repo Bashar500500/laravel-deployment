@@ -24,6 +24,8 @@ class QuestionBankMultipleTypeQuestionController extends Controller
 
     public function index(QuestionBankMultipleTypeQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('question_bank_id'));
+
         $data = QuestionBankMultipleTypeQuestionResource::collection(
             $this->service->index($request),
         );
@@ -36,6 +38,8 @@ class QuestionBankMultipleTypeQuestionController extends Controller
 
     public function show(QuestionBankMultipleTypeQuestion $question): JsonResponse
     {
+        // $this->authorize('show', $question);
+
         $data = QuestionBankMultipleTypeQuestionResource::make(
             $this->service->show($question),
         );
@@ -48,6 +52,8 @@ class QuestionBankMultipleTypeQuestionController extends Controller
 
     public function store(QuestionBankMultipleTypeQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = QuestionBankMultipleTypeQuestionResource::make(
             $this->service->store($request),
         );
@@ -60,6 +66,8 @@ class QuestionBankMultipleTypeQuestionController extends Controller
 
     public function update(QuestionBankMultipleTypeQuestionRequest $request, QuestionBankMultipleTypeQuestion $question): JsonResponse
     {
+        // $this->authorize('update', $question);
+
         $data = QuestionBankMultipleTypeQuestionResource::make(
             $this->service->update($request, $question),
         );
@@ -72,6 +80,8 @@ class QuestionBankMultipleTypeQuestionController extends Controller
 
     public function destroy(QuestionBankMultipleTypeQuestion $question): JsonResponse
     {
+        // $this->authorize('destroy', $question);
+
         $data = QuestionBankMultipleTypeQuestionResource::make(
             $this->service->destroy($question),
         );
@@ -84,6 +94,8 @@ class QuestionBankMultipleTypeQuestionController extends Controller
 
     public function addQuestionBankMultipleTypeQuestionToAssessment(AddOrRemoveQuestionBankMultipleTypeQuestionToOrFromAssessmentRequest $request, QuestionBankMultipleTypeQuestion $question): JsonResponse
     {
+        // $this->authorize('addQuestionBankMultipleTypeQuestionToAssessment', $question);
+
         $this->service->addQuestionBankMultipleTypeQuestionToAssessment($request, $question);
 
         return $this->controller->setFunctionName(FunctionName::AddQuestionBankMultipleTypeQuestionToAssessment)
@@ -94,6 +106,8 @@ class QuestionBankMultipleTypeQuestionController extends Controller
 
     public function removeQuestionBankMultipleTypeQuestionFromAssessment(AddOrRemoveQuestionBankMultipleTypeQuestionToOrFromAssessmentRequest $request, QuestionBankMultipleTypeQuestion $question): JsonResponse
     {
+        // $this->authorize('removeQuestionBankMultipleTypeQuestionFromAssessment', $question);
+
         $this->service->removeQuestionBankMultipleTypeQuestionFromAssessment($request, $question);
 
         return $this->controller->setFunctionName(FunctionName::RemoveQuestionBankMultipleTypeQuestionFromAssessment)

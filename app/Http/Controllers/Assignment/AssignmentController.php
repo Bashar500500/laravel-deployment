@@ -25,6 +25,8 @@ class AssignmentController extends Controller
 
     public function index(AssignmentRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('course_id'));
+
         $data = AssignmentResource::collection(
             $this->service->index($request),
         );
@@ -37,6 +39,8 @@ class AssignmentController extends Controller
 
     public function show(Assignment $assignment): JsonResponse
     {
+        // $this->authorize('show', $assignment);
+
         $data = AssignmentResource::make(
             $this->service->show($assignment),
         );
@@ -49,6 +53,8 @@ class AssignmentController extends Controller
 
     public function store(AssignmentRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = AssignmentResource::make(
             $this->service->store($request),
         );
@@ -61,6 +67,8 @@ class AssignmentController extends Controller
 
     public function update(AssignmentRequest $request, Assignment $assignment): JsonResponse
     {
+        // $this->authorize('update', $assignment);
+
         $data = AssignmentResource::make(
             $this->service->update($request, $assignment),
         );
@@ -73,6 +81,8 @@ class AssignmentController extends Controller
 
     public function destroy(Assignment $assignment): JsonResponse
     {
+        // $this->authorize('destroy', $assignment);
+
         $data = AssignmentResource::make(
             $this->service->destroy($assignment),
         );
@@ -85,6 +95,8 @@ class AssignmentController extends Controller
 
     public function submit(AssignmentSubmitRequest $request): JsonResponse
     {
+        // $this->authorize('submit', $request->validated('assignment_id'));
+
         $data = AssignmentSubmitResource::make(
             $this->service->submit($request),
         );

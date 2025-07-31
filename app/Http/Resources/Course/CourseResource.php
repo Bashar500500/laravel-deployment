@@ -5,6 +5,7 @@ namespace App\Http\Resources\Course;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class CourseResource extends JsonResource
 {
@@ -36,9 +37,9 @@ class CourseResource extends JsonResource
 
     private function prepareAttachmentData(int $id, string $url): string
     {
-        $file = Storage::disk('local')->path('Course/' . $id . '/Images/' . $url);
-        $data = base64_encode(file_get_contents($file));
-        $metadata = mime_content_type($file);
-        return 'data:' . $metadata . ';base64,' . $data;
+        $file = Storage::disk('supabase')->get('Course/' . $id . '/Images/' . $url);
+        $encoded = base64_encode($file);
+        $mimeType = Storage::disk('supabase')->mimeType('Course/' . $id . '/Images/' . $url);
+        return 'data:' . $mimeType . ';base64,' . $encoded;
     }
 }

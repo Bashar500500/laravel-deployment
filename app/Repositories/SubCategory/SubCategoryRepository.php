@@ -48,9 +48,8 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
 
             if ($dto->subCategoryImage)
             {
-                $storedFile = Storage::disk('local')->putFileAs('SubCategory/' . $subCategory->id . '/Images',
-                    $dto->subCategoryImage,
-                    str()->uuid() . '.' . $dto->subCategoryImage->extension());
+                $storedFile = Storage::disk('supabase')->putFile('SubCategory/' . $subCategory->id . '/Images',
+                    $dto->subCategoryImage);
 
                 $subCategory->attachment()->create([
                     'reference_field' => AttachmentReferenceField::SubCategoryImage,
@@ -79,11 +78,10 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
             if ($dto->subCategoryImage)
             {
                 $subCategory->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('SubCategory/' . $subCategory->id);
+                Storage::disk('supabase')->delete('SubCategory/' . $subCategory->id . '/Images/' . $subCategory->attachment->url);
 
-                $storedFile = Storage::disk('local')->putFileAs('SubCategory/' . $subCategory->id . '/Images',
-                    $dto->subCategoryImage,
-                    str()->uuid() . '.' . $dto->subCategoryImage->extension());
+                $storedFile = Storage::disk('supabase')->putFile('SubCategory/' . $subCategory->id . '/Images',
+                    $dto->subCategoryImage);
 
                 $subCategory->attachment()->create([
                     'reference_field' => AttachmentReferenceField::SubCategoryImage,
@@ -103,8 +101,9 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
         $model = (object) parent::find($id);
 
         $subCategory = DB::transaction(function () use ($id, $model) {
-            $model->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('SubCategory/' . $model->id);
+            $attachment = $model->attachment;
+            Storage::disk('supabase')->delete('SubCategory/' . $model->id . '/Images/' . $attachment->url);
+            $attachment->delete();
             return parent::delete($id);
         });
 
@@ -115,28 +114,40 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('SubCategory/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('SubCategory/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('SubCategory/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function download(int $id): string
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('SubCategory/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('SubCategory/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('SubCategory/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function upload(int $id, array $data): UploadMessage
@@ -144,17 +155,11 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
-            $exists = Storage::disk('local')->exists('SubCategory/' . $model->id);
+            $model->attachments()->delete();
+            Storage::disk('supabase')->delete('SubCategory/' . $model->id . '/Images/' . $model->attachment->url);
 
-            if ($exists)
-            {
-                $model->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('SubCategory/' . $model->id);
-            }
-
-            $storedFile = Storage::disk('local')->putFileAs('SubCategory/' . $model->id . '/Images',
-                $data['image'],
-                basename($data['image']));
+            $storedFile = Storage::disk('supabase')->putFile('SubCategory/' . $model->id . '/Images',
+                $data['image']);
 
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
@@ -173,6 +178,6 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
     {
         $model = (object) parent::find($id);
         $model->attachments()->delete();
-        Storage::disk('local')->deleteDirectory('SubCategory/' . $model->id);
+        Storage::disk('supabase')->deleteDirectory('SubCategory/' . $model->id . '/Images/' . $model->attachment->url);
     }
 }

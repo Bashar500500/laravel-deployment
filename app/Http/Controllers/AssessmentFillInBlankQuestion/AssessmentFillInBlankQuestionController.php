@@ -23,6 +23,8 @@ class AssessmentFillInBlankQuestionController extends Controller
 
     public function index(AssessmentFillInBlankQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('assessment_id'));
+
         $data = AssessmentFillInBlankQuestionResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class AssessmentFillInBlankQuestionController extends Controller
 
     public function show(AssessmentFillInBlankQuestion $question): JsonResponse
     {
+        // $this->authorize('show', $question);
+
         $data = AssessmentFillInBlankQuestionResource::make(
             $this->service->show($question),
         );
@@ -47,6 +51,8 @@ class AssessmentFillInBlankQuestionController extends Controller
 
     public function store(AssessmentFillInBlankQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = AssessmentFillInBlankQuestionResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class AssessmentFillInBlankQuestionController extends Controller
 
     public function update(AssessmentFillInBlankQuestionRequest $request, AssessmentFillInBlankQuestion $question): JsonResponse
     {
+        // $this->authorize('update', $question);
+
         $data = AssessmentFillInBlankQuestionResource::make(
             $this->service->update($request, $question),
         );
@@ -71,6 +79,8 @@ class AssessmentFillInBlankQuestionController extends Controller
 
     public function destroy(AssessmentFillInBlankQuestion $question): JsonResponse
     {
+        // $this->authorize('destroy', $question);
+
         $data = AssessmentFillInBlankQuestionResource::make(
             $this->service->destroy($question),
         );
@@ -83,6 +93,8 @@ class AssessmentFillInBlankQuestionController extends Controller
 
     public function addAssessmentFillInBlankQuestionToQuestionBank(AssessmentFillInBlankQuestion $question): JsonResponse
     {
+        // $this->authorize('addAssessmentFillInBlankQuestionToQuestionBank', $question);
+
         $this->service->addAssessmentFillInBlankQuestionToQuestionBank($question);
 
         return $this->controller->setFunctionName(FunctionName::AddAssessmentFillInBlankQuestionToQuestionBank)

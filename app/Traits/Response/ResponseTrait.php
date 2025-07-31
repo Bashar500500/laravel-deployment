@@ -81,7 +81,7 @@ trait ResponseTrait
         return response()->file($this->file, [
             'X-Sendfile' => $this->file,
             'Content-Type' => mime_content_type($this->file),
-        ]);
+        ])->deleteFileAfterSend(true);
     }
 
     public function downloadFileResponse(): BinaryFileResponse
@@ -90,7 +90,7 @@ trait ResponseTrait
             'X-Sendfile' => $this->file,
             'Content-Type' => mime_content_type($this->file),
             'Content-Disposition' => 'attachment; filename="' . basename($this->file) . '"',
-        ]);
+        ])->deleteFileAfterSend(true);
     }
 
     public function downloadZipResponse(): BinaryFileResponse

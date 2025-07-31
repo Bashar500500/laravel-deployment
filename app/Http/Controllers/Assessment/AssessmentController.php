@@ -25,6 +25,8 @@ class AssessmentController extends Controller
 
     public function index(AssessmentRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('course_id'));
+
         $data = AssessmentResource::collection(
             $this->service->index($request),
         );
@@ -37,6 +39,8 @@ class AssessmentController extends Controller
 
     public function show(Assessment $assessment): JsonResponse
     {
+        // $this->authorize('show', $assessment);
+
         $data = AssessmentResource::make(
             $this->service->show($assessment),
         );
@@ -49,6 +53,8 @@ class AssessmentController extends Controller
 
     public function store(AssessmentRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = AssessmentResource::make(
             $this->service->store($request),
         );
@@ -61,6 +67,8 @@ class AssessmentController extends Controller
 
     public function update(AssessmentRequest $request, Assessment $assessment): JsonResponse
     {
+        // $this->authorize('update', $assessment);
+
         $data = AssessmentResource::make(
             $this->service->update($request, $assessment),
         );
@@ -73,6 +81,8 @@ class AssessmentController extends Controller
 
     public function destroy(Assessment $assessment): JsonResponse
     {
+        // $this->authorize('destroy', $assessment);
+
         $data = AssessmentResource::make(
             $this->service->destroy($assessment),
         );
@@ -85,6 +95,8 @@ class AssessmentController extends Controller
 
     public function submit(AssessmentSubmitRequest $request): JsonResponse
     {
+        // $this->authorize('submit', $request->validated('assessment_id'));
+
         $data = AssessmentSubmitResource::make(
             $this->service->submit($request),
         );
@@ -97,6 +109,8 @@ class AssessmentController extends Controller
 
     public function startTimer(Assessment $assessment): JsonResponse
     {
+        // $this->authorize('startTimer', $assessment);
+
         $this->service->startTimer($assessment);
 
         return $this->controller->setFunctionName(FunctionName::StartTimer)
@@ -107,6 +121,8 @@ class AssessmentController extends Controller
 
     public function pauseTimer(Assessment $assessment): JsonResponse
     {
+        // $this->authorize('pauseTimer', $assessment);
+
         $this->service->pauseTimer($assessment);
 
         return $this->controller->setFunctionName(FunctionName::PauseTimer)
@@ -117,6 +133,8 @@ class AssessmentController extends Controller
 
     public function resumeTimer(Assessment $assessment): JsonResponse
     {
+        // $this->authorize('resumeTimer', $assessment);
+
         $this->service->resumeTimer($assessment);
 
         return $this->controller->setFunctionName(FunctionName::ResumeTimer)
@@ -127,6 +145,8 @@ class AssessmentController extends Controller
 
     public function submitTimer(Assessment $assessment): JsonResponse
     {
+        // $this->authorize('submitTimer', $assessment);
+
         $this->service->submitTimer($assessment);
 
         return $this->controller->setFunctionName(FunctionName::SubmitTimer)
@@ -137,6 +157,8 @@ class AssessmentController extends Controller
 
     public function timerStatus(Assessment $assessment): JsonResponse
     {
+        // $this->authorize('timerStatus', $assessment);
+
         $this->service->timerStatus($assessment);
 
         return $this->controller->setFunctionName(FunctionName::TimerStatus)

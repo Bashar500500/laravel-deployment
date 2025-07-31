@@ -69,28 +69,40 @@ class StudentCourseRepository extends BaseRepository implements CourseRepository
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('Course/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Course/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Course/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function download(int $id): string
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('Course/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Course/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Course/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function upload(int $id, array $data): UploadMessage

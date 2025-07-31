@@ -47,6 +47,8 @@ class RuleController extends Controller
 
     public function store(RuleRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = RuleResource::make(
             $this->service->store($request),
         );
@@ -59,6 +61,8 @@ class RuleController extends Controller
 
     public function update(RuleRequest $request, Rule $rule): JsonResponse
     {
+        // $this->authorize('update', $rule);
+
         $data = RuleResource::make(
             $this->service->update($request, $rule),
         );
@@ -71,6 +75,8 @@ class RuleController extends Controller
 
     public function destroy(Rule $rule): JsonResponse
     {
+        // $this->authorize('destroy', $rule);
+
         $data = RuleResource::make(
             $this->service->destroy($rule),
         );

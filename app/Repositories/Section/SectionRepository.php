@@ -69,14 +69,8 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
             {
                 foreach ($dto->sectionResourcesDto->files as $file)
                 {
-                    match (is_null($file->extension())) {
-                        true => $storedFile = Storage::disk('local')->putFileAs('Section/' . $section->id . '/Files',
-                                $file,
-                                str()->uuid() . '.txt'),
-                        false => $storedFile = Storage::disk('local')->putFileAs('Section/' . $section->id . '/Files',
-                                $file,
-                                str()->uuid() . '.' . $file->extension()),
-                    };
+                    $storedFile = Storage::disk('supabase')->putFile('Section/' . $section->id . '/Files',
+                        $file);
 
                     $section->attachment()->create([
                         'reference_field' => AttachmentReferenceField::SectionResourcesFile,
@@ -135,19 +129,17 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
 
             if ($dto->sectionResourcesDto->files)
             {
-                $section->attachments()->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->delete();
-                Storage::disk('local')->deleteDirectory('Section/' . $section->id);
+                $attachments = $section->attachments()->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->all();
+                foreach ($attachments as $attachment)
+                {
+                    Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment->url);
+                }
+                $attachments->delete();
 
                 foreach ($dto->sectionResourcesDto->files as $file)
                 {
-                    match (is_null($file->extension())) {
-                        true => $storedFile = Storage::disk('local')->putFileAs('Section/' . $section->id . '/Files',
-                                $file,
-                                str()->uuid() . '.txt'),
-                        false => $storedFile = Storage::disk('local')->putFileAs('Section/' . $section->id . '/Files',
-                                $file,
-                                str()->uuid() . '.' . $file->extension()),
-                    };
+                    $storedFile = Storage::disk('supabase')->putFile('Section/' . $section->id . '/Files',
+                        $file);
 
                     $section->attachment()->create([
                         'reference_field' => AttachmentReferenceField::SectionResourcesFile,
@@ -186,12 +178,30 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
 
             foreach ($learningActivities as $learningActivity)
             {
-                $learningActivity->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('LearningActivity/' . $learningActivity->id);
+                $attachment = $learningActivity->attachment;
+                switch ($attachment->type)
+                {
+                    case AttachmentType::Pdf:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment->url);
+                        break;
+                    default:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment->url);
+                        break;
+                }
+                $attachment->delete();
             }
 
-            $model->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('Section/' . $model->id);
+            $attachments = $model->attachments;
+            foreach ($attachments as $attachment)
+            {
+                switch ($attachment->reference_field)
+                {
+                    case AttachmentReferenceField::SectionResourcesFile:
+                        Storage::disk('supabase')->delete('Section/' . $model->id . '/Files/' . $attachment->url);
+                        break;
+                }
+            }
+            $attachments->delete();
             return parent::delete($id);
         });
 
@@ -200,23 +210,30 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
 
     public function view(int $id, string $fileName): string
     {
-        $file = Storage::disk('local')->path('Section/' . $id . '/Files/' . $fileName);
+        $model = (object) parent::find($id);
 
-        if (!file_exists($file))
+        $exists = Storage::disk('supabase')->exists('Section/' . $model->id . '/Files/' . $fileName);
+
+        if (! $exists)
         {
             throw CustomException::notFound('File');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Section/' . $model->id . '/Files/' . $fileName);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $fileName);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function download(int $id): string
     {
         $model = (object) parent::find($id);
+        $attachments = $model->attachments()->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->get();
 
-        $files = Storage::disk('local')->files('Section/' . $id . '/Files');
-
-        if (count($files) == 0)
+        if (count($attachments) == 0)
         {
             throw CustomException::notFound('Files');
         }
@@ -226,9 +243,13 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
         $zipPath = storage_path('app/private/' . $zipName);
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
-            foreach ($files as $file) {
-                $path = Storage::disk('local')->path($file);
-                $zip->addFromString(basename($path), file_get_contents($path));
+            foreach ($attachments as $attachment) {
+                $file = Storage::disk('supabase')->exists('Section/' . $model->id . '/Files/' . $attachment->url);
+                $encoded = base64_encode($file);
+                $decoded = base64_decode($encoded);
+                $tempPath = storage_path('app/private/' . $attachment->url);
+                file_put_contents($tempPath, $decoded);
+                $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
             }
             $zip->close();
         }
@@ -241,9 +262,8 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
-            $storedFile = Storage::disk('local')->putFileAs('Section/' . $model->id . '/Files',
-                $data['file'],
-                basename($data['file']));
+            $storedFile = Storage::disk('supabase')->putFile('Section/' . $model->id . '/Files',
+                $data['file']);
 
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
@@ -261,7 +281,16 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
     public function deleteAttachment(int $id, string $fileName): void
     {
         $model = (object) parent::find($id);
-        $model->attachments()->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->where('url', $fileName)->delete();
-        Storage::disk('local')->delete('Section/' . $model->id . '/Files/' . $fileName);
+
+        $exists = Storage::disk('supabase')->exists('Section/' . $model->id . '/Files/' . $fileName);
+
+        if (! $exists)
+        {
+            throw CustomException::notFound('File');
+        }
+
+        $attachment = $model->attachments()->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->where('url', $fileName)->first();
+        Storage::disk('supabase')->delete('Section/' . $model->id . '/Files/' . $attachment->url);
+        $attachment->delete();
     }
 }

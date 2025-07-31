@@ -50,9 +50,8 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
 
             if ($dto->image)
             {
-                $storedFile = Storage::disk('local')->putFileAs('Group/' . $group->id . '/Images',
-                    $dto->image,
-                    str()->uuid() . '.' . $dto->image->extension());
+                $storedFile = Storage::disk('supabase')->putFile('Group/' . $group->id . '/Images',
+                    $dto->image);
 
                 $group->attachment()->create([
                     'reference_field' => AttachmentReferenceField::GroupImageUrl,
@@ -82,11 +81,10 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
             if ($dto->image)
             {
                 $group->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Group/' . $group->id);
+                Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $group->attachment->url);
 
-                $storedFile = Storage::disk('local')->putFileAs('Group/' . $group->id . '/Images',
-                    $dto->image,
-                    str()->uuid() . '.' . $dto->image->extension());
+                $storedFile = Storage::disk('supabase')->putFile('Group/' . $group->id . '/Images',
+                    $dto->image);
 
                 $group->attachment()->create([
                     'reference_field' => AttachmentReferenceField::GroupImageUrl,
@@ -110,12 +108,17 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
 
             foreach ($projects as $project)
             {
-                $project->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+                $attachments = $project->attachments;
+                foreach ($attachments as $attachment)
+                {
+                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                }
+                $attachments->delete();
             }
 
-            $model->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('Group/' . $model->id);
+            $attachment = $model->attachment;
+            Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $attachment->url);
+            $attachment->delete();
             return parent::delete($id);
         });
 
@@ -154,28 +157,40 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('Group/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Group/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Group/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function download(int $id): string
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('Group/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Group/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Group/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function upload(int $id, array $data): UploadMessage
@@ -183,17 +198,11 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
-            $exists = Storage::disk('local')->exists('Group/' . $model->id);
+            $model->attachments()->delete();
+            Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $model->attachment->url);
 
-            if ($exists)
-            {
-                $model->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Group/' . $model->id);
-            }
-
-            $storedFile = Storage::disk('local')->putFileAs('Group/' . $model->id . '/Images',
-                $data['image'],
-                basename($data['image']));
+            $storedFile = Storage::disk('supabase')->putFile('Group/' . $model->id . '/Images',
+                $data['image']);
 
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
@@ -212,6 +221,6 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
     {
         $model = (object) parent::find($id);
         $model->attachments()->delete();
-        Storage::disk('local')->deleteDirectory('Group/' . $model->id);
+        Storage::disk('supabase')->deleteDirectory('Group/' . $model->id . '/Images/' . $model->attachment->url);
     }
 }

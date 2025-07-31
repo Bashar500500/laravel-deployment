@@ -281,6 +281,7 @@ enum FieldName: string
     case File = 'file';
     case Score = 'score';
     case FcmToken = 'fcm_token';
+    case Year = 'year';
 
     public function getMessage(): string
     {

@@ -17,7 +17,7 @@ class QuestionBank extends Model
         'course_id',
     ];
 
-    public function Course(): BelongsTo
+    public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class, 'course_id');
     }

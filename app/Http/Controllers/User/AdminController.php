@@ -23,6 +23,8 @@ class AdminController extends Controller
 
     public function index(AdminRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = UserResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class AdminController extends Controller
 
     public function show(User $adminUser): JsonResponse
     {
+        // $this->authorize('show');
+
         $data = UserResource::make(
             $this->service->show($adminUser),
         );
@@ -47,6 +51,8 @@ class AdminController extends Controller
 
     public function store(AdminRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = UserResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class AdminController extends Controller
 
     public function update(AdminRequest $request, User $adminUser): JsonResponse
     {
+        // $this->authorize('update');
+
         $data = UserResource::make(
             $this->service->update($request, $adminUser),
         );
@@ -71,6 +79,8 @@ class AdminController extends Controller
 
     public function destroy(User $adminUser): JsonResponse
     {
+        // $this->authorize('destroy');
+
         $data = UserResource::make(
             $this->service->destroy($adminUser),
         );

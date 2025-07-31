@@ -83,9 +83,8 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
 
             if ($dto->coverImage)
             {
-                $storedFile = Storage::disk('local')->putFileAs('Course/' . $course->id . '/Images',
-                    $dto->coverImage,
-                    str()->uuid() . '.' . $dto->coverImage->extension());
+                $storedFile = Storage::disk('supabase')->putFile('Course/' . $course->id . '/Images',
+                    $dto->coverImage);
 
                 $course->attachment()->create([
                     'reference_field' => AttachmentReferenceField::CourseCoverImage,
@@ -136,11 +135,10 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
             if ($dto->coverImage)
             {
                 $course->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Course/' . $course->id);
+                Storage::disk('supabase')->delete('Course/' . $course->id . '/Images/' . $course->attachment->url);
 
-                $storedFile = Storage::disk('local')->putFileAs('Course/' . $course->id . '/Images',
-                    $dto->coverImage,
-                    str()->uuid() . '.' . $dto->coverImage->extension());
+                $storedFile = Storage::disk('supabase')->putFile('Course/' . $course->id . '/Images',
+                    $dto->coverImage);
 
                 $course->attachment()->create([
                     'reference_field' => AttachmentReferenceField::CourseCoverImage,
@@ -175,28 +173,60 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
 
             foreach ($learningActivities as $learningActivity)
             {
-                $learningActivity->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('LearningActivity/' . $learningActivity->id);
+                $attachment = $learningActivity->attachment;
+                switch ($attachment->type)
+                {
+                    case AttachmentType::Pdf:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment->url);
+                        break;
+                    default:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment->url);
+                        break;
+                }
+                $attachment->delete();
             }
             foreach ($sections as $section)
             {
-                $section->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Section/' . $section->id);
+                $attachments = $section->attachments;
+                foreach ($attachments as $attachment)
+                {
+                    switch ($attachment->reference_field)
+                    {
+                        case AttachmentReferenceField::SectionResourcesFile:
+                            Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment->url);
+                            break;
+                    }
+                }
+                $attachments->delete();
             }
             foreach ($groups as $group)
             {
-                $group->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Group/' . $group->id);
+                $attachment = $group->attachment;
+                Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment->url);
+                $attachment->delete();
             }
             foreach ($events as $event)
             {
-                $event->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Event/' . $event->id);
+                $attachments = $event->attachments;
+                foreach ($attachments as $attachment)
+                {
+                    switch ($attachment->reference_field)
+                    {
+                        case AttachmentReferenceField::EventAttachmentsFile:
+                            Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment->url);
+                            break;
+                    }
+                }
+                $attachments->delete();
             }
             foreach ($projects as $project)
             {
-                $project->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Project/' . $project->id);
+                $attachments = $project->attachments;
+                foreach ($attachments as $attachment)
+                {
+                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                }
+                $attachments->delete();
             }
             foreach ($assessments as $assessment)
             {
@@ -223,8 +253,12 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
 
                 foreach ($assignmentSubmits as $assignmentSubmit)
                 {
-                    $assignmentSubmit->attachments()->delete();
-                    Storage::disk('local')->deleteDirectory('AssignmentSubmit/' . $assignmentSubmit->id);
+                    $attachments = $assignmentSubmit->attachments;
+                    foreach ($attachments as $attachment)
+                    {
+                        Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment->url);
+                    }
+                    $attachments->delete();
                 }
             }
             foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
@@ -247,8 +281,9 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                 $questionBankFillInBlankQuestion->assessmentQuestionBankQuestions()->delete();
             }
 
-            $model->attachments()->delete();
-            Storage::disk('local')->deleteDirectory('Course/' . $model->id);
+            $attachment = $model->attachment;
+            Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $attachment->url);
+            $attachment->delete();
             return parent::delete($id);
         });
 
@@ -259,28 +294,40 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('Course/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Course/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Course/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function download(int $id): string
     {
         $model = (object) parent::find($id);
 
-        $file = Storage::disk('local')->path('Course/' . $id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Course/' . $model->id . '/Images/' . $model->attachment->url);
 
-        if (!file_exists($file))
+        if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        return $file;
+        $file = Storage::disk('supabase')->get('Course/' . $model->id . '/Images/' . $model->attachment->url);
+        $encoded = base64_encode($file);
+        $decoded = base64_decode($encoded);
+        $tempPath = storage_path('app/private/' . $model->attachment->url);
+        file_put_contents($tempPath, $decoded);
+
+        return $tempPath;
     }
 
     public function upload(int $id, array $data): UploadMessage
@@ -288,17 +335,11 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
-            $exists = Storage::disk('local')->exists('Course/' . $model->id);
+            $model->attachments()->delete();
+            Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $model->attachment->url);
 
-            if ($exists)
-            {
-                $model->attachments()->delete();
-                Storage::disk('local')->deleteDirectory('Course/' . $model->id);
-            }
-
-            $storedFile = Storage::disk('local')->putFileAs('Course/' . $model->id . '/Images',
-                $data['image'],
-                basename($data['image']));
+            $storedFile = Storage::disk('supabase')->putFile('Course/' . $model->id . '/Images',
+                $data['image']);
 
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
@@ -317,6 +358,6 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
     {
         $model = (object) parent::find($id);
         $model->attachments()->delete();
-        Storage::disk('local')->deleteDirectory('Course/' . $model->id);
+        Storage::disk('supabase')->deleteDirectory('Course/' . $model->id . '/Images/' . $model->attachment->url);
     }
 }

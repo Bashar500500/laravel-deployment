@@ -23,6 +23,8 @@ class TimeLimitController extends Controller
 
     public function index(TimeLimitRequest $request): JsonResponse
     {
+        // $this->authorize('index');
+
         $data = TimeLimitResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class TimeLimitController extends Controller
 
     public function show(TimeLimit $timeLimit): JsonResponse
     {
+        // $this->authorize('show', $timeLimit);
+
         $data = TimeLimitResource::make(
             $this->service->show($timeLimit),
         );
@@ -47,6 +51,8 @@ class TimeLimitController extends Controller
 
     public function store(TimeLimitRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = TimeLimitResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class TimeLimitController extends Controller
 
     public function update(TimeLimitRequest $request, TimeLimit $timeLimit): JsonResponse
     {
+        // $this->authorize('update', $timeLimit);
+
         $data = TimeLimitResource::make(
             $this->service->update($request, $timeLimit),
         );
@@ -71,6 +79,8 @@ class TimeLimitController extends Controller
 
     public function destroy(TimeLimit $timeLimit): JsonResponse
     {
+        // $this->authorize('destroy', $timeLimit);
+
         $data = TimeLimitResource::make(
             $this->service->destroy($timeLimit),
         );

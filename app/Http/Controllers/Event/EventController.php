@@ -28,6 +28,8 @@ class EventController extends Controller
 
     public function index(EventRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('course_id'));
+
         $data = EventResource::collection(
             $this->eventService->index($request),
         );
@@ -40,6 +42,8 @@ class EventController extends Controller
 
     public function show(Event $event): JsonResponse
     {
+        // $this->authorize('show', $event);
+
         $data = EventResource::make(
             $this->eventService->show($event),
         );
@@ -52,6 +56,8 @@ class EventController extends Controller
 
     public function store(EventRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = EventResource::make(
             $this->eventService->store($request),
         );
@@ -64,6 +70,8 @@ class EventController extends Controller
 
     public function update(EventRequest $request, Event $event): JsonResponse
     {
+        // $this->authorize('update', $event);
+
         $data = EventResource::make(
             $this->eventService->update($request, $event),
         );
@@ -76,6 +84,8 @@ class EventController extends Controller
 
     public function destroy(Event $event): JsonResponse
     {
+        // $this->authorize('destroy', $event);
+
         $data = EventResource::make(
             $this->eventService->destroy($event),
         );
@@ -88,6 +98,8 @@ class EventController extends Controller
 
     public function view(Event $event, string $fileName): BinaryFileResponse
     {
+        // $this->authorize('view', $event);
+
         $file = $this->eventService->view($event, $fileName);
 
         return $this->controller->setFile($file)
@@ -96,6 +108,8 @@ class EventController extends Controller
 
     public function download(Event $event): BinaryFileResponse
     {
+        // $this->authorize('download', $event);
+
         $zip = $this->eventService->download($event);
 
         return $this->controller->setZip($zip)
@@ -104,6 +118,8 @@ class EventController extends Controller
 
     public function upload(FileUploadRequest $request, Event $event): JsonResponse
     {
+        // $this->authorize('upload', $event);
+
         $message = $this->uploadService->uploadEventFile($request, $event);
 
         return match ($message) {
@@ -120,6 +136,8 @@ class EventController extends Controller
 
     public function destroyAttachment(Event $event, string $fileName): JsonResponse
     {
+        // $this->authorize('destroyAttachment', $event);
+
         $this->eventService->destroyAttachment($event, $fileName);
 
         return $this->controller->setFunctionName(FunctionName::Delete)

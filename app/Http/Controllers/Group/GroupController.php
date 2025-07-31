@@ -28,6 +28,8 @@ class GroupController extends Controller
 
     public function index(GroupRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('course_id'));
+
         $data = GroupResource::collection(
             $this->groupService->index($request),
         );
@@ -40,6 +42,8 @@ class GroupController extends Controller
 
     public function show(Group $group): JsonResponse
     {
+        // $this->authorize('show', $group);
+
         $data = GroupResource::make(
             $this->groupService->show($group),
         );
@@ -52,6 +56,8 @@ class GroupController extends Controller
 
     public function store(GroupRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = GroupResource::make(
             $this->groupService->store($request),
         );
@@ -64,6 +70,8 @@ class GroupController extends Controller
 
     public function update(GroupRequest $request, Group $group): JsonResponse
     {
+        // $this->authorize('update', $group);
+
         $data = GroupResource::make(
             $this->groupService->update($request, $group),
         );
@@ -76,6 +84,8 @@ class GroupController extends Controller
 
     public function destroy(Group $group): JsonResponse
     {
+        // $this->authorize('destroy', $group);
+
         $data = GroupResource::make(
             $this->groupService->destroy($group),
         );
@@ -88,6 +98,8 @@ class GroupController extends Controller
 
     public function join(Group $group): JsonResponse
     {
+        // $this->authorize('join', $group);
+
         $this->groupService->join($group);
 
         return $this->controller->setFunctionName(FunctionName::Join)
@@ -98,6 +110,8 @@ class GroupController extends Controller
 
     public function leave(Group $group): JsonResponse
     {
+        // $this->authorize('leave', $group);
+
         $this->groupService->leave($group);
 
         return $this->controller->setFunctionName(FunctionName::Leave)
@@ -108,6 +122,8 @@ class GroupController extends Controller
 
     public function view(Group $group): BinaryFileResponse
     {
+        // $this->authorize('view', $group);
+
         $file = $this->groupService->view($group);
 
         return $this->controller->setFile($file)
@@ -116,6 +132,8 @@ class GroupController extends Controller
 
     public function download(Group $group): BinaryFileResponse
     {
+        // $this->authorize('download', $group);
+
         $file = $this->groupService->download($group);
 
         return $this->controller->setFile($file)
@@ -124,6 +142,8 @@ class GroupController extends Controller
 
     public function upload(ImageUploadRequest $request, Group $group): JsonResponse
     {
+        // $this->authorize('upload', $group);
+
         $message = $this->uploadService->uploadGroupImage($request, $group);
 
         return match ($message) {
@@ -140,6 +160,8 @@ class GroupController extends Controller
 
     public function destroyAttachment(Group $group): JsonResponse
     {
+        // $this->authorize('destroyAttachment', $group);
+
         $this->groupService->destroyAttachment($group);
 
         return $this->controller->setFunctionName(FunctionName::Delete)

@@ -23,6 +23,8 @@ class AssessmentShortAnswerQuestionController extends Controller
 
     public function index(AssessmentShortAnswerQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('index', $request->validated('assessment_id'));
+
         $data = AssessmentShortAnswerQuestionResource::collection(
             $this->service->index($request),
         );
@@ -35,6 +37,8 @@ class AssessmentShortAnswerQuestionController extends Controller
 
     public function show(AssessmentShortAnswerQuestion $question): JsonResponse
     {
+        // $this->authorize('show', $question);
+
         $data = AssessmentShortAnswerQuestionResource::make(
             $this->service->show($question),
         );
@@ -47,6 +51,8 @@ class AssessmentShortAnswerQuestionController extends Controller
 
     public function store(AssessmentShortAnswerQuestionRequest $request): JsonResponse
     {
+        // $this->authorize('store');
+
         $data = AssessmentShortAnswerQuestionResource::make(
             $this->service->store($request),
         );
@@ -59,6 +65,8 @@ class AssessmentShortAnswerQuestionController extends Controller
 
     public function update(AssessmentShortAnswerQuestionRequest $request, AssessmentShortAnswerQuestion $question): JsonResponse
     {
+        // $this->authorize('update', $question);
+
         $data = AssessmentShortAnswerQuestionResource::make(
             $this->service->update($request, $question),
         );
@@ -71,6 +79,8 @@ class AssessmentShortAnswerQuestionController extends Controller
 
     public function destroy(AssessmentShortAnswerQuestion $question): JsonResponse
     {
+        // $this->authorize('destroy', $question);
+
         $data = AssessmentShortAnswerQuestionResource::make(
             $this->service->destroy($question),
         );
@@ -83,6 +93,8 @@ class AssessmentShortAnswerQuestionController extends Controller
 
     public function addAssessmentShortAnswerQuestionToQuestionBank(AssessmentShortAnswerQuestion $question): JsonResponse
     {
+        // $this->authorize('addAssessmentShortAnswerQuestionToQuestionBank', $question);
+
         $this->service->addAssessmentShortAnswerQuestionToQuestionBank($question);
 
         return $this->controller->setFunctionName(FunctionName::AddAssessmentShortAnswerQuestionToQuestionBank)
