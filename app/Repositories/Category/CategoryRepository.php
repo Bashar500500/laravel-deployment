@@ -76,8 +76,8 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
 
             if ($dto->categoryImage)
             {
+                Storage::disk('supabase')->delete('Category/' . $category->id . '/Images/' . $category->attachment?->url);
                 $category->attachments()->delete();
-                Storage::disk('supabase')->delete('Category/' . $category->id . '/Images/' . $category->attachment->url);
 
                 $storedFile = Storage::disk('supabase')->putFile('Category/' . $category->id . '/Images',
                     $dto->categoryImage);
@@ -106,7 +106,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
             foreach ($subCategories as $subCategory)
             {
                 $attachment = $subCategory->attachment;
-                Storage::disk('supabase')->delete('SubCategory/' . $subCategory->id . '/Images/' . $attachment->url);
+                Storage::disk('supabase')->delete('SubCategory/' . $subCategory->id . '/Images/' . $attachment?->url);
                 $attachment->delete();
             }
             foreach ($courses as $course)
@@ -130,10 +130,10 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                     switch ($attachment->type)
                     {
                         case AttachmentType::Pdf:
-                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment->url);
+                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment?->url);
                             break;
                         default:
-                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment->url);
+                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment?->url);
                             break;
                     }
                     $attachment->delete();
@@ -146,7 +146,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                         switch ($attachment->reference_field)
                         {
                             case AttachmentReferenceField::SectionResourcesFile:
-                                Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment->url);
+                                Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment?->url);
                                 break;
                         }
                     }
@@ -155,7 +155,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                 foreach ($groups as $group)
                 {
                     $attachment = $group->attachment;
-                    Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment->url);
+                    Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment?->url);
                     $attachment->delete();
                 }
                 foreach ($events as $event)
@@ -166,7 +166,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                         switch ($attachment->reference_field)
                         {
                             case AttachmentReferenceField::EventAttachmentsFile:
-                                Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment->url);
+                                Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment?->url);
                                 break;
                         }
                     }
@@ -177,7 +177,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                     $attachments = $project->attachments;
                     foreach ($attachments as $attachment)
                     {
-                        Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                        Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
                     }
                     $attachments->delete();
                 }
@@ -209,7 +209,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                         $attachments = $assignmentSubmit->attachments;
                         foreach ($attachments as $attachment)
                         {
-                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment->url);
+                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
                         }
                         $attachments->delete();
                     }
@@ -235,12 +235,12 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                 }
 
                 $attachment = $course->attachment;
-                Storage::disk('supabase')->delete('Course/' . $course->id . '/Images/' . $attachment->url);
+                Storage::disk('supabase')->delete('Course/' . $course->id . '/Images/' . $attachment?->url);
                 $attachment->delete();
             }
 
             $attachment = $model->attachment;
-            Storage::disk('supabase')->delete('Category/' . $model->id . '/Images/' . $attachment->url);
+            Storage::disk('supabase')->delete('Category/' . $model->id . '/Images/' . $attachment?->url);
             $attachment->delete();
             return parent::delete($id);
         });
@@ -293,8 +293,8 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
+            Storage::disk('supabase')->delete('Category/' . $model->id . '/Images/' . $model->attachment?->url);
             $model->attachments()->delete();
-            Storage::disk('supabase')->delete('Category/' . $model->id . '/Images/' . $model->attachment->url);
 
             $storedFile = Storage::disk('supabase')->putFile('Category/' . $model->id . '/Images',
                 $data['image']);
@@ -315,7 +315,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     public function deleteAttachment(int $id): void
     {
         $model = (object) parent::find($id);
+        Storage::disk('supabase')->delete('Category/' . $model->id . '/Images/' . $model->attachment?->url);
         $model->attachments()->delete();
-        Storage::disk('supabase')->delete('Category/' . $model->id . '/Images/' . $model->attachment->url);
     }
 }

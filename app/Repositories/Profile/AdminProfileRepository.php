@@ -97,8 +97,8 @@ class AdminProfileRepository extends BaseRepository implements AdminProfileRepos
 
             if ($dto->userImage)
             {
+                Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $profile->attachment?->url);
                 $profile->attachments()->delete();
-                Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $profile->attachment->url);
 
                 $storedFile = Storage::disk('supabase')->putFile('Profile/' . $profile->id . '/Images',
                     $dto->userImage);
@@ -122,7 +122,7 @@ class AdminProfileRepository extends BaseRepository implements AdminProfileRepos
 
         $profile = DB::transaction(function () use ($id, $model) {
             $attachment = $model->attachment;
-            Storage::disk('supabase')->delete('Profile/' . $model->id . '/Images/' . $attachment->url);
+            Storage::disk('supabase')->delete('Profile/' . $model->id . '/Images/' . $attachment?->url);
             $attachment->delete();
             return parent::delete($id);
         });
@@ -175,8 +175,8 @@ class AdminProfileRepository extends BaseRepository implements AdminProfileRepos
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
+            Storage::disk('supabase')->delete('Profile/' . $model->id . '/Images/' . $model->attachment?->url);
             $model->attachments()->delete();
-            Storage::disk('supabase')->delete('Profile/' . $model->id . '/Images/' . $model->attachment->url);
 
             $storedFile = Storage::disk('supabase')->putFile('Profile/' . $model->id . '/Images',
                 $data['image']);
@@ -197,7 +197,7 @@ class AdminProfileRepository extends BaseRepository implements AdminProfileRepos
     public function deleteAttachment(int $id): void
     {
         $model = (object) parent::find($id);
+        Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $model->attachment->url);
         $model->attachments()->delete();
-        Storage::disk('supabase')->deleteDirectory('Group/' . $model->id . '/Images/' . $model->attachment->url);
     }
 }

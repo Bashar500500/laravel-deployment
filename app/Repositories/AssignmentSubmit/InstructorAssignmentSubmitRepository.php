@@ -81,7 +81,7 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
             $attachments = $model->attachments;
             foreach ($attachments as $attachment)
             {
-                Storage::disk('supabase')->delete('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $attachment->url);
+                Storage::disk('supabase')->delete('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $attachment?->url);
             }
             $attachments->delete();
             return parent::delete($id);

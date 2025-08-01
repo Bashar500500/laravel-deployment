@@ -132,8 +132,8 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 switch ($dto->learningActivityContentDto->type)
                 {
                     case LearningActivityContentType::Pdf:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $learningActivity->attachment?->url);
                         $learningActivity->attachments()->delete();
-                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $learningActivity->attachment->url);
 
                         $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Pdfs',
                             $dto->learningActivityContentDto->pdf);
@@ -145,8 +145,8 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                         ]);
                         break;
                     default:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $learningActivity->attachment?->url);
                         $learningActivity->attachments()->delete();
-                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $learningActivity->attachment->url);
 
                         $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Videos',
                             $dto->learningActivityContentDto->video);
@@ -175,10 +175,10 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
             switch ($attachment->type)
             {
                 case AttachmentType::Pdf:
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $attachment->url);
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $attachment?->url);
                     break;
                 default:
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $attachment->url);
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $attachment?->url);
                     break;
             }
             $attachment->delete();
@@ -278,8 +278,8 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
             switch ($model->content_type)
             {
                 case LearningActivityContentType::Pdf:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
                     $model->attachments()->delete();
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
 
                     $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $model->id . '/Pdfs',
                         $data['pdf']);
@@ -295,8 +295,8 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
 
                     return UploadMessage::Pdf;
                 default:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
                     $model->attachments()->delete();
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
 
                     $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $model->id . '/Videos',
                         $data['video']);
@@ -324,11 +324,11 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
         switch ($model->attachment->type)
         {
             case AttachmentType::Pdf:
-                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
+                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
 
                 break;
             default:
-                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
+                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
 
                 break;
         }

@@ -93,7 +93,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $badges = $model->badges;
 
             $attachment = $profile->attachment;
-            Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $attachment->url);
+            Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $attachment?->url);
             $attachment->delete();
 
             foreach ($projects as $project)
@@ -101,7 +101,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 $attachments = $project->attachments;
                 foreach ($attachments as $attachment)
                 {
-                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
                 }
                 $attachments->delete();
             }
@@ -126,10 +126,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                     switch ($attachment->type)
                     {
                         case AttachmentType::Pdf:
-                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment->url);
+                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment?->url);
                             break;
                         default:
-                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment->url);
+                            Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment?->url);
                             break;
                     }
                     $attachment->delete();
@@ -142,7 +142,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                         switch ($attachment->reference_field)
                         {
                             case AttachmentReferenceField::SectionResourcesFile:
-                                Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment->url);
+                                Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment?->url);
                                 break;
                         }
                     }
@@ -151,7 +151,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 foreach ($groups as $group)
                 {
                     $attachment = $group->attachment;
-                    Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment->url);
+                    Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment?->url);
                     $attachment->delete();
                 }
                 foreach ($events as $event)
@@ -162,7 +162,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                         switch ($attachment->reference_field)
                         {
                             case AttachmentReferenceField::EventAttachmentsFile:
-                                Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment->url);
+                                Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment?->url);
                                 break;
                         }
                     }
@@ -173,7 +173,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                     $attachments = $project->attachments;
                     foreach ($attachments as $attachment)
                     {
-                        Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                        Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
                     }
                     $attachments->delete();
                 }
@@ -205,7 +205,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                         $attachments = $assignmentSubmit->attachments;
                         foreach ($attachments as $attachment)
                         {
-                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment->url);
+                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
                         }
                         $attachments->delete();
                     }
@@ -231,7 +231,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 }
 
                 $attachment = $ownedCourse->attachment;
-                Storage::disk('supabase')->delete('Course/' . $ownedCourse->id . '/Images/' . $attachment->url);
+                Storage::disk('supabase')->delete('Course/' . $ownedCourse->id . '/Images/' . $attachment?->url);
                 $attachment->delete();
             }
             foreach ($badges as $badge)

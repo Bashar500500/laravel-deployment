@@ -90,7 +90,7 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
                 $attachments = $project->attachments;
                 foreach ($attachments as $attachment)
                 {
-                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
                 }
                 $attachments->delete();
 
@@ -121,7 +121,7 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
             $attachments = $model->attachments;
             foreach ($attachments as $attachment)
             {
-                Storage::disk('supabase')->delete('Project/' . $model->id . '/Files/' . $attachment->url);
+                Storage::disk('supabase')->delete('Project/' . $model->id . '/Files/' . $attachment?->url);
             }
             $attachments->delete();
             return parent::delete($id);
@@ -212,7 +212,7 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
         }
 
         $attachment = $model->attachments()->where('url', $fileName)->first();
-        Storage::disk('supabase')->delete('Project/' . $model->id . '/Files/' . $attachment->url);
+        Storage::disk('supabase')->delete('Project/' . $model->id . '/Files/' . $attachment?->url);
         $attachment->delete();
     }
 }

@@ -77,8 +77,8 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
 
             if ($dto->subCategoryImage)
             {
+                Storage::disk('supabase')->delete('SubCategory/' . $subCategory->id . '/Images/' . $subCategory->attachment?->url);
                 $subCategory->attachments()->delete();
-                Storage::disk('supabase')->delete('SubCategory/' . $subCategory->id . '/Images/' . $subCategory->attachment->url);
 
                 $storedFile = Storage::disk('supabase')->putFile('SubCategory/' . $subCategory->id . '/Images',
                     $dto->subCategoryImage);
@@ -102,7 +102,7 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
 
         $subCategory = DB::transaction(function () use ($id, $model) {
             $attachment = $model->attachment;
-            Storage::disk('supabase')->delete('SubCategory/' . $model->id . '/Images/' . $attachment->url);
+            Storage::disk('supabase')->delete('SubCategory/' . $model->id . '/Images/' . $attachment?->url);
             $attachment->delete();
             return parent::delete($id);
         });
@@ -155,8 +155,8 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
+            Storage::disk('supabase')->delete('SubCategory/' . $model->id . '/Images/' . $model->attachment?->url);
             $model->attachments()->delete();
-            Storage::disk('supabase')->delete('SubCategory/' . $model->id . '/Images/' . $model->attachment->url);
 
             $storedFile = Storage::disk('supabase')->putFile('SubCategory/' . $model->id . '/Images',
                 $data['image']);
@@ -177,7 +177,7 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
     public function deleteAttachment(int $id): void
     {
         $model = (object) parent::find($id);
+        Storage::disk('supabase')->delete('SubCategory/' . $model->id . '/Images/' . $model->attachment->url);
         $model->attachments()->delete();
-        Storage::disk('supabase')->deleteDirectory('SubCategory/' . $model->id . '/Images/' . $model->attachment->url);
     }
 }

@@ -80,8 +80,8 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
 
             if ($dto->image)
             {
+                Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $group->attachment?->url);
                 $group->attachments()->delete();
-                Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $group->attachment->url);
 
                 $storedFile = Storage::disk('supabase')->putFile('Group/' . $group->id . '/Images',
                     $dto->image);
@@ -111,13 +111,13 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
                 $attachments = $project->attachments;
                 foreach ($attachments as $attachment)
                 {
-                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
                 }
                 $attachments->delete();
             }
 
             $attachment = $model->attachment;
-            Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $attachment->url);
+            Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $attachment?->url);
             $attachment->delete();
             return parent::delete($id);
         });
@@ -198,8 +198,8 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
+            Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $model->attachment?->url);
             $model->attachments()->delete();
-            Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $model->attachment->url);
 
             $storedFile = Storage::disk('supabase')->putFile('Group/' . $model->id . '/Images',
                 $data['image']);
@@ -220,7 +220,7 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
     public function deleteAttachment(int $id): void
     {
         $model = (object) parent::find($id);
+        Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $model->attachment?->url);
         $model->attachments()->delete();
-        Storage::disk('supabase')->deleteDirectory('Group/' . $model->id . '/Images/' . $model->attachment->url);
     }
 }

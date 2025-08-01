@@ -136,8 +136,8 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
 
             if ($dto->coverImage)
             {
+                Storage::disk('supabase')->delete('Course/' . $course->id . '/Images/' . $course->attachment?->url);
                 $course->attachments()->delete();
-                Storage::disk('supabase')->delete('Course/' . $course->id . '/Images/' . $course->attachment->url);
 
                 $storedFile = Storage::disk('supabase')->putFile('Course/' . $course->id . '/Images',
                     $dto->coverImage);
@@ -179,10 +179,10 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
                 switch ($attachment->type)
                 {
                     case AttachmentType::Pdf:
-                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment->url);
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment?->url);
                         break;
                     default:
-                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment->url);
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment?->url);
                         break;
                 }
                 $attachment->delete();
@@ -195,7 +195,7 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
                     switch ($attachment->reference_field)
                     {
                         case AttachmentReferenceField::SectionResourcesFile:
-                            Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment->url);
+                            Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment?->url);
                             break;
                     }
                 }
@@ -204,7 +204,7 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
             foreach ($groups as $group)
             {
                 $attachment = $group->attachment;
-                Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment->url);
+                Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment?->url);
                 $attachment->delete();
             }
             foreach ($events as $event)
@@ -215,7 +215,7 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
                     switch ($attachment->reference_field)
                     {
                         case AttachmentReferenceField::EventAttachmentsFile:
-                            Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment->url);
+                            Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment?->url);
                             break;
                     }
                 }
@@ -226,7 +226,7 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
                 $attachments = $project->attachments;
                 foreach ($attachments as $attachment)
                 {
-                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment->url);
+                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
                 }
                 $attachments->delete();
             }
@@ -258,7 +258,7 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
                     $attachments = $assignmentSubmit->attachments;
                     foreach ($attachments as $attachment)
                     {
-                        Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment->url);
+                        Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
                     }
                     $attachments->delete();
                 }
@@ -284,7 +284,7 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
             }
 
             $attachment = $model->attachment;
-            Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $attachment->url);
+            Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $attachment?->url);
             $attachment->delete();
             return parent::delete($id);
         });
@@ -337,8 +337,8 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
         $model = (object) parent::find($id);
 
         DB::transaction(function () use ($data, $model) {
+            Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $model->attachment?->url);
             $model->attachments()->delete();
-            Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $model->attachment->url);
 
             $storedFile = Storage::disk('supabase')->putFile('Course/' . $model->id . '/Images',
                 $data['image']);
@@ -359,7 +359,7 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
     public function deleteAttachment(int $id): void
     {
         $model = (object) parent::find($id);
+        Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $model->attachment?->url);
         $model->attachments()->delete();
-        Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $model->attachment->url);
     }
 }

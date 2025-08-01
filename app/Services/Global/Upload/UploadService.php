@@ -19,7 +19,6 @@ use App\Models\Event\Event;
 use App\Models\Category\Category;
 use App\Models\SubCategory\SubCategory;
 use App\Models\Profile\Profile;
-use App\Models\Question\Question;
 use App\Models\Project\Project;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,7 +32,8 @@ class UploadService
     {
         $dto = UploadDto::fromImageUploadRequest($request);
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
         $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
@@ -45,7 +45,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks(AttachmentType::Image, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks(AttachmentType::Image, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::Course);
             return $repository->upload($course->id, $data);
@@ -58,7 +58,8 @@ class UploadService
     {
         $dto = UploadDto::fromImageUploadRequest($request);
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
         $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
@@ -70,7 +71,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks(AttachmentType::Image, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks(AttachmentType::Image, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::Group);
             return $repository->upload($group->id, $data);
@@ -97,7 +98,8 @@ class UploadService
                 break;
         };
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
 
         if (!file_exists($chunkDir))
         {
@@ -108,7 +110,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks($type, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks($type, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::LearningActivity);
             return $repository->upload($learningActivity->id, $data);
@@ -121,7 +123,8 @@ class UploadService
     {
         $dto = UploadDto::fromFileUploadRequest($request);
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
         $extension = $dto->file->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
@@ -133,7 +136,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks(AttachmentType::File, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks(AttachmentType::File, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::Section);
             return $repository->upload($section->id, $data);
@@ -146,7 +149,8 @@ class UploadService
     {
         $dto = UploadDto::fromFileUploadRequest($request);
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
         $extension = $dto->file->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
@@ -158,7 +162,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks(AttachmentType::File, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks(AttachmentType::File, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::Event);
             return $repository->upload($event->id, $data);
@@ -171,7 +175,8 @@ class UploadService
     {
         $dto = UploadDto::fromImageUploadRequest($request);
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
         $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
@@ -183,7 +188,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks(AttachmentType::Image, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks(AttachmentType::Image, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::Category);
             return $repository->upload($category->id, $data);
@@ -196,7 +201,8 @@ class UploadService
     {
         $dto = UploadDto::fromImageUploadRequest($request);
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
         $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
@@ -208,7 +214,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks(AttachmentType::Image, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks(AttachmentType::Image, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::SubCategory);
             return $repository->upload($subCategory->id, $data);
@@ -221,7 +227,8 @@ class UploadService
     {
         $dto = UploadDto::fromImageUploadRequest($request);
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
         $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
@@ -233,7 +240,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks(AttachmentType::Image, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks(AttachmentType::Image, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::UserProfile);
             return $repository->upload(Auth::user()->profile->id, $data);
@@ -246,7 +253,8 @@ class UploadService
     {
         $dto = UploadDto::fromImageUploadRequest($request);
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
         $extension = $dto->image->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
@@ -258,7 +266,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks(AttachmentType::Image, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks(AttachmentType::Image, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::AdminProfile);
             return $repository->upload($profile->id, $data);
@@ -271,7 +279,8 @@ class UploadService
     {
         $dto = UploadDto::fromFileUploadRequest($request);
 
-        $chunkDir = storage_path("app/chunks/{$dto->dzuuid}");
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
         $extension = $dto->file->getClientOriginalExtension();
 
         if (!file_exists($chunkDir))
@@ -283,7 +292,7 @@ class UploadService
 
         if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
         {
-            $data = $this->mergeChunks(AttachmentType::File, $dto->dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+            $data = $this->mergeChunks(AttachmentType::File, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
 
             $repository = $this->factory->make(ModelName::Project);
             return $repository->upload($project->id, $data);

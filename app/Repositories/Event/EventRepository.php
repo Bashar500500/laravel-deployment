@@ -119,7 +119,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
                 $attachments = $event->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->all();
                 foreach ($attachments as $attachment)
                 {
-                    Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment->url);
+                    Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment?->url);
                 }
                 $attachments->delete();
 
@@ -167,7 +167,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
                 switch ($attachment->reference_field)
                 {
                     case AttachmentReferenceField::EventAttachmentsFile:
-                        Storage::disk('supabase')->delete('Event/' . $model->id . '/Files/' . $attachment->url);
+                        Storage::disk('supabase')->delete('Event/' . $model->id . '/Files/' . $attachment?->url);
                         break;
                 }
             }
@@ -260,7 +260,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
         }
 
         $attachment = $model->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->where('url', $fileName)->first();
-        Storage::disk('supabase')->delete('Event/' . $model->id . '/Files/' . $attachment->url);
+        Storage::disk('supabase')->delete('Event/' . $model->id . '/Files/' . $attachment?->url);
         $attachment->delete();
     }
 }

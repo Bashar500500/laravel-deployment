@@ -132,7 +132,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
                 $attachments = $section->attachments()->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->all();
                 foreach ($attachments as $attachment)
                 {
-                    Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment->url);
+                    Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment?->url);
                 }
                 $attachments->delete();
 
@@ -182,10 +182,10 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
                 switch ($attachment->type)
                 {
                     case AttachmentType::Pdf:
-                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment->url);
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment?->url);
                         break;
                     default:
-                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment->url);
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment?->url);
                         break;
                 }
                 $attachment->delete();
@@ -197,7 +197,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
                 switch ($attachment->reference_field)
                 {
                     case AttachmentReferenceField::SectionResourcesFile:
-                        Storage::disk('supabase')->delete('Section/' . $model->id . '/Files/' . $attachment->url);
+                        Storage::disk('supabase')->delete('Section/' . $model->id . '/Files/' . $attachment?->url);
                         break;
                 }
             }
@@ -290,7 +290,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
         }
 
         $attachment = $model->attachments()->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->where('url', $fileName)->first();
-        Storage::disk('supabase')->delete('Section/' . $model->id . '/Files/' . $attachment->url);
+        Storage::disk('supabase')->delete('Section/' . $model->id . '/Files/' . $attachment?->url);
         $attachment->delete();
     }
 }
