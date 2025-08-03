@@ -832,4 +832,7 @@ return [
     'year' => [
         'message' => 'year',
     ],
+    'students' => [
+        'message' => 'students',
+    ],
 ];

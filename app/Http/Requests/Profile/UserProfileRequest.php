@@ -17,6 +17,7 @@ class UserProfileRequest extends FormRequest
 
     protected function onIndex() {
         return [
+            'course_id' => ['sometimes', 'exists:courses,id'],
             'page' => ['required', 'integer', 'gt:0'],
             'page_size' => ['sometimes', 'integer', 'gt:0'],
         ];
@@ -97,6 +98,7 @@ class UserProfileRequest extends FormRequest
     // public function messages(): array
     // {
     //     return [
+    //         'course_id.exists' => ValidationType::Exists->getMessage(),
     //         'page.required' => ValidationType::Required->getMessage(),
     //         'page.integer' => ValidationType::Integer->getMessage(),
     //         'page.gt' => ValidationType::GreaterThanZero->getMessage(),
@@ -157,6 +159,7 @@ class UserProfileRequest extends FormRequest
     // public function attributes(): array
     // {
     //     return [
+    //         'course_id' => FieldName::CourseId->getMessage(),
     //         'page' => FieldName::Page->getMessage(),
     //         'page_size' => FieldName::PageSize->getMessage(),
     //         'user_image' => FieldName::UserImage->getMessage(),

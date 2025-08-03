@@ -4,18 +4,10 @@ namespace App\Policies\User;
 
 use App\Models\User\User;
 use App\Models\UserCourseGroup\UserCourseGroup;
+use Illuminate\Auth\Access\Response;
 
 class AdminAndUserPolicy
 {
-    public function before(User $user, $ability)
-    {
-        $role = $user->getRoleNames();
-        if ($role[0] == 'student')
-        {
-            return false;
-        }
-    }
-
     public function adminIndex(User $user): bool
     {
         return $this->checkAdminRole($user);
@@ -41,9 +33,14 @@ class AdminAndUserPolicy
         return $this->checkAdminRole($user);
     }
 
-    public function userIndex(User $user): bool
+    public function userShow(User $user, string $model, int $userId): bool
     {
-        return $this->checkAdminRole($user);
+        return $this->checkIfBelonged($user, $userId);
+    }
+
+    public function userStore(User $user): bool
+    {
+        return $this->checkInstructorRole($user);
     }
 
     public function addStudentToCourse(User $user, string $model, int $courseId): bool
@@ -63,6 +60,13 @@ class AdminAndUserPolicy
 
         return ($this->checkInstructorRole($user) &&
             $this->checkIfOwned($user, $exists->course->id));
+    }
+
+    private function checkIfBelonged(User $user, int $userId): bool
+    {
+        $coursesA = UserCourseGroup::where('student_id', $user->id)->pluck('course_id');
+        $coursesB = UserCourseGroup::where('student_id', $userId)->pluck('course_id');
+        return $coursesA->intersect($coursesB)->isNotEmpty();
     }
 
     private function checkIfOwned(User $user, int $courseId): bool

@@ -21,7 +21,7 @@ use App\Jobs\GlobalServiceHandlerJob;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
 
-class UserRepository extends BaseRepository implements UserRepositoryInterface
+class InstructorRepository extends BaseRepository implements UserRepositoryInterface
 {
     public function __construct(User $user)
     {
@@ -30,7 +30,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function all(UserDto $dto, array $data): object
     {
-        return (object) $this->model->latest('created_at')
+        $user = $data['user'];
+        $students = $user->ownedCourses
+            ->flatMap(fn($course) => $course->students)
+            ->pluck('student_id')
+            ->unique()
+            ->values();
+
+        return (object) $this->model->whereIn('id', $students)
+            ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
                 ['*'],
@@ -41,7 +49,22 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function allWithFilter(UserDto $dto, array $data): object
     {
-        return (object) [];
+        $user = $data['user'];
+        $students = $user->ownedCourses
+            ->where('id', $dto->courseId)
+            ->first()
+            ->students?->pluck('student_id')
+            ->unique()
+            ->values();
+
+        return (object) $this->model->whereIn('id', $students)
+            ->latest('created_at')
+            ->simplePaginate(
+                $dto->pageSize,
+                ['*'],
+                'page',
+                $dto->currentPage,
+            );
     }
 
     public function find(int $id): object

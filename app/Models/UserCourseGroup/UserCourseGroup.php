@@ -35,8 +35,6 @@ class UserCourseGroup extends Model
     public static function getOrder($id): int
     {
         return self::where('course_id', $id)
-            ->orderBy('created_at')
-            ->pluck('id')
-            ->search($id) + 1;
+            ->count() + 1;
     }
 }

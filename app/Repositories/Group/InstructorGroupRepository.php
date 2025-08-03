@@ -15,7 +15,7 @@ use App\Enums\Exception\ForbiddenExceptionMessage;
 use App\Enums\Upload\UploadMessage;
 use App\Models\User\User;
 
-class GroupRepository extends BaseRepository implements GroupRepositoryInterface
+class InstructorGroupRepository extends BaseRepository implements GroupRepositoryInterface
 {
     public function __construct(Group $group) {
         parent::__construct($group);
@@ -23,7 +23,15 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
 
     public function all(GroupDto $dto, array $data): object
     {
-        return (object) $this->model->where('course_id', $dto->courseId)
+        $instructor = $data['instructor'];
+        $instructorGroups = $instructor->with('ownedCourses.groups')->find($instructor->id);
+        $groups = $instructorGroups->ownedCourses
+            ->flatMap(fn($course) => $course->groups)
+            ->unique('id')
+            ->values();
+        return (object) $this->model->whereHas('course', function ($courseQuery) use ($instructor) {
+                $courseQuery->whereIn('id', $instructor->ownedCourses->pluck('id'));
+            })
             ->with('course', 'sectionGroups', 'students', 'attachment')
             ->latest('created_at')
             ->simplePaginate(
@@ -36,7 +44,15 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
 
     public function allWithFilter(GroupDto $dto): object
     {
-        return (object) [];
+        return (object) $this->model->where('course_id', $dto->courseId)
+            ->with('course', 'sectionGroups', 'students', 'attachment')
+            ->latest('created_at')
+            ->simplePaginate(
+                $dto->pageSize,
+                ['*'],
+                'page',
+                $dto->currentPage,
+            );
     }
 
     public function find(int $id): object
@@ -162,33 +178,9 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
         return (object) $group;
     }
 
-    public function join(int $id, array $data): void
-    {
-        $student = $data['student'];
-        $model = (object) parent::find($id);
+    public function join(int $id, array $data): void {}
 
-        DB::transaction(function () use ($student, $model) {
-            $student->userCourseGroups()->where('student_id', $student->id)
-                ->where('course_id', $model->course_id)
-                ->update([
-                'group_id' => $model->id,
-            ]);
-        });
-    }
-
-    public function leave(int $id, array $data): void
-    {
-        $student = $data['student'];
-        $model = (object) parent::find($id);
-
-        DB::transaction(function () use ($student, $model) {
-            $student->userCourseGroups()->where('student_id', $student->id)
-                ->where('course_id', $model->course_id)
-                ->update([
-                'group_id' => null,
-            ]);
-        });
-    }
+    public function leave(int $id, array $data): void {}
 
     public function view(int $id): string
     {

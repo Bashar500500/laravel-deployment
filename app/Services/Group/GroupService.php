@@ -2,7 +2,7 @@
 
 namespace App\Services\Group;
 
-use App\Repositories\Group\GroupRepositoryInterface;
+use App\Factories\Group\GroupRepositoryFactory;
 use App\Http\Requests\Group\GroupRequest;
 use App\Models\Group\Group;
 use App\DataTransferObjects\Group\GroupDto;
@@ -14,35 +14,49 @@ use App\Enums\Exception\ForbiddenExceptionMessage;
 class GroupService
 {
     public function __construct(
-        protected GroupRepositoryInterface $repository,
+        protected GroupRepositoryFactory $factory,
     ) {}
 
     public function index(GroupRequest $request): object
     {
         $dto = GroupDto::fromIndexRequest($request);
-        return $this->repository->all($dto);
+        $role = Auth::user()->getRoleNames();
+        $data = $this->prepareIndexData();
+        $repository = $this->factory->make($role[0]);
+        return match ($dto->courseId) {
+            null => $repository->all($dto, $data),
+            default => $repository->allWithFilter($dto),
+        };
     }
 
     public function show(Group $group): object
     {
-        return $this->repository->find($group->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->find($group->id);
     }
 
     public function store(GroupRequest $request): object
     {
         $dto = GroupDto::fromStoreRequest($request);
-        return $this->repository->create($dto);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->create($dto);
     }
 
     public function update(GroupRequest $request, Group $group): object
     {
         $dto = GroupDto::fromUpdateRequest($request);
-        return $this->repository->update($dto, $group->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->update($dto, $group->id);
     }
 
     public function destroy(Group $group): object
     {
-        return $this->repository->delete($group->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->delete($group->id);
     }
 
     public function join(Group $group): void
@@ -59,7 +73,9 @@ class GroupService
             throw CustomException::forbidden(ModelName::Group, ForbiddenExceptionMessage::GroupCapacityMax);
         }
 
-        $this->repository->join($group->id, $data);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        $repository->join($group->id, $data);
     }
 
     public function leave(Group $group): void
@@ -72,28 +88,43 @@ class GroupService
             throw CustomException::forbidden(ModelName::Group, ForbiddenExceptionMessage::GroupNotJoined);
         }
 
-        $this->repository->leave($group->id, $data);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        $repository->leave($group->id, $data);
     }
 
     public function view(Group $group): string
     {
-        return $this->repository->view($group->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->view($group->id);
     }
 
     public function download(Group $group): string
     {
-        return $this->repository->download($group->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->download($group->id);
     }
 
     public function destroyAttachment(Group $group): void
     {
-        $this->repository->deleteAttachment($group->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        $repository->deleteAttachment($group->id);
     }
 
     private function prepareJoinAndLeaveData(): array
     {
         return [
             'student' => Auth::user(),
+        ];
+    }
+
+    private function prepareIndexData(): array
+    {
+        return [
+            'instructor' => Auth::user(),
         ];
     }
 }

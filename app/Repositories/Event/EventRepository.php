@@ -11,6 +11,7 @@ use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
 use App\Exceptions\CustomException;
 use ZipArchive;
+use Illuminate\Support\Facades\File;
 use App\Enums\Upload\UploadMessage;
 
 class EventRepository extends BaseRepository implements EventRepositoryInterface
@@ -171,7 +172,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
                         break;
                 }
             }
-            $attachments->delete();
+            $model->attachments()->delete();
             return parent::delete($id);
         });
 
@@ -190,10 +191,8 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
         }
 
         $file = Storage::disk('supabase')->get('Event/' . $model->id . '/Files/' . $fileName);
-        $encoded = base64_encode($file);
-        $decoded = base64_decode($encoded);
         $tempPath = storage_path('app/private/' . $fileName);
-        file_put_contents($tempPath, $decoded);
+        file_put_contents($tempPath, $file);
 
         return $tempPath;
     }
@@ -211,17 +210,18 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
         $zip = new ZipArchive();
         $zipName = 'Event-Attachments.zip';
         $zipPath = storage_path('app/private/' . $zipName);
+        $tempFiles = [];
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
             foreach ($attachments as $attachment) {
-                $file = Storage::disk('supabase')->get('Event/' . $model->id . '/Files/' . $attachment->url);
-                $encoded = base64_encode($file);
-                $decoded = base64_decode($encoded);
-                $tempPath = storage_path('app/private/' . $attachment->url);
-                file_put_contents($tempPath, $decoded);
+                $file = Storage::disk('supabase')->get('Event/' . $model->id . '/Files/' . $attachment?->url);
+                $tempPath = storage_path('app/private/' . $attachment?->url);
+                file_put_contents($tempPath, $file);
                 $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
+                $tempFiles[] = $tempPath;
             }
             $zip->close();
+            File::delete($tempFiles);
         }
 
         return $zipPath;
@@ -261,6 +261,6 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
 
         $attachment = $model->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->where('url', $fileName)->first();
         Storage::disk('supabase')->delete('Event/' . $model->id . '/Files/' . $attachment?->url);
-        $attachment->delete();
+        $model->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->where('url', $fileName)->delete();
     }
 }

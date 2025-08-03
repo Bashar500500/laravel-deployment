@@ -7,7 +7,9 @@ use App\Enums\Upload\UploadMessage;
 
 interface UserProfileRepositoryInterface
 {
-    public function all(UserProfileDto $dto): object;
+    public function all(UserProfileDto $dto, array $data): object;
+
+    public function allWithFilter(UserProfileDto $dto, array $data): object;
 
     public function find(int $id): object;
 

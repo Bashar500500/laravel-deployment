@@ -28,7 +28,12 @@ class ProfileResource extends JsonResource
             'enrollmentDate' => $this->enrollment_date,
             'batch' => $this->batch,
             'currentSemester' => $this->current_semester,
-            'enrolledCourses' => ProfileEnrolledCoursesResource::collection($this->whenLoaded('user')->enrolledCourses),
+            'enrolledCourses' => $this->user
+                ? $this->user->enrolledCourses->map(
+                    fn($course) => new ProfileEnrolledCoursesResource($course, $this->user->id)
+                )
+                : [],
+            // 'enrolledCourses' => ProfileEnrolledCoursesResource::collection($this->whenLoaded('user')->enrolledCourses),
             'ownedCourses' => ProfileOwnedCoursesResource::collection($this->whenLoaded('user')->ownedCourses),
             'groups' => ProfileGroupsResource::collection($this->whenLoaded('user')->groups),
         ];

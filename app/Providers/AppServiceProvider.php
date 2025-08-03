@@ -10,8 +10,6 @@ use App\Models\Message\Message;
 use App\Repositories\Reply\ReplyRepositoryInterface;
 use App\Repositories\Reply\ReplyRepository;
 use App\Models\Reply\Reply;
-use App\Repositories\Group\GroupRepositoryInterface;
-use App\Repositories\Group\GroupRepository;
 use App\Models\Group\Group;
 use App\Repositories\LearningActivity\LearningActivityRepositoryInterface;
 use App\Repositories\LearningActivity\LearningActivityRepository;
@@ -28,13 +26,9 @@ use Spatie\Permission\Models\Permission;
 use App\Repositories\SubCategory\SubCategoryRepositoryInterface;
 use App\Repositories\SubCategory\SubCategoryRepository;
 use App\Models\SubCategory\SubCategory;
-use App\Repositories\User\UserRepository;
-use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\User\AdminRepository;
 use App\Repositories\User\AdminRepositoryInterface;
 use App\Models\User\User;
-use App\Repositories\Profile\UserProfileRepository;
-use App\Repositories\Profile\UserProfileRepositoryInterface;
 use App\Repositories\Profile\AdminProfileRepository;
 use App\Repositories\Profile\AdminProfileRepositoryInterface;
 use App\Models\Profile\Profile;
@@ -183,11 +177,6 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind(GroupRepositoryInterface::class, function (Container $app) {
-            return new GroupRepository($app->make(Group::class),
-            );
-        });
-
         $this->app->bind(LearningActivityRepositoryInterface::class, function (Container $app) {
             return new LearningActivityRepository($app->make(LearningActivity::class),
             );
@@ -208,18 +197,8 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind(UserRepositoryInterface::class, function (Container $app) {
-            return new UserRepository($app->make(User::class),
-            );
-        });
-
         $this->app->bind(AdminRepositoryInterface::class, function (Container $app) {
             return new AdminRepository($app->make(User::class),
-            );
-        });
-
-        $this->app->bind(UserProfileRepositoryInterface::class, function (Container $app) {
-            return new UserProfileRepository($app->make(Profile::class),
             );
         });
 

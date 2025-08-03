@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Exceptions\CustomException;
 use ZipArchive;
+use Illuminate\Support\Facades\File;
 
 class StudentAssignmentSubmitRepository extends BaseRepository implements AssignmentSubmitRepositoryInterface
 {
@@ -58,10 +59,8 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
         }
 
         $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $fileName);
-        $encoded = base64_encode($file);
-        $decoded = base64_decode($encoded);
         $tempPath = storage_path('app/private/' . $fileName);
-        file_put_contents($tempPath, $decoded);
+        file_put_contents($tempPath, $file);
 
         return $tempPath;
     }
@@ -79,17 +78,18 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
         $zip = new ZipArchive();
         $zipName = 'Assignment-Submit.zip';
         $zipPath = storage_path('app/private/' . $zipName);
+        $tempFiles = [];
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
             foreach ($attachments as $attachment) {
-                $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $attachment->url);
-                $encoded = base64_encode($file);
-                $decoded = base64_decode($encoded);
-                $tempPath = storage_path('app/private/' . $attachment->url);
-                file_put_contents($tempPath, $decoded);
+                $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $attachment?->url);
+                $tempPath = storage_path('app/private/' . $attachment?->url);
+                file_put_contents($tempPath, $file);
                 $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
+                $tempFiles[] = $tempPath;
             }
             $zip->close();
+            File::delete($tempFiles);
         }
 
         return $zipPath;

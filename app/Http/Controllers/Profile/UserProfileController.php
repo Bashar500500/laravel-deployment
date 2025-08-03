@@ -28,8 +28,6 @@ class UserProfileController extends Controller
 
     public function index(UserProfileRequest $request): JsonResponse
     {
-        // $this->authorize('userIndex', Profile::class);
-
         $data = ProfileResource::collection(
             $this->userProfileService->index($request),
         );
@@ -42,6 +40,8 @@ class UserProfileController extends Controller
 
     public function show(Profile $profile): JsonResponse
     {
+        // $this->authorize('userShow', $profile);
+
         $data = ProfileResource::make(
             $this->userProfileService->show($profile),
         );

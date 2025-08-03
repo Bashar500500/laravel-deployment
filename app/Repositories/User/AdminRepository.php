@@ -83,7 +83,7 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
 
             $attachment = $profile->attachment;
             Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $attachment?->url);
-            $attachment->delete();
+            $profile->attachment()->delete();
 
             foreach ($projects as $project)
             {
@@ -92,7 +92,7 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                 {
                     Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
                 }
-                $attachments->delete();
+                $project->attachments()->delete();
             }
             foreach ($ownedCourses as $ownedCourse)
             {
@@ -104,10 +104,10 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                 $assessments = $ownedCourse->assessments;
                 $assignments = $ownedCourse->assignments;
                 $questionBank = $ownedCourse->questionBank;
-                $questionBankMultipleTypeQuestions = $questionBank->questionBankMultipleTypeQuestions;
-                $questionBankTrueOrFalseQuestions = $questionBank->questionBankTrueOrFalseQuestions;
-                $questionBankShortAnswerQuestions = $questionBank->questionBankShortAnswerQuestions;
-                $questionBankFillInBlankQuestions = $questionBank->questionBankFillInBlankQuestions;
+                $questionBankMultipleTypeQuestions = $questionBank->questionBankMultipleTypeQuestions ?? [];
+                $questionBankTrueOrFalseQuestions = $questionBank->questionBankTrueOrFalseQuestions ?? [];
+                $questionBankShortAnswerQuestions = $questionBank->questionBankShortAnswerQuestions ?? [];
+                $questionBankFillInBlankQuestions = $questionBank->questionBankFillInBlankQuestions ?? [];
 
                 foreach ($learningActivities as $learningActivity)
                 {
@@ -121,7 +121,7 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                             Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment?->url);
                             break;
                     }
-                    $attachment->delete();
+                    $learningActivity->attachment()->delete();
                 }
                 foreach ($sections as $section)
                 {
@@ -135,13 +135,13 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                                 break;
                         }
                     }
-                    $attachments->delete();
+                    $section->attachments()->delete();
                 }
                 foreach ($groups as $group)
                 {
                     $attachment = $group->attachment;
                     Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment?->url);
-                    $attachment->delete();
+                    $group->attachment()->delete();
                 }
                 foreach ($events as $event)
                 {
@@ -155,7 +155,7 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                                 break;
                         }
                     }
-                    $attachments->delete();
+                    $event->attachments()->delete();
                 }
                 foreach ($projects as $project)
                 {
@@ -164,7 +164,7 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                     {
                         Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
                     }
-                    $attachments->delete();
+                    $project->attachments()->delete();
                 }
                 foreach ($assessments as $assessment)
                 {
@@ -196,7 +196,7 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                         {
                             Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
                         }
-                        $attachments->delete();
+                        $assignmentSubmit->attachments()->delete();
                     }
                 }
                 foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
@@ -221,7 +221,7 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
 
                 $attachment = $ownedCourse->attachment;
                 Storage::disk('supabase')->delete('Course/' . $ownedCourse->id . '/Images/' . $attachment?->url);
-                $attachment->delete();
+                $ownedCourse->attachment()->delete();
             }
             foreach ($badges as $badge)
             {

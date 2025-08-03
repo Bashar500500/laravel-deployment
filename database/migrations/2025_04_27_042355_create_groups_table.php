@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
+            $table->string('status');
             $table->integer('capacity_min');
             $table->integer('capacity_max');
             $table->softDeletes();

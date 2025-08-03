@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Group;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
+use App\Enums\Group\GroupStatus;
 use App\Enums\Request\ValidationType;
 use App\Enums\Request\FieldName;
 
@@ -15,7 +17,7 @@ class GroupRequest extends FormRequest
 
     protected function onIndex() {
         return [
-            'course_id' => ['required', 'exists:courses,id'],
+            'course_id' => ['sometimes', 'exists:courses,id'],
             'page' => ['required', 'integer', 'gt:0'],
             'page_size' => ['sometimes', 'integer', 'gt:0'],
         ];
@@ -26,7 +28,10 @@ class GroupRequest extends FormRequest
             'course_id' => ['required', 'exists:courses,id'],
             'name' => ['required', 'string'],
             'description' => ['sometimes', 'string'],
+            'status' => ['required', new Enum(GroupStatus::class)],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png,bmp,gif,svg,webp'],
+            'students' => ['sometimes', 'array'],
+            'students.*' => ['required_with:students', 'exists:users,id'],
             'capacity' => ['required', 'array'],
             'capacity.min' => ['required', 'integer', 'gt:0'],
             'capacity.max' => ['required', 'integer', 'gt:capacity.min'],
@@ -37,6 +42,7 @@ class GroupRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string'],
             'description' => ['sometimes', 'string'],
+            'status' => ['sometimes', new Enum(GroupStatus::class)],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png,bmp,gif,svg,webp'],
             'capacity' => ['sometimes', 'array'],
             'capacity.min' => ['required_with:capacity', 'integer', 'gt:0'],
@@ -73,8 +79,13 @@ class GroupRequest extends FormRequest
     //         'name.required' => ValidationType::Required->getMessage(),
     //         'name.string' => ValidationType::String->getMessage(),
     //         'description.string' => ValidationType::String->getMessage(),
+    //         'status.required' => ValidationType::Required->getMessage(),
+    //         'status.Illuminate\Validation\Rules\Enum' => ValidationType::Enum->getMessage(),
     //         'image.image' => ValidationType::Image->getMessage(),
     //         'image.mimes' => ValidationType::ImageMimes->getMessage(),
+    //         'students.array' => ValidationType::Array->getMessage(),
+    //         'students.*.required_with' => ValidationType::RequiredWith->getMessage(),
+    //         'students.*.exists' => ValidationType::Exists->getMessage(),
     //         'capacity.required' => ValidationType::Required->getMessage(),
     //         'capacity.array' => ValidationType::Array->getMessage(),
     //         'capacity.min.required' => ValidationType::Required->getMessage(),
@@ -96,7 +107,10 @@ class GroupRequest extends FormRequest
     //         'page_size' => FieldName::PageSize->getMessage(),
     //         'name' => FieldName::Name->getMessage(),
     //         'description' => FieldName::Description->getMessage(),
+    //         'status' => FieldName::Status->getMessage(),
     //         'image' => FieldName::Image->getMessage(),
+    //         'students' => FieldName::Students->getMessage(),
+    //         'students.*' => FieldName::Students->getMessage(),
     //         'capacity' => FieldName::Capacity->getMessage(),
     //         'capacity.min' => FieldName::Min->getMessage(),
     //         'capacity.max' => FieldName::Max->getMessage(),

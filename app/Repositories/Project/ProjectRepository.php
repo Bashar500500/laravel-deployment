@@ -12,6 +12,7 @@ use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
 use App\Exceptions\CustomException;
 use ZipArchive;
+use Illuminate\Support\Facades\File;
 use App\Enums\Upload\UploadMessage;
 
 class ProjectRepository extends BaseRepository implements ProjectRepositoryInterface
@@ -123,7 +124,7 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
             {
                 Storage::disk('supabase')->delete('Project/' . $model->id . '/Files/' . $attachment?->url);
             }
-            $attachments->delete();
+            $model->attachments()->delete();
             return parent::delete($id);
         });
 
@@ -142,10 +143,8 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
         }
 
         $file = Storage::disk('supabase')->get('Project/' . $model->id . '/Files/' . $fileName);
-        $encoded = base64_encode($file);
-        $decoded = base64_decode($encoded);
         $tempPath = storage_path('app/private/' . $fileName);
-        file_put_contents($tempPath, $decoded);
+        file_put_contents($tempPath, $file);
 
         return $tempPath;
     }
@@ -163,17 +162,18 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
         $zip = new ZipArchive();
         $zipName = 'Project-Files.zip';
         $zipPath = storage_path('app/private/' . $zipName);
+        $tempFiles = [];
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
             foreach ($attachments as $attachment) {
-                $file = Storage::disk('supabase')->exists('Project/' . $model->id . '/Files/' . $attachment->url);
-                $encoded = base64_encode($file);
-                $decoded = base64_decode($encoded);
-                $tempPath = storage_path('app/private/' . $attachment->url);
-                file_put_contents($tempPath, $decoded);
+                $file = Storage::disk('supabase')->get('Project/' . $model->id . '/Files/' . $attachment?->url);
+                $tempPath = storage_path('app/private/' . $attachment?->url);
+                file_put_contents($tempPath, $file);
                 $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
+                $tempFiles[] = $tempPath;
             }
             $zip->close();
+            File::delete($tempFiles);
         }
 
         return $zipPath;
@@ -213,6 +213,6 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
 
         $attachment = $model->attachments()->where('url', $fileName)->first();
         Storage::disk('supabase')->delete('Project/' . $model->id . '/Files/' . $attachment?->url);
-        $attachment->delete();
+        $model->attachments()->where('url', $fileName)->delete();
     }
 }

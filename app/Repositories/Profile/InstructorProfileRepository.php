@@ -4,15 +4,16 @@ namespace App\Repositories\Profile;
 
 use App\Repositories\BaseRepository;
 use App\Models\Profile\Profile;
-use App\DataTransferObjects\Profile\AdminProfileDto;
+use App\DataTransferObjects\Profile\UserProfileDto;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
 use App\Exceptions\CustomException;
 use App\Enums\Upload\UploadMessage;
+use App\Models\User\User;
 
-class AdminProfileRepository extends BaseRepository implements AdminProfileRepositoryInterface
+class InstructorProfileRepository extends BaseRepository implements UserProfileRepositoryInterface
 {
 
     public function __construct(Profile $profile)
@@ -20,9 +21,44 @@ class AdminProfileRepository extends BaseRepository implements AdminProfileRepos
         parent::__construct($profile);
     }
 
-    public function all(AdminProfileDto $dto): object
+    public function all(UserProfileDto $dto, array $data): object
     {
-        return (object) $this->model->with('user', 'attachment')
+        $user = $data['user'];
+        $studentIds = $user->ownedCourses
+            ->flatMap(fn($course) => $course->students)
+            ->pluck('id')
+            ->unique();
+        $profileIds = User::whereIn('id', $studentIds)
+            ->with('profile')
+            ->get()
+            ->map(fn($student) => optional($student->profile)->id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        return (object) $this->model->whereIn('id', $profileIds)
+            ->with('user', 'attachment')
+            ->latest('created_at')
+            ->simplePaginate(
+                $dto->pageSize,
+                ['*'],
+                'page',
+                $dto->currentPage,
+            );
+    }
+
+    public function allWithFilter(UserProfileDto $dto, array $data): object
+    {
+        $user = $data['user'];
+        $students = $user->ownedCourses
+            ->where('id', $dto->courseId)
+            ->students?->map(fn($student) => optional($student->profile)->id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        return (object) $this->model->whereIn('id', $students)
+            ->with('user', 'attachment')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -38,11 +74,11 @@ class AdminProfileRepository extends BaseRepository implements AdminProfileRepos
             ->load('user', 'attachment');
     }
 
-    public function create(AdminProfileDto $dto, array $data): object
+    public function create(UserProfileDto $dto, array $data): object
     {
         $profile = DB::transaction(function () use ($dto, $data) {
             $profile = $this->model->create([
-                'user_id' => $dto->userId,
+                'user_id' => $data['userId'],
                 'date_of_birth' => $dto->dateOfBirth,
                 'gender' => $dto->gender,
                 'nationality' => $dto->nationality,
@@ -75,7 +111,7 @@ class AdminProfileRepository extends BaseRepository implements AdminProfileRepos
         return (object) $profile->load('user', 'attachment');
     }
 
-    public function update(AdminProfileDto $dto, int $id, array $data): object
+    public function update(UserProfileDto $dto, int $id, array $data): object
     {
         $model = (object) parent::find($id);
 
@@ -193,7 +229,7 @@ class AdminProfileRepository extends BaseRepository implements AdminProfileRepos
     public function deleteAttachment(int $id): void
     {
         $model = (object) parent::find($id);
-        Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $model->attachment->url);
+        Storage::disk('supabase')->delete('Group/' . $model->id . '/Images/' . $model->attachment?->url);
         $model->attachments()->delete();
     }
 }

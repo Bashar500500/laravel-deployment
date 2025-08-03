@@ -8,11 +8,20 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfileEnrolledCoursesResource extends JsonResource
 {
+    protected $userId;
+
+    public function __construct($resource, $userId)
+    {
+        parent::__construct($resource);
+        $this->userId = $userId;
+    }
+
     public function toArray(Request $request): array
     {
+        $userId = $this->userId;
         return [
             'id' => $this->id,
-            'studentCode' => $this->getCourseStudentCode(Auth::id(), $this->id),
+            'studentCode' => $this->getCourseStudentCode($userId, $this->id),
             'instructorId' => $this->instructor_id,
             'name' => $this->name,
             'description' => $this->description,

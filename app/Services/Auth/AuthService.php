@@ -4,7 +4,7 @@ namespace App\Services\Auth;
 
 use App\Repositories\Auth\RegisterRepositoryInterface;
 use App\Repositories\Auth\PasswordResetCodeRepositoryInterface;
-use App\Repositories\User\UserRepositoryInterface;
+use App\Factories\User\UserRepositoryFactory;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SendPasswordResetCodeRequest;
@@ -24,7 +24,7 @@ class AuthService
     public function __construct(
         protected RegisterRepositoryInterface $registerRepositoryInterface,
         protected PasswordResetCodeRepositoryInterface $passwordResetRepository,
-        protected UserRepositoryInterface $userRepository,
+        protected UserRepositoryFactory $userRepositoryFactory,
     ) {}
 
     public function register(RegisterRequest $request): object
@@ -77,7 +77,9 @@ class AuthService
             throw CustomException::forbidden(ModelName::PasswordResetCode, ForbiddenExceptionMessage::PasswordResetCode);
         }
 
-        $this->userRepository->resetPassword($dto);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->userRepositoryFactory->make($role[0]);
+        $repository->resetPassword($dto);
 
         $this->passwordResetRepository->delete($passwordResetCode->id);
     }

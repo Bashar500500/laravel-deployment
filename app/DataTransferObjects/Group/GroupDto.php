@@ -3,6 +3,7 @@
 namespace App\DataTransferObjects\Group;
 
 use App\Http\Requests\Group\GroupRequest;
+use App\Enums\Group\GroupStatus;
 use Illuminate\Http\UploadedFile;
 
 class GroupDto
@@ -13,7 +14,9 @@ class GroupDto
         public readonly ?int $pageSize,
         public readonly ?string $name,
         public readonly ?string $description,
+        public readonly ?GroupStatus $status,
         public readonly ?UploadedFile $image,
+        public readonly ?array $students,
         public readonly ?GroupCapacityDto $groupCapacityDto,
     ) {}
 
@@ -25,7 +28,9 @@ class GroupDto
             pageSize: $request->validated('page_size') ?? 20,
             name: null,
             description: null,
+            status: null,
             image: null,
+            students: null,
             groupCapacityDto: null,
         );
     }
@@ -38,9 +43,11 @@ class GroupDto
             pageSize: null,
             name: $request->validated('name'),
             description: $request->validated('description'),
+            status: GroupStatus::from($request->validated('status')),
             image: $request->validated('image') ?
                 UploadedFile::createFromBase($request->validated('image')) :
                 null,
+            students: $request->validated('students'),
             groupCapacityDto: GroupCapacityDto::from($request),
         );
     }
@@ -53,9 +60,13 @@ class GroupDto
             pageSize: null,
             name: $request->validated('name'),
             description: $request->validated('description'),
+            status: $request->validated('status') ?
+                GroupStatus::from($request->validated('status')) :
+                null,
             image: $request->validated('image') ?
                 UploadedFile::createFromBase($request->validated('image')) :
                 null,
+            students: null,
             groupCapacityDto: GroupCapacityDto::from($request),
         );
     }

@@ -7,6 +7,7 @@ use App\Enums\User\UserRole;
 class UserDto
 {
     public function __construct(
+        public readonly ?int $courseId,
         public readonly ?int $currentPage,
         public readonly ?int $pageSize,
         public readonly ?string $firstName,
@@ -20,6 +21,7 @@ class UserDto
     public static function fromIndexRequest(UserRequest $request): UserDto
     {
         return new self(
+            courseId: $request->validated('course_id'),
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
             firstName: null,
@@ -34,6 +36,7 @@ class UserDto
     public static function fromStoreRequest(UserRequest $request): UserDto
     {
         return new self(
+            courseId: null,
             currentPage: null,
             pageSize: null,
             firstName: $request->validated('first_name'),
@@ -48,6 +51,7 @@ class UserDto
     public static function fromUpdateRequest(UserRequest $request): UserDto
     {
         return new self(
+            courseId: null,
             currentPage: null,
             pageSize: null,
             firstName: $request->validated('first_name'),

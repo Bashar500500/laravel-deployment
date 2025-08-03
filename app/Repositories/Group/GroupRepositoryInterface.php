@@ -7,7 +7,9 @@ use App\Enums\Upload\UploadMessage;
 
 interface GroupRepositoryInterface
 {
-    public function all(GroupDto $dto): object;
+    public function all(GroupDto $dto, array $data): object;
+
+    public function allWithFilter(GroupDto $dto): object;
 
     public function find(int $id): object;
 

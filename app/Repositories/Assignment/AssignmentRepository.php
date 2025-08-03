@@ -127,7 +127,7 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
                 {
                     Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
                 }
-                $attachments->delete();
+                $assignmentSubmit->attachments()->delete();
             }
 
             return parent::delete($id);

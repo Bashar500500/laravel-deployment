@@ -181,7 +181,7 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                     Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $attachment?->url);
                     break;
             }
-            $attachment->delete();
+            $model->attachment()->delete();
             return parent::delete($id);
         });
 
@@ -195,33 +195,29 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
         switch ($model->attachment->type)
         {
             case AttachmentType::Pdf:
-                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
 
                 if (! $exists)
                 {
                     throw CustomException::notFound('Pdf');
                 }
 
-                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
-                $encoded = base64_encode($file);
-                $decoded = base64_decode($encoded);
-                $tempPath = storage_path('app/private/' . $model->attachment->url);
-                file_put_contents($tempPath, $decoded);
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
 
                 break;
             default:
-                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
 
                 if (! $exists)
                 {
                     throw CustomException::notFound('Video');
                 }
 
-                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
-                $encoded = base64_encode($file);
-                $decoded = base64_decode($encoded);
-                $tempPath = storage_path('app/private/' . $model->attachment->url);
-                file_put_contents($tempPath, $decoded);
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
 
                 break;
         }
@@ -236,33 +232,29 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
         switch ($model->attachment->type)
         {
             case AttachmentType::Pdf:
-                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
 
                 if (! $exists)
                 {
                     throw CustomException::notFound('Pdf');
                 }
 
-                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment->url);
-                $encoded = base64_encode($file);
-                $decoded = base64_decode($encoded);
-                $tempPath = storage_path('app/private/' . $model->attachment->url);
-                file_put_contents($tempPath, $decoded);
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
 
                 break;
             default:
-                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
 
                 if (! $exists)
                 {
                     throw CustomException::notFound('Video');
                 }
 
-                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment->url);
-                $encoded = base64_encode($file);
-                $decoded = base64_decode($encoded);
-                $tempPath = storage_path('app/private/' . $model->attachment->url);
-                file_put_contents($tempPath, $decoded);
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
 
                 break;
         }

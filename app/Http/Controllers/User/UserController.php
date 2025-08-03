@@ -26,8 +26,6 @@ class UserController extends Controller
 
     public function index(UserRequest $request): JsonResponse
     {
-        // $this->authorize('userIndex', User::class);
-
         $data = UserResource::collection(
             $this->service->index($request),
         );
@@ -40,6 +38,8 @@ class UserController extends Controller
 
     public function show(User $user): JsonResponse
     {
+        // $this->authorize('userShow', [User::class, $user->id]);
+
         $data = UserResource::make(
             $this->service->show($user),
         );
@@ -64,6 +64,8 @@ class UserController extends Controller
 
     public function store(UserRequest $request): JsonResponse
     {
+        // $this->authorize('userStore', User::class);
+
         $data = UserResource::make(
             $this->service->store($request),
         );

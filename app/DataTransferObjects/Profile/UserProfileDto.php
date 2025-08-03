@@ -10,6 +10,7 @@ use Illuminate\Http\UploadedFile;
 class UserProfileDto
 {
     public function __construct(
+        public readonly ?int $courseId,
         public readonly ?int $currentPage,
         public readonly ?int $pageSize,
         public readonly ?UploadedFile $userImage,
@@ -30,6 +31,7 @@ class UserProfileDto
     public static function fromIndexRequest(UserProfileRequest $request): UserProfileDto
     {
         return new self(
+            courseId: $request->validated('course_Id'),
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
             userImage: null,
@@ -51,6 +53,7 @@ class UserProfileDto
     public static function fromStoreRequest(UserProfileRequest $request): UserProfileDto
     {
         return new self(
+            courseId: null,
             currentPage: null,
             pageSize: null,
             userImage: $request->validated('user_image') ?
@@ -74,6 +77,7 @@ class UserProfileDto
     public static function fromUpdateRequest(UserProfileRequest $request): UserProfileDto
     {
         return new self(
+            courseId: null,
             currentPage: null,
             pageSize: null,
             userImage: $request->validated('user_image') ?

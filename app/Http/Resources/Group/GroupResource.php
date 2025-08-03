@@ -13,8 +13,10 @@ class GroupResource extends JsonResource
         return [
             'id' => $this->id,
             'courseId' => $this->course_id,
+            'courseName' => $this->whenLoaded('course')->name,
             'name' => $this->name,
             'description' => $this->description,
+            'status' => $this->status,
             // 'imageUrl' => $this->whenLoaded('attachment') ? $this->whenLoaded('attachment')->url : null,
             'imageUrl' => $this->whenLoaded('attachment') ?
                 $this->prepareAttachmentData($this->id, $this->whenLoaded('attachment')->url)
@@ -23,6 +25,7 @@ class GroupResource extends JsonResource
             'instructorId' => $this->whenLoaded('course')->instructor->id,
             'students' => GroupStudentsResource::collection($this->whenLoaded('students')),
             'sectionIds' => GroupSectionsResource::collection($this->whenLoaded('sectionGroups')),
+            'startDate' => $this->created_at,
         ];
     }
 

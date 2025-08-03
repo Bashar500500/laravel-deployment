@@ -2,7 +2,7 @@
 
 namespace App\Services\Profile;
 
-use App\Repositories\Profile\UserProfileRepositoryInterface;
+use App\Factories\Profile\UserProfileRepositoryFactory;
 use App\Http\Requests\Profile\UserProfileRequest;
 use App\Models\Profile\Profile;
 use App\DataTransferObjects\Profile\UserProfileDto;
@@ -13,63 +13,85 @@ use Illuminate\Support\Facades\Auth;
 class UserProfileService
 {
     public function __construct(
-        protected UserProfileRepositoryInterface $repository
+        protected UserProfileRepositoryFactory $factory,
     ) {}
 
     public function index(UserProfileRequest $request): object
     {
         $dto = UserProfileDto::fromIndexRequest($request);
-        return $this->repository->all($dto);
+        $role = Auth::user()->getRoleNames();
+        $data = $this->prepareIndexData();
+        $repository = $this->factory->make($role[0]);
+        return match ($dto->courseId) {
+            null => $repository->all($dto, $data),
+            default => $repository->allWithFilter($dto, $data),
+        };
     }
 
     public function show(Profile $profile): object
     {
-        return $this->repository->find($profile->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->find($profile->id);
     }
 
     public function profile(): object
     {
-        return $this->repository->find(Auth::user()->profile->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->find(Auth::user()->profile->id);
     }
 
     public function store(UserProfileRequest $request): object
     {
         $dto = UserProfileDto::fromStoreRequest($request);
+        $role = Auth::user()->getRoleNames();
         $data = $this->prepareStoreAndUpdateData($dto);
+        $repository = $this->factory->make($role[0]);
         $profile = Auth::user()->profile;
 
         if ($profile) {
             throw CustomException::alreadyExists(ModelName::Profile);
         }
 
-        return $this->repository->create($dto, $data);
+        return $repository->create($dto, $data);
     }
 
     public function update(UserProfileRequest $request): object
     {
         $dto = UserProfileDto::fromUpdateRequest($request);
+        $role = Auth::user()->getRoleNames();
         $data = $this->prepareStoreAndUpdateData($dto);
-        return $this->repository->update($dto, Auth::user()->profile->id, $data);
+        $repository = $this->factory->make($role[0]);
+        return $repository->update($dto, Auth::user()->profile->id, $data);
     }
 
     public function destroy(): object
     {
-        return $this->repository->delete(Auth::user()->profile->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->delete(Auth::user()->profile->id);
     }
 
     public function view(): string
     {
-        return $this->repository->view(Auth::user()->profile->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->view(Auth::user()->profile->id);
     }
 
     public function download(): string
     {
-        return $this->repository->download(Auth::user()->profile->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->download(Auth::user()->profile->id);
     }
 
     public function destroyAttachment(): void
     {
-        $this->repository->deleteAttachment(Auth::user()->profile->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        $repository->deleteAttachment(Auth::user()->profile->id);
     }
 
     private function prepareStoreAndUpdateData(UserProfileDto $dto): array
@@ -86,5 +108,12 @@ class UserProfileService
         $data['temporaryAddress']['country'] = $dto->userProfileTemporaryAddressDto->country;
         $data['temporaryAddress']['zipCode'] = $dto->userProfileTemporaryAddressDto->zipCode;
         return $data;
+    }
+
+    private function prepareIndexData(): array
+    {
+        return [
+            'user' => Auth::user(),
+        ];
     }
 }

@@ -102,7 +102,7 @@ class Course extends Model
         );
     }
 
-    public function getCourseStudentCode(int $courseId, int $studentId): UserCourseGroup
+    public function getCourseStudentCode( int $studentId, int $courseId): UserCourseGroup
     {
         return UserCourseGroup::where('student_id', $studentId)
             ->where('course_id', $courseId)

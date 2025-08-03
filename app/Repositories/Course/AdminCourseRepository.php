@@ -166,10 +166,10 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
             $assessments = $model->assessments;
             $assignments = $model->assignments;
             $questionBank = $model->questionBank;
-            $questionBankMultipleTypeQuestions = $questionBank->questionBankMultipleTypeQuestions;
-            $questionBankTrueOrFalseQuestions = $questionBank->questionBankTrueOrFalseQuestions;
-            $questionBankShortAnswerQuestions = $questionBank->questionBankShortAnswerQuestions;
-            $questionBankFillInBlankQuestions = $questionBank->questionBankFillInBlankQuestions;
+            $questionBankMultipleTypeQuestions = $questionBank->questionBankMultipleTypeQuestions ?? [];
+            $questionBankTrueOrFalseQuestions = $questionBank->questionBankTrueOrFalseQuestions ?? [];
+            $questionBankShortAnswerQuestions = $questionBank->questionBankShortAnswerQuestions ?? [];
+            $questionBankFillInBlankQuestions = $questionBank->questionBankFillInBlankQuestions ?? [];
 
             foreach ($learningActivities as $learningActivity)
             {
@@ -183,7 +183,7 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                         Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $attachment?->url);
                         break;
                 }
-                $attachment->delete();
+                $learningActivity->attachment()->delete();
             }
             foreach ($sections as $section)
             {
@@ -197,13 +197,13 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                             break;
                     }
                 }
-                $attachments->delete();
+                $section->attachments()->delete();
             }
             foreach ($groups as $group)
             {
                 $attachment = $group->attachment;
                 Storage::disk('supabase')->delete('Group/' . $group->id . '/Images/' . $attachment?->url);
-                $attachment->delete();
+                $group->attachment()->delete();
             }
             foreach ($events as $event)
             {
@@ -217,7 +217,7 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                             break;
                     }
                 }
-                $attachments->delete();
+                $event->attachments()->delete();
             }
             foreach ($projects as $project)
             {
@@ -226,7 +226,7 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                 {
                     Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
                 }
-                $attachments->delete();
+                $project->attachments()->delete();
             }
             foreach ($assessments as $assessment)
             {
@@ -258,7 +258,7 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                     {
                         Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
                     }
-                    $attachments->delete();
+                    $assignmentSubmit->attachments()->delete();
                 }
             }
             foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
@@ -283,7 +283,7 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
 
             $attachment = $model->attachment;
             Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $attachment?->url);
-            $attachment->delete();
+            $model->attachment()->delete();
             return parent::delete($id);
         });
 
@@ -294,18 +294,16 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
     {
         $model = (object) parent::find($id);
 
-        $exists = Storage::disk('supabase')->exists('Course/' . $model->id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Course/' . $model->id . '/Images/' . $model->attachment?->url);
 
         if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        $file = Storage::disk('supabase')->get('Course/' . $model->id . '/Images/' . $model->attachment->url);
-        $encoded = base64_encode($file);
-        $decoded = base64_decode($encoded);
-        $tempPath = storage_path('app/private/' . $model->attachment->url);
-        file_put_contents($tempPath, $decoded);
+        $file = Storage::disk('supabase')->get('Course/' . $model->id . '/Images/' . $model->attachment?->url);
+        $tempPath = storage_path('app/private/' . $model->attachment?->url);
+        file_put_contents($tempPath, $file);
 
         return $tempPath;
     }
@@ -314,18 +312,16 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
     {
         $model = (object) parent::find($id);
 
-        $exists = Storage::disk('supabase')->exists('Course/' . $model->id . '/Images/' . $model->attachment->url);
+        $exists = Storage::disk('supabase')->exists('Course/' . $model->id . '/Images/' . $model->attachment?->url);
 
         if (! $exists)
         {
             throw CustomException::notFound('Image');
         }
 
-        $file = Storage::disk('supabase')->get('Course/' . $model->id . '/Images/' . $model->attachment->url);
-        $encoded = base64_encode($file);
-        $decoded = base64_decode($encoded);
-        $tempPath = storage_path('app/private/' . $model->attachment->url);
-        file_put_contents($tempPath, $decoded);
+        $file = Storage::disk('supabase')->get('Course/' . $model->id . '/Images/' . $model->attachment?->url);
+        $tempPath = storage_path('app/private/' . $model->attachment?->url);
+        file_put_contents($tempPath, $file);
 
         return $tempPath;
     }

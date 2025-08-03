@@ -4,23 +4,11 @@ namespace App\Policies\Profile;
 
 use App\Models\Profile\Profile;
 use App\Models\User\User;
+use App\Models\UserCourseGroup\UserCourseGroup;
 use Illuminate\Auth\Access\Response;
 
 class AdminAndUserProfilePolicy
 {
-    public function before(User $user, $ability)
-    {
-        $role = $user->getRoleNames();
-        if ($role[0] == 'student')
-        {
-            return false;
-        }
-        else if ($role[0] == 'instructor')
-        {
-            return false;
-        }
-    }
-
     public function adminIndex(User $user): bool
     {
         return $this->checkAdminRole($user);
@@ -66,9 +54,16 @@ class AdminAndUserProfilePolicy
         return $this->checkAdminRole($user);
     }
 
-    public function userIndex(User $user): bool
+    public function userShow(User $user, Profile $profile): bool
     {
-        return $this->checkAdminRole($user);
+        return $this->checkIfBelonged($user, $profile->user->id);
+    }
+
+    private function checkIfBelonged(User $user, int $userId): bool
+    {
+        $coursesA = UserCourseGroup::where('student_id', $user->id)->pluck('course_id');
+        $coursesB = UserCourseGroup::where('student_id', $userId)->pluck('course_id');
+        return $coursesA->intersect($coursesB)->isNotEmpty();
     }
 
     public function checkAdminRole(User $user): bool

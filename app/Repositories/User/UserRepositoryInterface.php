@@ -9,7 +9,9 @@ use App\Enums\User\UserMessage;
 
 interface UserRepositoryInterface
 {
-    public function all(UserDto $dto): object;
+    public function all(UserDto $dto, array $data): object;
+
+    public function allWithFilter(UserDto $dto, array $data): object;
 
     public function find(int $id): object;
 

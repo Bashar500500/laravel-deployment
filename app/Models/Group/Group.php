@@ -4,6 +4,7 @@ namespace App\Models\Group;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Enums\Group\GroupStatus;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -22,9 +23,14 @@ class Group extends Model
         'course_id',
         'name',
         'description',
+        'status',
         'capacity_min',
         'capacity_max',
         'capacity_current',
+    ];
+
+    protected $casts = [
+        'status' => GroupStatus::class,
     ];
 
     public function course(): BelongsTo
