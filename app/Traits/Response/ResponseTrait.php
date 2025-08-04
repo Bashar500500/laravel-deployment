@@ -89,7 +89,7 @@ trait ResponseTrait
         return response()->file($this->file, [
             'X-Sendfile' => $this->file,
             'Content-Type' => mime_content_type($this->file),
-            'Content-Disposition' => 'attachment; filename="' . basename($this->file) . '"',
+            'Content-Disposition' => 'inline; filename="' . basename($this->file) . '"',
         ])->deleteFileAfterSend(true);
     }
 
@@ -98,7 +98,7 @@ trait ResponseTrait
         return response()->file($this->zip, [
             'X-Sendfile' => $this->zip,
             'Content-Type' => mime_content_type($this->zip),
-            'Content-Disposition' => 'attachment; filename="' . basename($this->zip) . '"',
+            'Content-Disposition' => 'inline; filename="' . basename($this->zip) . '"',
         ])->deleteFileAfterSend(true);
     }
 
