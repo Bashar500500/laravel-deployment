@@ -283,7 +283,7 @@ Route::get('/download-new', function () {
 });
 
 
-Route::get('/download-old', function (Request $request) {
+Route::get('/download-old', function () {
     $file = Storage::disk('supabase')->get('LearningActivity/3/Pdfs/1XOxV2Gf5JBjaGzQPWMASX7ZYrpEYgyYMTMDcDIV.pdf');
     $tempPath = storage_path('app/private/1XOxV2Gf5JBjaGzQPWMASX7ZYrpEYgyYMTMDcDIV.pdf');
     file_put_contents($tempPath, $file);
