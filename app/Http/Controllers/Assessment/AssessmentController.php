@@ -41,8 +41,6 @@ class AssessmentController extends Controller
     {
         // $this->authorize('show', $assessment);
 
-        dd('pass');
-
         $data = AssessmentResource::make(
             $this->service->show($assessment),
         );

@@ -96,7 +96,8 @@ class Assessment extends Model
             'id',
             'id',
             'questionable_id'
-        )->distinct();
+        )->where('questionable_type', QuestionBankMultipleTypeQuestion::class)
+            ->withoutGlobalScopes();
     }
 
     public function assessmentQuestionBankTrueOrFalseQuestions(): HasManyThrough
@@ -106,7 +107,8 @@ class Assessment extends Model
             'id',
             'id',
             'questionable_id'
-        )->distinct();
+        )->where('questionable_type', QuestionBankTrueOrFalseQuestion::class)
+            ->withoutGlobalScopes();
     }
 
     public function assessmentQuestionBankShortAnswerQuestions(): HasManyThrough
@@ -116,7 +118,8 @@ class Assessment extends Model
             'id',
             'id',
             'questionable_id'
-        )->distinct();
+        )->where('questionable_type', QuestionBankShortAnswerQuestion::class)
+            ->withoutGlobalScopes();
     }
 
     public function assessmentQuestionBankFillInBlankQuestions(): HasManyThrough
@@ -126,7 +129,8 @@ class Assessment extends Model
             'id',
             'id',
             'questionable_id'
-        )->distinct();
+        )->where('questionable_type', QuestionBankFillInBlankQuestion::class)
+            ->withoutGlobalScopes();
     }
 
     public function grades(): MorphMany
