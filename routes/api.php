@@ -272,25 +272,3 @@ Route::post('/private-image', function (Request $request) {
     $path = Storage::disk('supabase')->putFile('Section/' . 1 . '/Files', $file);
     return response()->json(['path' => $path]);
 });
-
-
-Route::get('/download-new', function () {
-    $file = Storage::disk('supabase')->get('LearningActivity/3/Pdfs/1XOxV2Gf5JBjaGzQPWMASX7ZYrpEYgyYMTMDcDIV.pdf');
-    $tempPath = storage_path('app/private/1XOxV2Gf5JBjaGzQPWMASX7ZYrpEYgyYMTMDcDIV.pdf');
-    file_put_contents($tempPath, $file);
-
-    return response()->download($tempPath)->deleteFileAfterSend(true);
-});
-
-
-Route::get('/download-old', function () {
-    $file = Storage::disk('supabase')->get('LearningActivity/3/Pdfs/1XOxV2Gf5JBjaGzQPWMASX7ZYrpEYgyYMTMDcDIV.pdf');
-    $tempPath = storage_path('app/private/1XOxV2Gf5JBjaGzQPWMASX7ZYrpEYgyYMTMDcDIV.pdf');
-    file_put_contents($tempPath, $file);
-
-    return response()->file($tempPath, [
-        'X-Sendfile' => $tempPath,
-        'Content-Type' => mime_content_type($tempPath),
-        'Content-Disposition' => 'attachment; filename="' . basename($tempPath) . '"',
-    ])->deleteFileAfterSend(true);
-});

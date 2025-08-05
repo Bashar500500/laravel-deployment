@@ -10,7 +10,6 @@ class AssessmentStatsResource extends JsonResource
         AssessmentResource $assessmentResource,
     ): array
     {
-        dd($assessmentResource->whenLoaded('course')->students->count());
         return [
             'totalStudents' => $assessmentResource->whenLoaded('course')->students->count(),
             'submissions' => $assessmentResource->whenLoaded('assessmentSubmits')->count(),

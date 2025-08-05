@@ -86,12 +86,20 @@ trait ResponseTrait
 
     public function downloadFileResponse(): BinaryFileResponse
     {
-        return response()->download($this->file)->deleteFileAfterSend(true);
+        return response()->file($this->file, [
+            'X-Sendfile' => $this->file,
+            'Content-Type' => mime_content_type($this->file),
+            'Content-Disposition' => 'attachment; filename="' . basename($this->file) . '"',
+        ])->deleteFileAfterSend(true);
     }
 
     public function downloadZipResponse(): BinaryFileResponse
     {
-        return response()->download($this->zip)->deleteFileAfterSend(true);
+        return response()->file($this->zip, [
+            'X-Sendfile' => $this->zip,
+            'Content-Type' => mime_content_type($this->zip),
+            'Content-Disposition' => 'attachment; filename="' . basename($this->zip) . '"',
+        ])->deleteFileAfterSend(true);
     }
 
     // public function viewFileResponse(): BinaryFileResponse

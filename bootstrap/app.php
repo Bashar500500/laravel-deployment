@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\DatabaseReconnect;
 use App\Exceptions\InternalException;
 use App\Traits\Response\ResponseTrait;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -21,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // $middleware->append(DatabaseReconnect::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->renderable(function (InternalException $exception) {

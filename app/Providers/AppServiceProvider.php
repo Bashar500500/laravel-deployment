@@ -118,6 +118,8 @@ use App\Models\Rule\Rule;
 use App\Repositories\Badge\BadgeRepositoryInterface;
 use App\Repositories\Badge\BadgeRepository;
 use App\Models\Badge\Badge;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Gate;
 use App\Models\AssessmentSubmit\AssessmentSubmit;
 use App\Models\AssignmentSubmit\AssignmentSubmit;
@@ -403,6 +405,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Queue::looping(function () {
+        //     DB::reconnect();
+        // });
+
         foreach ($this->policies as $model => $policy) {
             Gate::policy($model, $policy);
         }
