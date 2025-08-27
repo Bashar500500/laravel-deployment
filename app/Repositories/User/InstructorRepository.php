@@ -20,6 +20,7 @@ use App\DataTransferObjects\Auth\PasswordResetCodeDto;
 use App\Jobs\GlobalServiceHandlerJob;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
+use App\Models\InstructorStudent\InstructorStudent;
 
 class InstructorRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -31,10 +32,8 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
     public function all(UserDto $dto, array $data): object
     {
         $user = $data['user'];
-        $students = $user->ownedCourses
-            ->flatMap(fn($course) => $course->students)
+        $students = $user->instructorStudentsForInstructor
             ->pluck('student_id')
-            ->unique()
             ->values();
 
         return (object) $this->model->whereIn('id', $students)
@@ -72,9 +71,10 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
         return (object) parent::find($id);
     }
 
-    public function create(UserDto $dto): object
+    public function create(UserDto $dto, array $data): object
     {
-        $user = DB::transaction(function () use ($dto) {
+        $instructor = $data['user'];
+        $user = DB::transaction(function () use ($dto, $instructor) {
             $user = $this->model->create([
                 'first_name' => $dto->firstName,
                 'last_name' => $dto->lastName,
@@ -84,6 +84,11 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
             ]);
 
             $user['role'] = $user->assignRole($dto->role);
+
+            $instructor->instructorStudentsForInstructor()->create([
+                'student_id' => $user->id,
+            ]);
+
             return $user;
         });
 
@@ -116,6 +121,7 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
 
         $user = DB::transaction(function () use ($id, $model) {
             $profile = $model->profile;
+            $wikis = $model->wikis;
             $projects = $model->projects;
             $ownedCourses = $model->ownedCourses;
             $badges = $model->badges;
@@ -124,15 +130,25 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
             Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $attachment?->url);
             $profile->attachment()->delete();
 
-            foreach ($projects as $project)
+            foreach ($wikis as $wiki)
             {
-                $attachments = $project->attachments;
+                $attachments = $wiki->attachments;
                 foreach ($attachments as $attachment)
                 {
-                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('Wiki/' . $wiki->id . '/Files/' . $attachment?->url);
                 }
-                $project->attachments()->delete();
+                $wiki->attachments()->delete();
             }
+
+            // foreach ($projects as $project)
+            // {
+            //     $attachments = $project->attachments;
+            //     foreach ($attachments as $attachment)
+            //     {
+            //         Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
+            //     }
+            //     $project->attachments()->delete();
+            // }
             foreach ($ownedCourses as $ownedCourse)
             {
                 $sections = $ownedCourse->sections;
@@ -198,6 +214,27 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
                 }
                 foreach ($projects as $project)
                 {
+                    $projectSubmits = $project->projectSubmits;
+
+                    foreach ($projectSubmits as $projectSubmit)
+                    {
+                        $attachments = $projectSubmit->attachments;
+                        foreach ($attachments as $attachment)
+                        {
+                            $reference_field = $attachment->reference_field;
+                            switch ($reference_field)
+                            {
+                                case AttachmentReferenceField::ProjectSubmitInstructorFiles:
+                                    Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Instructor/' . $attachment?->url);
+                                    break;
+                                default:
+                                    Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Student/' . $attachment?->url);
+                                    break;
+                            }
+                        }
+                        $projectSubmit->attachments()->delete();
+                    }
+
                     $attachments = $project->attachments;
                     foreach ($attachments as $attachment)
                     {
@@ -233,10 +270,26 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
                         $attachments = $assignmentSubmit->attachments;
                         foreach ($attachments as $attachment)
                         {
-                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
+                            $reference_field = $attachment->reference_field;
+                            switch ($reference_field)
+                            {
+                                case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                                    Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignment->id . '/Files/' . $assignment->student_id . '/Instructor/' . $attachment?->url);
+                                    break;
+                                default:
+                                    Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignment->id . '/Files/' . $assignment->student_id . '/Student/' . $attachment?->url);
+                                    break;
+                            }
                         }
                         $assignmentSubmit->attachments()->delete();
                     }
+
+                    $attachments = $assignment->attachments;
+                    foreach ($attachments as $attachment)
+                    {
+                        Storage::disk('supabase')->delete('Assignment/' . $assignment->id . '/Files/' . $attachment?->url);
+                    }
+                    $assignment->attachments()->delete();
                 }
                 foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
                 {
@@ -343,6 +396,20 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
     public function removeStudentFromCourse(UserCourseDto $dto): void
     {
         $exists = UserCourseGroup::where('student_code', $dto->studentCode)->first();
+
+        if (! $exists)
+        {
+            throw CustomException::notFound('Student');
+        }
+
+        DB::transaction(function () use ($exists) {
+            $exists->delete();
+        });
+    }
+
+    public function removeStudentFromInstructorList(UserCourseDto $dto, array $data): void
+    {
+        $exists = InstructorStudent::where('instructor_id', $data['user']->id)->where('student_id', $dto->studentId)->first();
 
         if (! $exists)
         {

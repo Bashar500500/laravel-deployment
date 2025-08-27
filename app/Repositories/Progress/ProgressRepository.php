@@ -39,7 +39,6 @@ class ProgressRepository extends BaseRepository implements ProgressRepositoryInt
                 'student_id' => $dto->studentId,
                 'progress' => $dto->progress,
                 'modules' => $dto->modules,
-                'time' => $dto->time,
                 'last_active' => $dto->lastActive,
                 'streak' => $dto->streak,
                 'skill_level' => $dto->skillLevel,
@@ -60,7 +59,6 @@ class ProgressRepository extends BaseRepository implements ProgressRepositoryInt
             $progress = tap($model)->update([
                 'progress' => $dto->progress ? $dto->progress : $model->progress,
                 'modules' => $dto->modules ? $dto->modules : $model->modules,
-                'time' => $dto->time ? $dto->time : $model->time,
                 'last_active' => $dto->lastActive ? $dto->lastActive : $model->last_active,
                 'streak' => $dto->streak ? $dto->streak : $model->streak,
                 'skill_level' => $dto->skillLevel ? $dto->skillLevel : $model->skill_level,

@@ -28,9 +28,9 @@ class EventDto
     public static function fromIndexRequest(EventRequest $request): EventDto
     {
         return new self(
+            courseId: $request->validated('course_id'),
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
-            courseId: null,
             name: null,
             type: null,
             date: null,

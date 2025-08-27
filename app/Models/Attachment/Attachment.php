@@ -13,6 +13,7 @@ class Attachment extends Model
         'reference_field',
         'type',
         'url',
+        'size_kb',
     ];
 
     protected $casts = [

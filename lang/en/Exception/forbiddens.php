@@ -89,6 +89,18 @@ return [
         'description' => 'Student already exsits in challenge. Try again with correct data.'
     ],
     'challenge_has_max_participants' => [
-        'description' => 'challenge reached max participants. Try again with correct data.'
+        'description' => 'Challenge reached max participants. Try again with correct data.'
+    ],
+    'rubric_criteria_weight_not_equal' => [
+        'description' => 'Rubric criteria weight not equal 100%. Try again with correct data.'
+    ],
+    'project_start_or_end_date' => [
+        'description' => 'Project start or end date is not valid. Try again with correct data.'
+    ],
+    'project_max_submits' => [
+        'description' => 'Project project max submits are reached. Try again with correct data.'
+    ],
+    'certificate_type_condition' => [
+        'description' => 'Certificate type does not match condition. Try again with correct data.'
     ],
 ];

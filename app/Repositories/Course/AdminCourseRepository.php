@@ -20,7 +20,7 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
 
     public function all(CourseDto $dto, array $data): object
     {
-        return (object) $this->model->with('attachment', 'students')
+        return (object) $this->model->with('attachment', 'students', 'requireds')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -33,7 +33,7 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
     public function allWithFilter(CourseDto $dto, array $data): object
     {
         return (object) $this->model->where('access_settings_access_type', $dto->accessType)
-            ->with('attachment', 'students')
+            ->with('attachment', 'students', 'requireds')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -46,7 +46,7 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('attachment', 'students');
+            ->load('attachment', 'students', 'requireds');
     }
 
     public function create(CourseDto $dto, array $data): object
@@ -64,6 +64,7 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                 'end_date' => $dto->endDate,
                 'status' => $dto->status,
                 'duration' => $dto->duration,
+                'estimated_duration_hours' => 1,
                 'price' => $dto->price,
                 'access_settings_access_type' => $dto->accessSettingsDto->accessType,
                 'access_settings_price_hidden' => $dto->accessSettingsDto->priceHidden,
@@ -86,17 +87,21 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                 $storedFile = Storage::disk('supabase')->putFile('Course/' . $course->id . '/Images',
                     $dto->coverImage);
 
+                $size = $dto->coverImage->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $course->attachment()->create([
                     'reference_field' => AttachmentReferenceField::CourseCoverImage,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
             return $course;
         });
 
-        return (object) $course->load('attachment', 'students');
+        return (object) $course->load('attachment', 'students', 'requireds');
     }
 
     public function update(CourseDto $dto, int $id): object
@@ -140,17 +145,21 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                 $storedFile = Storage::disk('supabase')->putFile('Course/' . $course->id . '/Images',
                     $dto->coverImage);
 
+                $size = $dto->coverImage->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $course->attachment()->create([
                     'reference_field' => AttachmentReferenceField::CourseCoverImage,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
             return $course;
         });
 
-        return (object) $course->load('attachment', 'students');
+        return (object) $course->load('attachment', 'students', 'requireds');
     }
 
     public function delete(int $id): object
@@ -221,6 +230,27 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
             }
             foreach ($projects as $project)
             {
+                $projectSubmits = $project->projectSubmits;
+
+                foreach ($projectSubmits as $projectSubmit)
+                {
+                    $attachments = $projectSubmit->attachments;
+                    foreach ($attachments as $attachment)
+                    {
+                        $reference_field = $attachment->reference_field;
+                        switch ($reference_field)
+                        {
+                            case AttachmentReferenceField::ProjectSubmitInstructorFiles:
+                                Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Instructor/' . $attachment?->url);
+                                break;
+                            default:
+                                Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Student/' . $attachment?->url);
+                                break;
+                        }
+                    }
+                    $projectSubmit->attachments()->delete();
+                }
+
                 $attachments = $project->attachments;
                 foreach ($attachments as $attachment)
                 {
@@ -256,10 +286,26 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
                     $attachments = $assignmentSubmit->attachments;
                     foreach ($attachments as $attachment)
                     {
-                        Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
+                        $reference_field = $attachment->reference_field;
+                        switch ($reference_field)
+                        {
+                            case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                                Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignment->id . '/Files/' . $assignment->student_id . '/Instructor/' . $attachment?->url);
+                                break;
+                            default:
+                                Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignment->id . '/Files/' . $assignment->student_id . '/Student/' . $attachment?->url);
+                                break;
+                        }
                     }
                     $assignmentSubmit->attachments()->delete();
                 }
+
+                $attachments = $assignment->attachments;
+                foreach ($attachments as $attachment)
+                {
+                    Storage::disk('supabase')->delete('Assignment/' . $assignment->id . '/Files/' . $attachment?->url);
+                }
+                $assignment->attachments()->delete();
             }
             foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
             {
@@ -284,6 +330,8 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
             $attachment = $model->attachment;
             Storage::disk('supabase')->delete('Course/' . $model->id . '/Images/' . $attachment?->url);
             $model->attachment()->delete();
+            $model->prerequisites()->delete();
+            $model->requireds()->delete();
             return parent::delete($id);
         });
 
@@ -340,10 +388,14 @@ class AdminCourseRepository extends BaseRepository implements CourseRepositoryIn
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
+            $size = $data['image']->getSize();
+            $sizeKb = round($size / 1024, 2);
+
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::CourseCoverImage,
                 'type' => AttachmentType::Image,
                 'url' => basename($storedFile),
+                'size_kb' => $sizeKb,
             ]);
         });
 

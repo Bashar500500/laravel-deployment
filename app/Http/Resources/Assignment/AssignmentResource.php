@@ -20,6 +20,9 @@ class AssignmentResource extends JsonResource
             'points' => $this->points,
             'submissionSettings' => $this->submission_settings,
             'policies' => $this->policies,
+            'files' => $this->whenLoaded('attachments')->count() == 0 ?
+                null :
+                AssignmentAttachmentResource::collection($this->whenLoaded('attachments')),
             'stats' => AssignmentStatsResource::makeJson($this),
         ];
     }

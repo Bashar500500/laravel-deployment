@@ -24,12 +24,15 @@ class ProjectRequest extends FormRequest
     protected function onStore() {
         return [
             'course_id' => ['required', 'exists:courses,id'],
+            'rubric_id' => ['required', 'exists:rubrics,id'],
             'leader_id' => ['required', 'exists:users,id'],
             'group_id' => ['required', 'exists:groups,id'],
             'name' => ['required', 'string'],
             'start_date' => ['required', 'date', 'date_format:Y-m-d'],
             'end_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
             'description' => ['required', 'string'],
+            'points' => ['required', 'integer'],
+            'max_submits' => ['required', 'integer'],
             'files' => ['sometimes', 'array'],
             'files.*' => ['required_with:files', 'file'],
         ];
@@ -37,10 +40,13 @@ class ProjectRequest extends FormRequest
 
     protected function onUpdate() {
         return [
+            'rubric_id' => ['sometimes', 'exists:rubrics,id'],
             'name' => ['sometimes', 'string'],
             'start_date' => ['sometimes', 'date', 'date_format:Y-m-d'],
             'end_date' => ['required_with:start_date', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
             'description' => ['sometimes', 'string'],
+            'points' => ['sometimes', 'integer'],
+            'max_submits' => ['sometimes', 'integer'],
             'files' => ['sometimes', 'array'],
             'files.*' => ['required_with:files', 'file'],
         ];
@@ -72,6 +78,8 @@ class ProjectRequest extends FormRequest
     //         'page.gt' => ValidationType::GreaterThanZero->getMessage(),
     //         'page_size.integer' => ValidationType::Integer->getMessage(),
     //         'page_size.gt' => ValidationType::GreaterThanZero->getMessage(),
+    //         'rubric_id.required' => ValidationType::Required->getMessage(),
+    //         'rubric_id.exists' => ValidationType::Exists->getMessage(),
     //         'leader_id.required' => ValidationType::Required->getMessage(),
     //         'leader_id.exists' => ValidationType::Exists->getMessage(),
     //         'group_id.required' => ValidationType::Required->getMessage(),
@@ -88,6 +96,10 @@ class ProjectRequest extends FormRequest
     //         'end_date.after_or_equal' => ValidationType::AfterOrEqual->getMessage(),
     //         'description.required' => ValidationType::Required->getMessage(),
     //         'description.string' => ValidationType::String->getMessage(),
+    //         'points.required' => ValidationType::Required->getMessage(),
+    //         'points.integer' => ValidationType::Integer->getMessage(),
+    //         'max_submits.required' => ValidationType::Required->getMessage(),
+    //         'max_submits.integer' => ValidationType::Integer->getMessage(),
     //         'files.array' => ValidationType::Array->getMessage(),
     //         'files.*.required_with' => ValidationType::RequiredWith->getMessage(),
     //         'files.*.file' => ValidationType::File->getMessage(),
@@ -100,12 +112,15 @@ class ProjectRequest extends FormRequest
     //         'course_id' => FieldName::CourseId->getMessage(),
     //         'page' => FieldName::Page->getMessage(),
     //         'page_size' => FieldName::PageSize->getMessage(),
+    //         'rubric_id' => FieldName::RubricId->getMessage(),
     //         'leader_id' => FieldName::LeaderId->getMessage(),
     //         'group_id' => FieldName::GroupId->getMessage(),
     //         'name' => FieldName::Name->getMessage(),
     //         'start_date' => FieldName::StartDate->getMessage(),
     //         'end_date' => FieldName::EndDate->getMessage(),
     //         'description' => FieldName::Description->getMessage(),
+    //         'points' => FieldName::Points->getMessage(),
+    //         'max_submits' => FieldName::MaxSubmits->getMessage(),
     //         'files' => FieldName::Files->getMessage(),
     //         'files.*' => FieldName::Files->getMessage(),
     //     ];

@@ -18,13 +18,9 @@ class StudentCourseRepository extends BaseRepository implements CourseRepository
 
     public function all(CourseDto $dto, array $data): object
     {
-        if ($data['student']->courses && $data['student']->courses->count() > 0)
+        if ($dto->allCourses)
         {
-            $courses = $data['student']->courses->pluck('id');
-
-            return (object) $this->model->whereIn('id', $courses)
-            ->where('status', CourseStatus::Published)
-            ->with('attachment', 'students')
+            return (object) $this->model->with('attachment', 'students', 'requireds')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -35,20 +31,38 @@ class StudentCourseRepository extends BaseRepository implements CourseRepository
         }
         else
         {
-            return (object) collect();
+            if ($data['student']->enrolledCourses && $data['student']->enrolledCourses->count() > 0)
+            {
+                $courses = $data['student']->enrolledCourses->pluck('id');
+
+                return (object) $this->model->whereIn('id', $courses)
+                ->where('status', CourseStatus::Published)
+                ->with('attachment', 'students', 'requireds')
+                ->latest('created_at')
+                ->simplePaginate(
+                    $dto->pageSize,
+                    ['*'],
+                    'page',
+                    $dto->currentPage,
+                );
+            }
+            else
+            {
+                return (object) collect();
+            }
         }
     }
 
     public function allWithFilter(CourseDto $dto, array $data): object
     {
-        if ($data['student']->courses && $data['student']->courses->count() > 0)
+        if ($data['student']->enrolledCourses && $data['student']->enrolledCourses->count() > 0)
         {
-            $courses = $data['student']->courses->pluck('id');
+            $courses = $data['student']->enrolledCourses->pluck('id');
 
             return (object) $this->model->whereIn('id', $courses)
                 ->where('status', CourseStatus::Published)
                 ->where('access_settings_access_type', $dto->accessType)
-                ->with('attachment', 'students')
+                ->with('attachment', 'students', 'requireds')
                 ->latest('created_at')
                 ->simplePaginate(
                     $dto->pageSize,
@@ -66,7 +80,7 @@ class StudentCourseRepository extends BaseRepository implements CourseRepository
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('attachment', 'students');
+            ->load('attachment', 'students', 'requireds');
     }
 
     public function create(CourseDto $dto, array $data): object

@@ -24,7 +24,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
     public function all(SectionDto $dto): object
     {
         return (object) $this->model->where('course_id', $dto->courseId)
-            ->with('course', 'groups', 'learningActivities', 'attachments')
+            ->with('course', 'groups', 'learningActivities', 'attachments', 'requireds')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -37,7 +37,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('course', 'groups', 'learningActivities', 'attachments');
+            ->load('course', 'groups', 'learningActivities', 'attachments', 'requireds');
     }
 
     public function create(SectionDto $dto): object
@@ -73,10 +73,14 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
                     $storedFile = Storage::disk('supabase')->putFile('Section/' . $section->id . '/Files',
                         $file);
 
+                    $size = $file->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
                     $section->attachment()->create([
                         'reference_field' => AttachmentReferenceField::SectionResourcesFile,
                         'type' => AttachmentType::File,
                         'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
                     ]);
                 }
             }
@@ -96,7 +100,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
             return $section;
         });
 
-        return (object) $section->load('course', 'groups', 'learningActivities', 'attachments');
+        return (object) $section->load('course', 'groups', 'learningActivities', 'attachments', 'requireds');
     }
 
     public function update(SectionDto $dto, int $id): object
@@ -135,17 +139,21 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
                 {
                     Storage::disk('supabase')->delete('Section/' . $section->id . '/Files/' . $attachment?->url);
                 }
-                $attachments->delete();
+                $section->attachments()->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->delete();
 
                 foreach ($dto->sectionResourcesDto->files as $file)
                 {
                     $storedFile = Storage::disk('supabase')->putFile('Section/' . $section->id . '/Files',
                         $file);
 
+                    $size = $file->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
                     $section->attachment()->create([
                         'reference_field' => AttachmentReferenceField::SectionResourcesFile,
                         'type' => AttachmentType::File,
                         'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
                     ]);
                 }
             }
@@ -167,7 +175,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
             return $section;
         });
 
-        return (object) $section->load('course', 'groups', 'learningActivities', 'attachments');
+        return (object) $section->load('course', 'groups', 'learningActivities', 'attachments', 'requireds');
     }
 
     public function delete(int $id): object
@@ -203,6 +211,8 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
                 }
             }
             $model->attachments()->delete();
+            $model->prerequisites()->delete();
+            $model->requireds()->delete();
             return parent::delete($id);
         });
 
@@ -268,10 +278,14 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
+            $size = $data['file']->getSize();
+            $sizeKb = round($size / 1024, 2);
+
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::SectionResourcesFile,
                 'type' => AttachmentType::File,
                 'url' => basename($storedFile),
+                'size_kb' => $sizeKb,
             ]);
         });
 

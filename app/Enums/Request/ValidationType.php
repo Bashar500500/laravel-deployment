@@ -13,6 +13,7 @@ enum ValidationType: string
     case GreaterThanOrEqualZero = 'gte_0';
     case GreaterThanOrEqual = 'gte';
     case LessThanOrEqual = 'lte';
+    case LessThan = 'lt';
     case String = 'string';
     case Boolean = 'boolean';
     case Regex = 'regex';

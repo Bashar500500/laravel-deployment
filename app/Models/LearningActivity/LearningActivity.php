@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Enums\LearningActivity\LearningActivityType;
 use App\Enums\LearningActivity\LearningActivityStatus;
 use App\Enums\LearningActivity\LearningActivityMetadataDifficulty;
-use App\Enums\LearningActivity\LearningActivityContentType;
 use App\Enums\LearningActivity\LearningActivityCompletionType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Section\Section;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Attendance\Attendance;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use App\Models\Attachment\Attachment;
@@ -28,7 +29,6 @@ class LearningActivity extends Model
         'flags_is_free_preview',
         'flags_is_compulsory',
         'flags_requires_enrollment',
-        'content_type',
         'content_data',
         'thumbnail_url',
         'completion_type',
@@ -45,7 +45,6 @@ class LearningActivity extends Model
     protected $casts = [
         'type' => LearningActivityType::class,
         'status' => LearningActivityStatus::class,
-        'content_type' => LearningActivityContentType::class,
         'content_data' => 'array',
         'completion_type' => LearningActivityCompletionType::class,
         'completion_data' => 'array',
@@ -56,6 +55,11 @@ class LearningActivity extends Model
     public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class, 'section_id');
+    }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class, 'learning_activity_id');
     }
 
     public function attachments(): MorphMany

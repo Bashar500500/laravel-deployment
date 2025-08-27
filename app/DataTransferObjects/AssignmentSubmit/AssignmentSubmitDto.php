@@ -10,8 +10,10 @@ class AssignmentSubmitDto
         public readonly ?int $assignmentId,
         public readonly ?int $currentPage,
         public readonly ?int $pageSize,
-        public readonly ?int $score,
+        public readonly ?array $rubricCriterias,
+        public readonly ?int $plagiarismScore,
         public readonly ?string $feedback,
+        public readonly ?array $files,
     ) {}
 
     public static function fromIndexRequest(AssignmentSubmitRequest $request): AssignmentSubmitDto
@@ -20,8 +22,10 @@ class AssignmentSubmitDto
             assignmentId: $request->validated('assignment_id'),
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
-            score: null,
+            rubricCriterias: null,
+            plagiarismScore: null,
             feedback: null,
+            files: null,
         );
     }
 
@@ -31,8 +35,10 @@ class AssignmentSubmitDto
             assignmentId: null,
             currentPage: null,
             pageSize: null,
-            score: $request->validated('score'),
+            rubricCriterias: $request->validated('rubric_criterias'),
+            plagiarismScore: $request->validated('plagiarism_score'),
             feedback: $request->validated('feedback'),
+            files: $request->validated('files'),
         );
     }
 }

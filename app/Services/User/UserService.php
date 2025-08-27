@@ -11,6 +11,7 @@ use App\Http\Requests\User\RemoveUserFromCourseRequest;
 use App\DataTransferObjects\User\UserCourseDto;
 use App\Enums\User\UserMessage;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\User\RemoveStudentFromInstructorListRequest;
 
 class UserService
 {
@@ -22,7 +23,7 @@ class UserService
     {
         $dto = UserDto::fromIndexRequest($request);
         $role = Auth::user()->getRoleNames();
-        $data = $this->prepareIndexData();
+        $data = $this->prepareIndexAndStoreData();
         $repository = $this->factory->make($role[0]);
         return match ($dto->courseId) {
             null => $repository->all($dto, $data),
@@ -48,8 +49,9 @@ class UserService
     {
         $dto = UserDto::fromStoreRequest($request);
         $role = Auth::user()->getRoleNames();
+        $data = $this->prepareIndexAndStoreData();
         $repository = $this->factory->make($role[0]);
-        return $repository->create($dto);
+        return $repository->create($dto, $data);
     }
 
     public function update(UserRequest $request): object
@@ -84,7 +86,16 @@ class UserService
         $repository->removeStudentFromCourse($dto);
     }
 
-    private function prepareIndexData(): array
+    public function removeStudentFromInstructorList(RemoveStudentFromInstructorListRequest $request): void
+    {
+        $dto = UserCourseDto::fromRemoveStudentFromInstructorListRequest($request);
+        $role = Auth::user()->getRoleNames();
+        $data = $this->prepareIndexAndStoreData();
+        $repository = $this->factory->make($role[0]);
+        $repository->removeStudentFromInstructorList($dto, $data);
+    }
+
+    private function prepareIndexAndStoreData(): array
     {
         return [
             'user' => Auth::user(),

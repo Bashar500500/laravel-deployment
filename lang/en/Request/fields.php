@@ -190,6 +190,9 @@ return [
     'section_id' => [
         'message' => 'section id',
     ],
+    'learning_activity_id' => [
+        'message' => 'learning activity id',
+    ],
     'flags' => [
         'message' => 'flags',
     ],
@@ -834,5 +837,134 @@ return [
     ],
     'students' => [
         'message' => 'students',
+    ],
+    'max_submits' => [
+        'message' => 'max submits',
+    ],
+    'weight' => [
+        'message' => 'weight',
+    ],
+    'rubric_id' => [
+        'message' => 'rubric id',
+    ],
+    'rubric_criterias' => [
+        'message' => 'rubric criterias',
+    ],
+    'levels' => [
+        'message' => 'levels',
+    ],
+    'excellent' => [
+        'message' => 'excellent',
+    ],
+    'excellent_points' => [
+        'message' => 'excellent points',
+    ],
+    'excellent_description' => [
+        'message' => 'excellent description',
+    ],
+    'good' => [
+        'message' => 'good',
+    ],
+    'good_points' => [
+        'message' => 'good points',
+    ],
+    'good_description' => [
+        'message' => 'good description',
+    ],
+    's1' => [
+        'message' => 's1',
+    ],
+    's1_points' => [
+        'message' => 's1 points',
+    ],
+    's1_description' => [
+        'message' => 's1 description',
+    ],
+    's2' => [
+        'message' => 's2',
+    ],
+    's2_points' => [
+        'message' => 's2 points',
+    ],
+    's2_description' => [
+        'message' => 's2 description',
+    ],
+    'bad' => [
+        'message' => 'bad',
+    ],
+    'bad_points' => [
+        'message' => 'bad points',
+    ],
+    'bad_description' => [
+        'message' => 'bad description',
+    ],
+    'assignment_submit_id' => [
+        'message' => 'assignment submit id',
+    ],
+    'rubric_criteria_id' => [
+        'message' => 'rubric criteria id',
+    ],
+    'plagiarism_score' => [
+        'message' => 'plagiarism score',
+    ],
+    'project_id' => [
+        'message' => 'project id',
+    ],
+    'tags' => [
+        'message' => 'tags',
+    ],
+    'collaborators' => [
+        'message' => 'collaborators',
+    ],
+    'wiki_id' => [
+        'message' => 'wiki id',
+    ],
+    'comment' => [
+        'message' => 'comment',
+    ],
+    'rating' => [
+        'message' => 'rating',
+    ],
+    'prerequisite' => [
+        'message' => 'prerequisite',
+    ],
+    'applies_to' => [
+        'message' => 'applies to',
+    ],
+    'required_for' => [
+        'message' => 'required for',
+    ],
+    'condition' => [
+        'message' => 'condition',
+    ],
+    'allow_override' => [
+        'message' => 'allow override',
+    ],
+    'certificate_template_id' => [
+        'message' => 'certificate template id',
+    ],
+    'color' => [
+        'message' => 'color',
+    ],
+    'period' => [
+        'message' => 'period',
+    ],
+    'allow_self_enrollment' => [
+        'message' => 'allow self enrollment',
+    ],
+    'enable_waiting_list' => [
+        'message' => 'enable waiting list',
+    ],
+    'require_instructor_approval' => [
+        'message' => 'require instructor approval',
+    ],
+    'require_prerequisites' => [
+        'message' => 'require prerequisites',
+    ],
+    'enable_notifications' => [
+        'message' => 'enable notifications',
+    ],
+    'enable_emails' => [
+        'message' => 'enable emails',
     ],
 ];

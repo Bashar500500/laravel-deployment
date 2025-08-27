@@ -54,7 +54,9 @@ class LearningActivityDto
             type: LearningActivityType::from($request->validated('type')),
             title: $request->validated('title'),
             description: $request->validated('description'),
-            status: LearningActivityStatus::from($request->validated('status')),
+            status: $request->validated('status') ?
+                LearningActivityStatus::from($request->validated('status')) :
+                null,
             learningActivityFlagsDto: LearningActivityFlagsDto::from($request),
             learningActivityContentDto: LearningActivityContentDto::from($request),
             thumbnailUrl: $request->validated('thumbnailUrl'),

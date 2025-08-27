@@ -17,7 +17,6 @@ class Progress extends Model
         'student_id',
         'progress',
         'modules',
-        'time',
         'last_active',
         'streak',
         'skill_level',

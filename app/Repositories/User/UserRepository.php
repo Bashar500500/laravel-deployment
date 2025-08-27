@@ -20,6 +20,7 @@ use App\DataTransferObjects\Auth\PasswordResetCodeDto;
 use App\Jobs\GlobalServiceHandlerJob;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
+use App\Models\InstructorStudent\InstructorStudent;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -49,7 +50,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return (object) parent::find($id);
     }
 
-    public function create(UserDto $dto): object
+    public function create(UserDto $dto, array $data): object
     {
         $user = DB::transaction(function () use ($dto) {
             $user = $this->model->create([
@@ -320,6 +321,20 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function removeStudentFromCourse(UserCourseDto $dto): void
     {
         $exists = UserCourseGroup::where('student_code', $dto->studentCode)->first();
+
+        if (! $exists)
+        {
+            throw CustomException::notFound('Student');
+        }
+
+        DB::transaction(function () use ($exists) {
+            $exists->delete();
+        });
+    }
+
+    public function removeStudentFromInstructorList(UserCourseDto $dto, array $data): void
+    {
+        $exists = InstructorStudent::where('instructor_id', $data['user']->id)->where('student_id', $dto->studentId)->first();
 
         if (! $exists)
         {

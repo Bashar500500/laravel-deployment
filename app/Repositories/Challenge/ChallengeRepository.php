@@ -22,7 +22,7 @@ class ChallengeRepository extends BaseRepository implements ChallengeRepositoryI
     public function all(ChallengeDto $dto, array $data): object
     {
         return (object) $this->model->where('instructor_id', $data['instructorId'])
-            ->with('challengeRules', 'challengeBadges', 'challengeUsers', 'userAwards')
+            ->with('challengeCourses', 'challengeRules', 'challengeBadges', 'challengeUsers', 'userAwards')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -35,7 +35,7 @@ class ChallengeRepository extends BaseRepository implements ChallengeRepositoryI
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('challengeRules', 'challengeBadges', 'challengeUsers', 'userAwards');
+            ->load('challengeCourses', 'challengeRules', 'challengeBadges', 'challengeUsers', 'userAwards');
     }
 
     public function create(ChallengeDto $dto, array $data): object
@@ -79,7 +79,7 @@ class ChallengeRepository extends BaseRepository implements ChallengeRepositoryI
             return $challenge;
         });
 
-        return (object) $challenge->load('challengeRules', 'challengeBadges', 'challengeUsers', 'userAwards');
+        return (object) $challenge->load('challengeCourses', 'challengeRules', 'challengeBadges', 'challengeUsers', 'userAwards');
     }
 
     public function update(ChallengeDto $dto, int $id): object
@@ -141,7 +141,7 @@ class ChallengeRepository extends BaseRepository implements ChallengeRepositoryI
             return $challenge;
         });
 
-        return (object) $challenge->load('challengeRules', 'challengeBadges', 'challengeUsers', 'userAwards');
+        return (object) $challenge->load('challengeCourses', 'challengeRules', 'challengeBadges', 'challengeUsers', 'userAwards');
     }
 
     public function delete(int $id): object

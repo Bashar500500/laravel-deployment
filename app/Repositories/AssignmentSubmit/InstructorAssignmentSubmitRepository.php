@@ -5,13 +5,18 @@ namespace App\Repositories\AssignmentSubmit;
 use App\Repositories\BaseRepository;
 use App\Models\AssignmentSubmit\AssignmentSubmit;
 use App\DataTransferObjects\AssignmentSubmit\AssignmentSubmitDto;
+use App\Enums\AssignmentSubmit\AssignmentSubmitLevel;
+use App\Enums\AssignmentSubmit\AssignmentSubmitStatus;
 use App\Enums\Grade\GradeTrend;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Exceptions\CustomException;
 use App\Enums\Model\ModelTypePath;
+use App\Enums\Plagiarism\PlagiarismStatus;
 use ZipArchive;
 use Illuminate\Support\Facades\File;
+use App\Enums\Attachment\AttachmentReferenceField;
+use App\Enums\Attachment\AttachmentType;
 
 class InstructorAssignmentSubmitRepository extends BaseRepository implements AssignmentSubmitRepositoryInterface
 {
@@ -22,7 +27,7 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
     public function all(AssignmentSubmitDto $dto, array $data): object
     {
         return (object) $this->model->where('assignment_id', $dto->assignmentId)
-            ->with('attachments')
+            ->with('assignment', 'student', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -35,21 +40,104 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('attachments');
+            ->load('assignment', 'student', 'attachments');
     }
 
     public function update(AssignmentSubmitDto $dto, int $id): object
     {
         $model = (object) parent::find($id);
+        $points = 0;
+        $detailedResults = [];
         $assignment = $model->assignment;
+        $rubric = $assignment->rubric;
         $grade = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->first();
         $grades = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->all();
         $gradeScoreSum = $grades->sum('points_earned');
 
-        $assignmentSubmit = DB::transaction(function () use ($dto, $model, $grade, $assignment, $gradeScoreSum, $grades) {
+        $assignmentSubmit = DB::transaction(function () use ($dto, $model, $points, $detailedResults, $rubric, $grade, $assignment, $gradeScoreSum, $grades) {
+            foreach ($dto->rubricCriterias as $item)
+            {
+                $rubricCriteria = $rubric->rubricCriterias->where('id', $item['rubric_criteria_id'])->first();
+
+                if (! $rubricCriteria)
+                {
+                    throw CustomException::notFound('RubricCriteria');
+                }
+
+                switch ($item['level'])
+                {
+                    case AssignmentSubmitLevel::Excellent->getType():
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::Excellent->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                    case AssignmentSubmitLevel::Good->getType():
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::Good->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                    case AssignmentSubmitLevel::S1->getType():
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::S1->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                    case AssignmentSubmitLevel::S2->getType():
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::S2->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                    default:
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::Bad->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                }
+            }
+
             $assignmentSubmit = tap($model)->update([
-                'score' => $dto->score ? $dto->score : $model->score,
+                'status' => AssignmentSubmitStatus::Corrected,
+                'score' => $points,
+                'detailed_results' => $detailedResults,
                 'feedback' => $dto->feedback ? $dto->feedback : $model->feedback,
+            ]);
+
+            if ($dto->files)
+            {
+                foreach ($dto->files as $file)
+                {
+                    $storedFile = Storage::disk('supabase')->putFile('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/Instructor',
+                        $file);
+
+                    $size = $file->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
+                    $assignmentSubmit->attachment()->create([
+                        'reference_field' => AttachmentReferenceField::AssignmentSubmitInstructorFiles,
+                        'type' => AttachmentType::File,
+                        'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
+                    ]);
+                }
+            }
+
+            $assignmentSubmit->plagiarism->update([
+                'score' => $dto->plagiarismScore,
+                'status' => $dto->plagiarismScore < 30 ? PlagiarismStatus::Clear : PlagiarismStatus::Flagged,
             ]);
 
             $oldTrendArray = $grade->trend_data;
@@ -71,7 +159,7 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
             return $assignmentSubmit;
         });
 
-        return (object) $assignmentSubmit->load('attachments');
+        return (object) $assignmentSubmit->load('assignment', 'student', 'attachments');
     }
 
     public function delete(int $id): object
@@ -82,7 +170,16 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
             $attachments = $model->attachments;
             foreach ($attachments as $attachment)
             {
-                Storage::disk('supabase')->delete('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $attachment?->url);
+                $reference_field = $attachment->reference_field;
+                switch ($reference_field)
+                {
+                    case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                        Storage::disk('supabase')->delete('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Instructor/' . $attachment?->url);
+                        break;
+                    default:
+                        Storage::disk('supabase')->delete('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Student/' . $attachment?->url);
+                        break;
+                }
             }
             $model->attachments()->delete();
             return parent::delete($id);
@@ -94,15 +191,38 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
     public function view(int $id, string $fileName): string
     {
         $model = (object) parent::find($id);
+        $attachment = $model->attachments()->where('url', $fileName)->first();
 
-        $exists = Storage::disk('supabase')->exists('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $fileName);
-
-        if (! $exists)
+        if (! $attachment)
         {
             throw CustomException::notFound('File');
         }
 
-        $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $fileName);
+        $reference_field = $attachment->reference_field;
+        switch ($reference_field)
+        {
+            case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                $exists = Storage::disk('supabase')->exists('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Instructor/' . $fileName);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('File');
+                }
+
+                $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Instructor/' . $fileName);
+                break;
+            default:
+                $exists = Storage::disk('supabase')->exists('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Student/' . $fileName);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('File');
+                }
+
+                $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Student/' . $fileName);
+                break;
+        }
+
         $tempPath = storage_path('app/private/' . $fileName);
         file_put_contents($tempPath, $file);
 
@@ -126,10 +246,22 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
             foreach ($attachments as $attachment) {
-                $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $attachment?->url);
+                $reference_field = $attachment->reference_field;
+                switch ($reference_field)
+                {
+                    case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                        $folder = 'Instructor';
+                        $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Instructor/' . $attachment?->url);
+                        break;
+                    default:
+                        $folder = 'Student';
+                        $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Student/' . $attachment?->url);
+                        break;
+                }
+
                 $tempPath = storage_path('app/private/' . $attachment?->url);
                 file_put_contents($tempPath, $file);
-                $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
+                $zip->addFile($tempPath, $folder . '/' . $attachment?->url);
                 $tempFiles[] = $tempPath;
             }
             $zip->close();
@@ -137,6 +269,25 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
         }
 
         return $zipPath;
+    }
+
+    private function calculateAssignmentPointsDependingOnLevel(object $rubricCriteria, int $assignmentPoints, string $level): array
+    {
+        $rubricCriteriaPointsToEarn = $rubricCriteria->levels[$level]['points'];
+        $rubricCriteriaMaxPoints = $rubricCriteria->levels['excellent']['points'];
+        $pointsEarned = ($rubricCriteriaPointsToEarn / 100) * $assignmentPoints;
+        $pointsPossible = ($rubricCriteriaMaxPoints / 100) * $assignmentPoints;
+
+        $result['criteria'] = $rubricCriteria->name;
+        $result['level'] = $level;
+        $result['description'] = $rubricCriteria->description;
+        $result['points_earned'] = $pointsEarned;
+        $result['points_possible'] = $pointsPossible;
+
+        return [
+            'points'=> $pointsEarned,
+            'result'=> $result,
+        ];
     }
 
     private function calculateTrend(array $values): GradeTrend

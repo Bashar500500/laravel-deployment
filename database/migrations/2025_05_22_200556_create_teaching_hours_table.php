@@ -15,9 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('instructor_id')->constrained('users')->cascadeOnDelete();
             $table->integer('total_hours');
-            $table->integer('completed_hours');
             $table->integer('upcoming');
-            $table->integer('break');
             $table->string('status');
             $table->timestamps();
         });

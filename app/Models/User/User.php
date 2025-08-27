@@ -24,9 +24,10 @@ use App\Models\ScheduleTiming\ScheduleTiming;
 use App\Models\Grade\Grade;
 use App\Models\Progress\Progress;
 use App\Models\Attendance\Attendance;
+use App\Models\SectionCompletion\SectionCompletion;
 use App\Models\Email\Email;
 use App\Models\Project\Project;
-use App\Models\Ticket\Ticket;
+use App\Models\SupportTicket\SupportTicket;
 use App\Models\AssessmentSubmit\AssessmentSubmit;
 use App\Models\TimeLimit\TimeLimit;
 use App\Models\Challenge\Challenge;
@@ -39,6 +40,14 @@ use App\Models\Holiday\Holiday;
 use App\Models\Leave\Leave;
 use App\Models\Section\Section;
 use App\Models\Event\Event;
+use App\Models\InstructorStudent\InstructorStudent;
+use App\Models\Rubric\Rubric;
+use App\Models\Wiki\Wiki;
+use App\Models\WikiComment\WikiComment;
+use App\Models\WikiRating\WikiRating;
+use App\Models\Prerequisite\Prerequisite;
+use App\Models\UserCertificate\UserCertificate;
+use App\Models\Whiteboard\Whiteboard;
 use App\Models\Notification\Notification;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -160,6 +169,11 @@ class User extends Authenticatable
         return $this->hasMany(Attendance::class, 'student_id');
     }
 
+    public function sectionCompletions(): HasMany
+    {
+        return $this->hasMany(SectionCompletion::class, 'student_id');
+    }
+
     public function emails(): HasMany
     {
         return $this->hasMany(Email::class, 'user_id');
@@ -170,9 +184,9 @@ class User extends Authenticatable
         return $this->hasMany(Project::class, 'leader_id');
     }
 
-    public function tickets(): HasMany
+    public function supporttickets(): HasMany
     {
-        return $this->hasMany(Ticket::class, 'user_id');
+        return $this->hasMany(SupportTicket::class, 'user_id');
     }
 
     public function assessmentSubmits(): HasMany
@@ -245,13 +259,63 @@ class User extends Authenticatable
         );
     }
 
-    public function notifications(): MorphMany
+    public function instructorStudentsForInstructor(): HasOne
     {
-        return $this->morphMany(Notification::class, 'notificationable');
+        return $this->hasOne(InstructorStudent::class, 'instructor_id');
     }
 
-    public function notification(): MorphOne
+    public function instructorStudentsForStudent(): HasOne
     {
-        return $this->morphOne(Notification::class, 'notificationable');
+        return $this->hasOne(InstructorStudent::class, 'student_id');
     }
+
+    public function rubrics(): HasMany
+    {
+        return $this->hasMany(Rubric::class, 'instructor_id');
+    }
+
+    public function wikis(): HasMany
+    {
+        return $this->hasMany(Wiki::class, 'user_id');
+    }
+
+    public function wikiComments(): HasMany
+    {
+        return $this->hasMany(WikiComment::class, 'user_id');
+    }
+
+    public function wikiRatings(): HasMany
+    {
+        return $this->hasMany(WikiRating::class, 'user_id');
+    }
+
+    public function prerequisites(): HasMany
+    {
+        return $this->hasMany(Prerequisite::class, 'instructor_id');
+    }
+
+    public function userCertificates(): HasMany
+    {
+        return $this->hasMany(UserCertificate::class, 'student_id');
+    }
+
+    public function whiteboards(): HasMany
+    {
+        return $this->hasMany(Whiteboard::class, 'instructor_id');
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
+
+    // public function notifications(): MorphMany
+    // {
+    //     return $this->morphMany(Notification::class, 'notificationable');
+    // }
+
+    // public function notification(): MorphOne
+    // {
+    //     return $this->morphOne(Notification::class, 'notificationable');
+    // }
 }

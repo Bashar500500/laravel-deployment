@@ -12,12 +12,12 @@ class SectionResourcesResource extends JsonResource
     ): array
     {
         return [
-            'files' => $sectionResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::SectionResourcesFile) ?
-                SectionAttachmentResource::collection($sectionResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::SectionResourcesFile)) :
-                null,
-            'links' => $sectionResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::SectionResourcesLink) ?
-                SectionAttachmentResource::collection($sectionResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::SectionResourcesLink)) :
-                null,
+            'files' => $sectionResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->count() == 0 ?
+                null :
+                SectionAttachmentResource::collection($sectionResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::SectionResourcesFile)),
+            'links' => $sectionResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::SectionResourcesLink)->count() == 0 ?
+                null :
+                SectionAttachmentResource::collection($sectionResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::SectionResourcesLink)),
         ];
     }
 }

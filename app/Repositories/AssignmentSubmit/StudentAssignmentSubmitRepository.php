@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Exceptions\CustomException;
 use ZipArchive;
 use Illuminate\Support\Facades\File;
+use App\Enums\Attachment\AttachmentReferenceField;
 
 class StudentAssignmentSubmitRepository extends BaseRepository implements AssignmentSubmitRepositoryInterface
 {
@@ -21,7 +22,7 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
     {
         return (object) $this->model->where('assignment_id', $dto->assignmentId)
             ->where('student_id', $data['studentId'])
-            ->with('attachments')
+            ->with('assignment', 'student', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -34,7 +35,7 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('attachments');
+            ->load('assignment', 'student', 'attachments');
     }
 
     public function update(AssignmentSubmitDto $dto, int $id): object
@@ -50,15 +51,38 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
     public function view(int $id, string $fileName): string
     {
         $model = (object) parent::find($id);
+        $attachment = $model->attachments()->where('url', $fileName)->first();
 
-        $exists = Storage::disk('supabase')->exists('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $fileName);
-
-        if (! $exists)
+        if (! $attachment)
         {
             throw CustomException::notFound('File');
         }
 
-        $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $fileName);
+        $reference_field = $attachment->reference_field;
+        switch ($reference_field)
+        {
+            case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                $exists = Storage::disk('supabase')->exists('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Instructor/' . $fileName);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('File');
+                }
+
+                $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Instructor/' . $fileName);
+                break;
+            default:
+                $exists = Storage::disk('supabase')->exists('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Student/' . $fileName);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('File');
+                }
+
+                $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Student/' . $fileName);
+                break;
+        }
+
         $tempPath = storage_path('app/private/' . $fileName);
         file_put_contents($tempPath, $file);
 
@@ -82,10 +106,22 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
             foreach ($attachments as $attachment) {
-                $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/' . $attachment?->url);
+                $reference_field = $attachment->reference_field;
+                switch ($reference_field)
+                {
+                    case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                        $folder = 'Instructor';
+                        $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Instructor/' . $attachment?->url);
+                        break;
+                    default:
+                        $folder = 'Student';
+                        $file = Storage::disk('supabase')->get('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Student/' . $attachment?->url);
+                        break;
+                }
+
                 $tempPath = storage_path('app/private/' . $attachment?->url);
                 file_put_contents($tempPath, $file);
-                $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
+                $zip->addFile($tempPath, $folder . '/' . $attachment?->url);
                 $tempFiles[] = $tempPath;
             }
             $zip->close();

@@ -4,6 +4,7 @@ namespace App\DataTransferObjects\Assessment;
 
 use App\Http\Requests\Assessment\AssessmentRequest;
 use App\Enums\Assessment\AssessmentType;
+use App\Enums\Assessment\AssessmentStatus;
 use Illuminate\Support\Carbon;
 
 class AssessmentDto
@@ -16,6 +17,8 @@ class AssessmentDto
         public readonly ?AssessmentType $type,
         public readonly ?string $title,
         public readonly ?string $description,
+        public readonly ?AssessmentStatus $status,
+        public readonly ?int $weight,
         public readonly ?Carbon $availableFrom,
         public readonly ?Carbon $availableTo,
         public readonly ?int $attemptsAllowed,
@@ -33,6 +36,8 @@ class AssessmentDto
             type: null,
             title: null,
             description: null,
+            status: null,
+            weight: null,
             availableFrom: null,
             availableTo: null,
             attemptsAllowed: null,
@@ -51,6 +56,8 @@ class AssessmentDto
             type: AssessmentType::from($request->validated('type')),
             title: $request->validated('title'),
             description: $request->validated('description'),
+            status: AssessmentStatus::from($request->validated('status')),
+            weight: $request->validated('weight'),
             availableFrom: Carbon::parse($request->validated('available_from')),
             availableTo: Carbon::parse($request->validated('available_to')),
             attemptsAllowed: $request->validated('attempts_allowed'),
@@ -71,6 +78,10 @@ class AssessmentDto
                 null,
             title: $request->validated('title'),
             description: $request->validated('description'),
+            status: $request->validated('type') ?
+                AssessmentStatus::from($request->validated('status')) :
+                null,
+            weight: $request->validated('weight'),
             availableFrom: $request->validated('available_from') ?
                 Carbon::parse($request->validated('available_from')) :
                 null,

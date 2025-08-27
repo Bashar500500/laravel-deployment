@@ -3,6 +3,7 @@
 namespace App\Repositories\Project;
 
 use App\DataTransferObjects\Project\ProjectDto;
+use App\DataTransferObjects\Project\ProjectSubmitDto;
 use App\Enums\Upload\UploadMessage;
 
 interface ProjectRepositoryInterface
@@ -24,4 +25,6 @@ interface ProjectRepositoryInterface
     public function upload(int $id, array $data): UploadMessage;
 
     public function deleteAttachment(int $id, string $fileName): void;
+
+    public function submit(ProjectSubmitDto $dto): object;
 }

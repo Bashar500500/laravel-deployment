@@ -28,7 +28,6 @@ class ProgressRequest extends FormRequest
             'student_id' => ['required', 'exists:users,id'],
             'progress' => ['required', 'integer', 'gte:0'],
             'modules' => ['required', 'string'],
-            'time' => ['required', 'string'],
             'last_active' => ['required', 'string'],
             'streak' => ['required', 'string'],
             'skill_level' => ['required', new Enum(ProgressSkillLevel::class)],
@@ -40,7 +39,6 @@ class ProgressRequest extends FormRequest
         return [
             'progress' => ['sometimes', 'integer', 'gte:0'],
             'modules' => ['sometimes', 'string'],
-            'time' => ['sometimes', 'string'],
             'last_active' => ['sometimes', 'string'],
             'streak' => ['sometimes', 'string'],
             'skill_level' => ['sometimes', new Enum(ProgressSkillLevel::class)],

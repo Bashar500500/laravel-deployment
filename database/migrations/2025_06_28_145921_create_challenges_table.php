@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('type');
             $table->string('category');
             $table->string('difficulty');
-            $table->string('status');
-            $table->text('description');
+            $table->string('status')->nullable();
+            $table->text('description')->nullable();
             $table->json('conditions');
             $table->json('rewards');
             $table->timestamps();

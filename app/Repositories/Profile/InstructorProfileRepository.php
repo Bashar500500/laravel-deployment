@@ -24,10 +24,9 @@ class InstructorProfileRepository extends BaseRepository implements UserProfileR
     public function all(UserProfileDto $dto, array $data): object
     {
         $user = $data['user'];
-        $studentIds = $user->ownedCourses
-            ->flatMap(fn($course) => $course->students)
-            ->pluck('id')
-            ->unique();
+        $studentIds = $user->instructorStudentsForInstructor
+            ->pluck('student_id')
+            ->values();
         $profileIds = User::whereIn('id', $studentIds)
             ->with('profile')
             ->get()
@@ -98,10 +97,14 @@ class InstructorProfileRepository extends BaseRepository implements UserProfileR
                 $storedFile = Storage::disk('supabase')->putFile('Profile/' . $profile->id . '/Images',
                     $dto->userImage);
 
+                $size = $dto->userImage->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $profile->attachment()->create([
                     'reference_field' => AttachmentReferenceField::UserImage,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
@@ -139,10 +142,14 @@ class InstructorProfileRepository extends BaseRepository implements UserProfileR
                 $storedFile = Storage::disk('supabase')->putFile('Profile/' . $profile->id . '/Images',
                     $dto->userImage);
 
+                $size = $dto->userImage->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $profile->attachment()->create([
                     'reference_field' => AttachmentReferenceField::UserImage,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
@@ -216,10 +223,14 @@ class InstructorProfileRepository extends BaseRepository implements UserProfileR
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
+            $size = $data['image']->getSize();
+            $sizeKb = round($size / 1024, 2);
+
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::UserImage,
                 'type' => AttachmentType::Image,
                 'url' => basename($storedFile),
+                'size_kb' => $sizeKb,
             ]);
         });
 

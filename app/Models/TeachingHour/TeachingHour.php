@@ -12,9 +12,7 @@ class TeachingHour extends Model
     protected $fillable = [
         'instructor_id',
         'total_hours',
-        'completed_hours',
         'upcoming',
-        'break',
         'status',
     ];
 

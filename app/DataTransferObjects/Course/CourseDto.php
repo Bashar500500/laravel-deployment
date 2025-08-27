@@ -13,8 +13,8 @@ use Illuminate\Http\UploadedFile;
 class CourseDto
 {
     public function __construct(
-        public readonly ?int $instructorId,
         public readonly ?CourseAccessType $accessType,
+        public readonly ?bool $allCourses,
         public readonly ?int $currentPage,
         public readonly ?int $pageSize,
         public readonly ?int $categoryId,
@@ -36,8 +36,8 @@ class CourseDto
     public static function fromIndexRequest(CourseRequest $request): CourseDto
     {
         return new self(
-            instructorId: $request->validated('instructor_id'),
             accessType: $request->validated('access_type') ? CourseAccessType::from($request->validated('access_type')) : null,
+            allCourses: $request->validated('all_courses'),
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
             categoryId: null,
@@ -60,15 +60,19 @@ class CourseDto
     public static function fromStoreRequest(CourseRequest $request): CourseDto
     {
         return new self(
-            instructorId: null,
             accessType: null,
+            allCourses: null,
             currentPage: null,
             pageSize: null,
             categoryId: $request->validated('category_id'),
             name: $request->validated('name'),
             description: $request->validated('description'),
-            language: CourseLanguage::from($request->validated('language')),
-            level: CourseLevel::from($request->validated('level')),
+            language: $request->validated('language') ?
+                CourseLanguage::from($request->validated('language')) :
+                null,
+            level: $request->validated('level') ?
+                CourseLevel::from($request->validated('level')) :
+                null,
             timezone: $request->validated('timezone'),
             startDate: Carbon::parse($request->validated('start_date')),
             endDate: Carbon::parse($request->validated('end_date')),
@@ -86,8 +90,8 @@ class CourseDto
     public static function fromUpdateRequest(CourseRequest $request): CourseDto
     {
         return new self(
-            instructorId: null,
             accessType: null,
+            allCourses: null,
             currentPage: null,
             pageSize: null,
             categoryId: $request->validated('category_id'),

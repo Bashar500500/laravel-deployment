@@ -115,4 +115,16 @@ return [
     'analytics' => [
         'message' => ' retrieved successfully.'
     ],
+    'instructor_file_names' => [
+        'message' => ' file names retrieved successfully.'
+    ],
+    'remove_student_from_instructor_list' => [
+        'message' => ' removed from instructor list successfully.'
+    ],
+    'grade_book' => [
+        'message' => ' grade book retrieved successfully.'
+    ],
+    'calendar' => [
+        'message' => ' calendar retrieved successfully.'
+    ],
 ];

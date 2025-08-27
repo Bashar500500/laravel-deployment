@@ -15,7 +15,7 @@ interface UserRepositoryInterface
 
     public function find(int $id): object;
 
-    public function create(UserDto $dto): object;
+    public function create(UserDto $dto, array $data): object;
 
     public function update(UserDto $dto, int $id): object;
 
@@ -26,5 +26,7 @@ interface UserRepositoryInterface
     public function addStudentToCourse(UserCourseDto $dto): UserMessage;
 
     public function removeStudentFromCourse(UserCourseDto $dto): void;
+
+    public function removeStudentFromInstructorList(UserCourseDto $dto, array $data): void;
 
 }

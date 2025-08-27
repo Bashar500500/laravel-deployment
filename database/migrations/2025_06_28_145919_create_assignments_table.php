@@ -14,14 +14,16 @@ return new class extends Migration
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
+            $table->foreignId('rubric_id')->constrained('rubrics')->cascadeOnDelete();
             $table->string('title');
             $table->string('status');
-            $table->text('description');
-            $table->text('instructions');
+            $table->text('description')->nullable();
+            $table->text('instructions')->nullable();
             $table->date('due_date');
             $table->integer('points');
-            $table->json('submission_settings');
-            $table->json('policies');
+            $table->json('peer_review_settings');
+            $table->json('submission_settings')->nullable();
+            $table->json('policies')->nullable();
             $table->timestamps();
         });
     }

@@ -26,9 +26,7 @@ class TeachingHourRequest extends FormRequest
         return [
             'instructor_id' => ['required', 'exists:users,id'],
             'total_hours' => ['required', 'integer', 'gt:0'],
-            'completed_hours' => ['required', 'integer', 'lte:total_hours'],
             'upcoming' => ['required', 'integer', 'gte:0'],
-            'break' => ['required', 'integer', 'gte:0'],
             'status' => ['required', new Enum(TeachingHourStatus::class)],
         ];
     }
@@ -36,9 +34,7 @@ class TeachingHourRequest extends FormRequest
     protected function onUpdate() {
         return [
             'total_hours' => ['sometimes', 'integer', 'gt:0'],
-            'completed_hours' => ['required_with:total_hours', 'integer', 'lte:total_hours'],
             'upcoming' => ['sometimes', 'integer', 'gte:0'],
-            'break' => ['sometimes', 'integer', 'gte:0'],
             'status' => ['sometimes', new Enum(TeachingHourStatus::class)],
         ];
     }

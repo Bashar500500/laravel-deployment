@@ -50,10 +50,14 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                 $storedFile = Storage::disk('supabase')->putFile('Category/' . $category->id . '/Images',
                     $dto->categoryImage);
 
+                $size = $dto->categoryImage->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $category->attachment()->create([
                     'reference_field' => AttachmentReferenceField::CategoryImage,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
@@ -82,10 +86,14 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                 $storedFile = Storage::disk('supabase')->putFile('Category/' . $category->id . '/Images',
                     $dto->categoryImage);
 
+                $size = $dto->categoryImage->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $category->attachment()->create([
                     'reference_field' => AttachmentReferenceField::CategoryImage,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
@@ -174,6 +182,27 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                 }
                 foreach ($projects as $project)
                 {
+                    $projectSubmits = $project->projectSubmits;
+
+                    foreach ($projectSubmits as $projectSubmit)
+                    {
+                        $attachments = $projectSubmit->attachments;
+                        foreach ($attachments as $attachment)
+                        {
+                            $reference_field = $attachment->reference_field;
+                            switch ($reference_field)
+                            {
+                                case AttachmentReferenceField::ProjectSubmitInstructorFiles:
+                                    Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Instructor/' . $attachment?->url);
+                                    break;
+                                default:
+                                    Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Student/' . $attachment?->url);
+                                    break;
+                            }
+                        }
+                        $projectSubmit->attachments()->delete();
+                    }
+
                     $attachments = $project->attachments;
                     foreach ($attachments as $attachment)
                     {
@@ -209,10 +238,26 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
                         $attachments = $assignmentSubmit->attachments;
                         foreach ($attachments as $attachment)
                         {
-                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
+                            $reference_field = $attachment->reference_field;
+                            switch ($reference_field)
+                            {
+                                case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                                    Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignment->id . '/Files/' . $assignment->student_id . '/Instructor/' . $attachment?->url);
+                                    break;
+                                default:
+                                    Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignment->id . '/Files/' . $assignment->student_id . '/Student/' . $attachment?->url);
+                                    break;
+                            }
                         }
                         $assignmentSubmit->attachments()->delete();
                     }
+
+                    $attachments = $assignment->attachments;
+                    foreach ($attachments as $attachment)
+                    {
+                        Storage::disk('supabase')->delete('Assignment/' . $assignment->id . '/Files/' . $attachment?->url);
+                    }
+                    $assignment->attachments()->delete();
                 }
                 foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
                 {
@@ -298,10 +343,14 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
+            $size = $data['image']->getSize();
+            $sizeKb = round($size / 1024, 2);
+
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::CategoryImage,
                 'type' => AttachmentType::Image,
                 'url' => basename($storedFile),
+                'size_kb' => $sizeKb,
             ]);
         });
 

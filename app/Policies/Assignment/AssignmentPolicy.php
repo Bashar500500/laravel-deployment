@@ -46,6 +46,30 @@ class AssignmentPolicy
             $this->checkIfOwned($user, $assignment->course->id));
     }
 
+    public function view(User $user, Assignment $assignment): bool
+    {
+        return ($this->checkIfEnrolled($user, $assignment->course->id) ||
+            $this->checkIfOwned($user, $assignment->course->id));
+    }
+
+    public function download(User $user, Assignment $assignment): bool
+    {
+        return ($this->checkIfEnrolled($user, $assignment->course->id) ||
+            $this->checkIfOwned($user, $assignment->course->id));
+    }
+
+    public function upload(User $user, Assignment $assignment): bool
+    {
+        return ($this->checkInstructorRole($user) &&
+            $this->checkIfOwned($user, $assignment->course->id));
+    }
+
+    public function destroyAttachment(User $user, Assignment $assignment): bool
+    {
+        return ($this->checkInstructorRole($user) &&
+            $this->checkIfOwned($user, $assignment->course->id));
+    }
+
     public function submit(User $user, string $model, int $assignmentId): bool
     {
         $assignment = Assignment::find($assignmentId);

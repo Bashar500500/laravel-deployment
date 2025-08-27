@@ -4,20 +4,20 @@ namespace App\Models\Attendance;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Section\Section;
+use App\Models\LearningActivity\LearningActivity;
 use App\Models\User\User;
 
 class Attendance extends Model
 {
     protected $fillable = [
-        'section_id',
+        'learning_activity_id',
         'student_id',
         'is_present',
     ];
 
-    public function section(): BelongsTo
+    public function learningActivity(): BelongsTo
     {
-        return $this->belongsTo(Section::class, 'section_id');
+        return $this->belongsTo(LearningActivity::class, 'learning_activity_id');
     }
 
     public function student(): BelongsTo

@@ -12,12 +12,12 @@ class EventAttachmentsResource extends JsonResource
     ): array
     {
         return [
-            'files' => $eventResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsFile) ?
-                EventAttachmentResource::collection($eventResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)) :
-                null,
-            'links' => $eventResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsLink) ?
-                EventAttachmentResource::collection($eventResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsLink)) :
-                null,
+            'files' => $eventResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->count() == 0 ?
+                null :
+                EventAttachmentResource::collection($eventResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)),
+            'links' => $eventResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsLink)->count() == 0 ?
+                null :
+                EventAttachmentResource::collection($eventResource->whenLoaded('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsLink)),
         ];
     }
 }

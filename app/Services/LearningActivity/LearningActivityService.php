@@ -7,7 +7,7 @@ use App\Http\Requests\LearningActivity\LearningActivityRequest;
 use App\Models\LearningActivity\LearningActivity;
 use App\DataTransferObjects\LearningActivity\LearningActivityDto;
 use App\Enums\LearningActivity\LearningActivityCompletionType;
-use App\Enums\LearningActivity\LearningActivityContentType;
+use App\Enums\LearningActivity\LearningActivityType;
 
 class LearningActivityService
 {
@@ -64,16 +64,9 @@ class LearningActivityService
     {
         $data = [];
 
-        switch ($dto->learningActivityContentDto->type)
+        switch ($dto->type)
         {
-            case LearningActivityContentType::Pdf:
-                $data['contentData']['sizeMB'] = $dto->learningActivityContentDto->sizeMB;
-                $data['contentData']['pages'] = $dto->learningActivityContentDto->pages;
-                $data['contentData']['watermark'] = $dto->learningActivityContentDto->watermark;
-                break;
-            default:
-                $data['contentData']['duration'] = $dto->learningActivityContentDto->duration;
-                $data['contentData']['captions']['language'] = $dto->learningActivityContentDto->learningActivityContentCaptionsDto->language;
+            case LearningActivityType::Video:
                 $data['contentData']['captions']['url'] = $dto->learningActivityContentDto->learningActivityContentCaptionsDto->url;
                 break;
         }

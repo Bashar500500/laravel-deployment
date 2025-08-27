@@ -39,9 +39,7 @@ class TeachingHourRepository extends BaseRepository implements TeachingHourRepos
             $teachingHour = (object) $this->model->create([
                 'instructor_id' => $dto->instructorId,
                 'total_hours' => $dto->totalHours,
-                'completed_hours' => $dto->completedHours,
                 'upcoming' => $dto->upcoming,
-                'break' => $dto->break,
                 'status' => $dto->status,
             ]);
 
@@ -58,9 +56,7 @@ class TeachingHourRepository extends BaseRepository implements TeachingHourRepos
         $teachingHour = DB::transaction(function () use ($dto, $model) {
             $teachingHour = tap($model)->update([
                 'total_hours' => $dto->totalHours ? $dto->totalHours : $model->total_hours,
-                'completed_hours' => $dto->completedHours ? $dto->completedHours : $model->completed_hours,
                 'upcoming' => $dto->upcoming ? $dto->upcoming : $model->upcoming,
-                'break' => $dto->break ? $dto->break : $model->break,
                 'status' => $dto->status ? $dto->status : $model->status,
             ]);
 

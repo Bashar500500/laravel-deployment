@@ -24,6 +24,10 @@ use App\Repositories\Profile\AdminProfileRepository;
 use App\Repositories\Profile\AdminProfileRepositoryInterface;
 use App\Repositories\Project\ProjectRepository;
 use App\Repositories\Project\ProjectRepositoryInterface;
+use App\Repositories\Assignment\AssignmentRepository;
+use App\Repositories\Assignment\AssignmentRepositoryInterface;
+use App\Repositories\Wiki\WikiRepository;
+use App\Repositories\Wiki\WikiRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
 class UploadRepositoryFactory
@@ -32,7 +36,7 @@ class UploadRepositoryFactory
         protected Container $container,
     ) {}
 
-    public function make(ModelName $name): AdminProfileRepositoryInterface|CategoryRepositoryInterface|CourseRepositoryInterface|GroupRepositoryInterface|LearningActivityRepositoryInterface|ProjectRepositoryInterface|SectionRepositoryInterface|SubCategoryRepositoryInterface|UserProfileRepositoryInterface
+    public function make(ModelName $name): AdminProfileRepositoryInterface|CategoryRepositoryInterface|CourseRepositoryInterface|GroupRepositoryInterface|LearningActivityRepositoryInterface|ProjectRepositoryInterface|SectionRepositoryInterface|SubCategoryRepositoryInterface|UserProfileRepositoryInterface|AssignmentRepositoryInterface|WikiRepositoryInterface
     {
         $role = Auth::user()->getRoleNames();
         return match ($name) {
@@ -49,6 +53,8 @@ class UploadRepositoryFactory
                 $this->container->make(InstructorProfileRepository::class),
             ModelName::AdminProfile => $this->container->make(AdminProfileRepository::class),
             ModelName::Project => $this->container->make(ProjectRepository::class),
+            ModelName::Assignment => $this->container->make(AssignmentRepository::class),
+            ModelName::Wiki => $this->container->make(WikiRepository::class),
         };
     }
 }

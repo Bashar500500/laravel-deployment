@@ -24,8 +24,8 @@ class AttendanceRepository extends BaseRepository implements AttendanceRepositor
 
     public function all(AttendanceDto $dto): object
     {
-        return (object) $this->model->where('section_id', $dto->sectionId)
-            ->with('section', 'student')
+        return (object) $this->model->where('learning_activity_id', $dto->learningActivityId)
+            ->with('learningActivity', 'student')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -38,12 +38,12 @@ class AttendanceRepository extends BaseRepository implements AttendanceRepositor
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('section', 'student');
+            ->load('learningActivity', 'student');
     }
 
     public function create(AttendanceDto $dto): object
     {
-        $exists = $this->model->where('section_id', $dto->sectionId)
+        $exists = $this->model->where('learning_activity_id', $dto->learningActivityId)
             ->where('student_id', $dto->studentId)->first();
 
         if ($exists)
@@ -53,36 +53,57 @@ class AttendanceRepository extends BaseRepository implements AttendanceRepositor
 
         $attendance = DB::transaction(function () use ($dto) {
             $attendance = (object) $this->model->create([
-                'section_id' => $dto->sectionId,
+                'learning_activity_id' => $dto->learningActivityId,
                 'student_id' => $dto->studentId,
                 'is_present' => $dto->isPresent,
             ]);
 
-            $course = $attendance->section->course;
-            $sections = $course->sections;
-            $nextSection = $course->sections->where('id', '>', $attendance->section_id)->first();
-            $progress = $course->progresses->where('student_id', $attendance->student_id)->first();
             $student = $attendance->student;
-            $attendances = $student->attendances;
-            $count = 0;
+            $section = $attendance->learningActivity->section;
 
-            foreach ($attendances as $item)
+            // $alreadyCompleted = SectionCompletion::where('section_id', $section->id)
+            //     ->where('student_id', $student->id)
+            //     ->exists();
+
+            // if ($alreadyCompleted) {
+            //     return;
+            // }
+
+            $totalActivities = $section->learningActivities->count();
+            $attendedActivities = Attendance::where('student_id', $student->id)
+                ->whereHas('learningActivity', function ($query) use ($section) {
+                    $query->where('section_id', $section->id);
+                })->count();
+
+            if ($attendedActivities == $totalActivities)
             {
-                $attendanceCourse = $item->section->course;
-                if ($attendanceCourse->id == $course->id)
+                $student->sectionCompletions()->create([
+                    'section_id' => $section->id,
+                    'is_complete' => true,
+                ]);
+
+                $course = $attendance->learningActivity->section->course;
+                $sections = $course->sections;
+                $nextSection = $sections->where('id', '>', $section->id)->first();
+                $progress = $course->progresses->where('student_id', $attendance->student_id)->first();
+                $sectionCompletions = $student->sectionCompletions;
+                $count = 0;
+
+                foreach ($sectionCompletions as $item)
                 {
-                    $count += 1;
+                    $sectionCompletionsCourse = $item->section->course;
+                    if ($sectionCompletionsCourse->id == $course->id)
+                    {
+                        $count += 1;
+                    }
                 }
-            }
 
-            if ($attendance->is_present)
-            {
                 $this->checkChallengeCompleteThreeCourseModulesRule($attendance, $dto);
                 $this->checkChallengeCourseCompletionRule($attendance, $dto);
 
                 if (! $progress)
                 {
-                    $course->progresses->create([
+                    $course->progresses()->create([
                         'student_id' => $attendance->student_id,
                         'progress' => (1 / (count($sections) / $count)) * 100,
                         'modules' => $count . '/' . count($sections),
@@ -104,7 +125,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceRepositor
             return $attendance;
         });
 
-        return (object) $attendance->load('section', 'student');
+        return (object) $attendance->load('learningActivity', 'student');
     }
 
     public function update(AttendanceDto $dto, int $id): object
@@ -116,40 +137,10 @@ class AttendanceRepository extends BaseRepository implements AttendanceRepositor
                 'is_present' => $dto->isPresent ? $dto->isPresent : $model->is_present,
             ]);
 
-            if ($attendance->is_present == false && $dto->isPresent == false)
-            {
-                $this->checkChallengeCompleteThreeCourseModulesRule($attendance, $dto);
-                $this->checkChallengeCourseCompletionRule($attendance, $dto);
-
-                $course = $attendance->section->course;
-                $sections = $course->sections;
-                $nextSection = $course->sections->where('id', '>', $attendance->section_id)->first();
-                $progress = $course->progresses->where('student_id', $attendance->student_id)->first();
-                $student = $attendance->student;
-                $attendances = $student->attendances;
-                $count = 0;
-
-                foreach ($attendances as $item)
-                {
-                    $attendanceCourse = $item->section->course;
-                    if ($attendanceCourse->id == $course->id)
-                    {
-                        $count += 1;
-                    }
-                }
-
-                $progress->update([
-                    'progress' => (1 / (count($sections) / $count)) * 100,
-                    'modules' => $count . '/' . count($sections),
-                    'upcomig' => $count == count($sections) ? null :
-                        $nextSection->title . ' - ' . $nextSection->access_release_date,
-                ]);
-            }
-
             return $attendance;
         });
 
-        return (object) $attendance->load('section', 'student');
+        return (object) $attendance->load('learningActivity', 'student');
     }
 
     public function delete(int $id): object
@@ -163,7 +154,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceRepositor
 
     private function checkChallengeCompleteThreeCourseModulesRule(object $attendance, AttendanceDto $dto): void
     {
-        $course = $attendance->section->course;
+        $course = $attendance->learningActivity->section->course;
         $challenges = $course->instructor->challenges;
 
         foreach ($challenges as $challenge)
@@ -219,13 +210,13 @@ class AttendanceRepository extends BaseRepository implements AttendanceRepositor
     private function checkChallengeCompleteThreeCourseModulesRuleDependingOnChallengeType(object $attendance, object $course, object $challengeRuleBadge): void
     {
         $student = $attendance->student;
-        $attendances = $student->attendances;
+        $sectionCompletions = $student->sectionCompletions;
         $count = 0;
 
-        foreach ($attendances as $item)
+        foreach ($sectionCompletions as $item)
         {
-            $attendanceCourse = $item->section->course;
-            if ($attendanceCourse->id == $course->id)
+            $sectionCompletionsCourse = $item->section->course;
+            if ($sectionCompletionsCourse->id == $course->id)
             {
                 $count += 1;
             }
@@ -239,7 +230,7 @@ class AttendanceRepository extends BaseRepository implements AttendanceRepositor
 
     private function checkChallengeCourseCompletionRule(object $attendance, AttendanceDto $dto): void
     {
-        $course = $attendance->section->course;
+        $course = $attendance->learningActivity->section->course;
         $challenges = $course->instructor->challenges;
 
         foreach ($challenges as $challenge)
@@ -295,18 +286,18 @@ class AttendanceRepository extends BaseRepository implements AttendanceRepositor
     private function checkChallengeCourseCompletionRuleDependingOnChallengeType(object $attendance, object $course, object $challengeRuleBadge): void
     {
         $student = $attendance->student;
-        $attendances = $student->attendances;
+        $sectionCompletions = $student->sectionCompletions;
         $count = 0;
 
-        foreach ($attendances as $item)
+        foreach ($sectionCompletions as $item)
         {
-            $attendanceCourse = $item->section->course;
-            $attendanceSections = $item->section->course->sections;
-            if ($attendanceCourse->id == $course->id)
+            $sectionCompletionsCourse = $item->section->course;
+            $sections = $item->section->course->sections;
+            if ($sectionCompletionsCourse->id == $course->id)
             {
                 $count += 1;
             }
-            if ($count == count($attendanceSections))
+            if ($count == count($sections))
             {
                 $this->awardToStudent($student, $challengeRuleBadge, 2);
                 break;

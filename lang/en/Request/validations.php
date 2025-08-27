@@ -28,6 +28,9 @@ return [
     'lte' => [
         'message' => 'The :attribute field must be less than or equalto previous data.',
     ],
+    'lt' => [
+        'message' => 'The :attribute field must be less than previous data.',
+    ],
     'string' => [
         'message' => 'The :attribute field must be a string.',
     ],

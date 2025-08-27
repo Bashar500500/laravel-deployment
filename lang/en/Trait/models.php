@@ -112,8 +112,8 @@ return [
     'project' => [
         'message' => 'Project'
     ],
-    'ticket' => [
-        'message' => 'Ticket'
+    'support_ticket' => [
+        'message' => 'Support ticket'
     ],
     'community_access' => [
         'message' => 'Community access'
@@ -171,5 +171,44 @@ return [
     ],
     'analytics' => [
         'message' => 'Analytics'
+    ],
+    'instructor' => [
+        'message' => 'Instructor'
+    ],
+    'rubric' => [
+        'message' => 'Rubric'
+    ],
+    'rubric_criteria' => [
+        'message' => 'Rubric criteria'
+    ],
+    'plagiarism' => [
+        'message' => 'Plagiarism'
+    ],
+    'project_submit' => [
+        'message' => 'Project submit'
+    ],
+    'wiki' => [
+        'message' => 'Wiki'
+    ],
+    'wiki_comment' => [
+        'message' => 'Wiki comment'
+    ],
+    'wiki_rating' => [
+        'message' => 'Wiki rating'
+    ],
+    'prerequisite' => [
+        'message' => 'Prerequisite'
+    ],
+    'certificate' => [
+        'message' => 'Certificate'
+    ],
+    'certificate_template' => [
+        'message' => 'Certificate template'
+    ],
+    'enrollment_option' => [
+        'message' => 'Enrollment option'
+    ],
+    'whiteboard' => [
+        'message' => 'Whiteboard'
     ],
 ];

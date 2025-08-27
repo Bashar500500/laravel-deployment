@@ -77,6 +77,7 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
 
         $user = DB::transaction(function () use ($id, $model) {
             $profile = $model->profile;
+            $wikis = $model->wikis;
             $projects = $model->projects;
             $ownedCourses = $model->ownedCourses;
             $badges = $model->badges;
@@ -85,15 +86,25 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
             Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $attachment?->url);
             $profile->attachment()->delete();
 
-            foreach ($projects as $project)
+            foreach ($wikis as $wiki)
             {
-                $attachments = $project->attachments;
+                $attachments = $wiki->attachments;
                 foreach ($attachments as $attachment)
                 {
-                    Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('Wiki/' . $wiki->id . '/Files/' . $attachment?->url);
                 }
-                $project->attachments()->delete();
+                $wiki->attachments()->delete();
             }
+
+            // foreach ($projects as $project)
+            // {
+            //     $attachments = $project->attachments;
+            //     foreach ($attachments as $attachment)
+            //     {
+            //         Storage::disk('supabase')->delete('Project/' . $project->id . '/Files/' . $attachment?->url);
+            //     }
+            //     $project->attachments()->delete();
+            // }
             foreach ($ownedCourses as $ownedCourse)
             {
                 $sections = $ownedCourse->sections;
@@ -159,6 +170,27 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                 }
                 foreach ($projects as $project)
                 {
+                    $projectSubmits = $project->projectSubmits;
+
+                    foreach ($projectSubmits as $projectSubmit)
+                    {
+                        $attachments = $projectSubmit->attachments;
+                        foreach ($attachments as $attachment)
+                        {
+                            $reference_field = $attachment->reference_field;
+                            switch ($reference_field)
+                            {
+                                case AttachmentReferenceField::ProjectSubmitInstructorFiles:
+                                    Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Instructor/' . $attachment?->url);
+                                    break;
+                                default:
+                                    Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Student/' . $attachment?->url);
+                                    break;
+                            }
+                        }
+                        $projectSubmit->attachments()->delete();
+                    }
+
                     $attachments = $project->attachments;
                     foreach ($attachments as $attachment)
                     {
@@ -194,10 +226,26 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                         $attachments = $assignmentSubmit->attachments;
                         foreach ($attachments as $attachment)
                         {
-                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
+                            $reference_field = $attachment->reference_field;
+                            switch ($reference_field)
+                            {
+                                case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                                    Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignment->id . '/Files/' . $assignment->student_id . '/Instructor/' . $attachment?->url);
+                                    break;
+                                default:
+                                    Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignment->id . '/Files/' . $assignment->student_id . '/Student/' . $attachment?->url);
+                                    break;
+                            }
                         }
                         $assignmentSubmit->attachments()->delete();
                     }
+
+                    $attachments = $assignment->attachments;
+                    foreach ($attachments as $attachment)
+                    {
+                        Storage::disk('supabase')->delete('Assignment/' . $assignment->id . '/Files/' . $attachment?->url);
+                    }
+                    $assignment->attachments()->delete();
                 }
                 foreach ($questionBankMultipleTypeQuestions as $questionBankMultipleTypeQuestion)
                 {

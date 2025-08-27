@@ -2,6 +2,7 @@
 
 namespace App\Policies\User;
 
+use App\Models\InstructorStudent\InstructorStudent;
 use App\Models\User\User;
 use App\Models\UserCourseGroup\UserCourseGroup;
 use Illuminate\Auth\Access\Response;
@@ -62,6 +63,22 @@ class AdminAndUserPolicy
             $this->checkIfOwned($user, $exists->course->id));
     }
 
+    public function instructorFileNames(User $user): bool
+    {
+        return $this->checkInstructorRole($user);
+    }
+
+    public function studentFileNames(User $user): bool
+    {
+        return $this->checkStudentRole($user);
+    }
+
+    public function removeStudentFromInstructorList(User $user, string $model, string $studentId): bool
+    {
+        $exists = InstructorStudent::where('instructor_id', $user->id)->where('student_id', $studentId)->first();
+        return ($this->checkInstructorRole($user) && $exists);
+    }
+
     private function checkIfBelonged(User $user, int $userId): bool
     {
         $coursesA = UserCourseGroup::where('student_id', $user->id)->pluck('course_id');
@@ -79,6 +96,12 @@ class AdminAndUserPolicy
     {
         $role = $user->getRoleNames();
         return $role[0] == 'instructor' ? true : false;
+    }
+
+    public function checkStudentRole(User $user): bool
+    {
+        $role = $user->getRoleNames();
+        return $role[0] == 'student' ? true : false;
     }
 
     public function checkAdminRole(User $user): bool

@@ -25,9 +25,14 @@ use App\Models\Assessment\Assessment;
 use App\Models\QuestionBank\QuestionBank;
 use App\Models\Assignment\Assignment;
 use App\Models\ChallengeCourse\ChallengeCourse;
+use Illuminate\Database\Eloquent\Collection;
+use App\Models\Whiteboard\Whiteboard;
+use App\Models\EnrollmentOption\EnrollmentOption;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use App\Models\Attachment\Attachment;
+use App\Models\Prerequisite\Prerequisite;
+use App\Models\UserCertificate\UserCertificate;
 
 class Course extends Model
 {
@@ -43,6 +48,7 @@ class Course extends Model
         'end_date',
         'status',
         'duration',
+        'estimated_duration_hours',
         'price',
         'access_settings_access_type',
         'access_settings_price_hidden',
@@ -149,6 +155,30 @@ class Course extends Model
         return $this->hasMany(ChallengeCourse::class, 'course_id');
     }
 
+    public function studentProjects(int $userId): Collection
+    {
+        $groupIds = UserCourseGroup::where('student_id', $userId)
+            ->whereIn('group_id', $this->groups->pluck('id'))
+            ->pluck('group_id');
+
+        return $this->projects()
+            ->where(function ($query) use ($userId, $groupIds) {
+                $query->where('leader_id', $userId)
+                    ->orWhereIn('group_id', $groupIds);
+            })
+            ->get();
+    }
+
+    public function whiteboards(): HasMany
+    {
+        return $this->hasMany(Whiteboard::class, 'course_id');
+    }
+
+    public function enrollmentOption(): HasOne
+    {
+        return $this->hasOne(EnrollmentOption::class, 'course_id');
+    }
+
     public function attachments(): MorphMany
     {
         return $this->morphMany(Attachment::class, 'attachmentable');
@@ -157,5 +187,35 @@ class Course extends Model
     public function attachment(): MorphOne
     {
         return $this->morphOne(Attachment::class, 'attachmentable');
+    }
+
+    public function prerequisites(): MorphMany
+    {
+        return $this->morphMany(Prerequisite::class, 'prerequisiteable');
+    }
+
+    public function prerequisite(): MorphOne
+    {
+        return $this->morphOne(Prerequisite::class, 'prerequisiteable');
+    }
+
+    public function requireds(): MorphMany
+    {
+        return $this->morphMany(Prerequisite::class, 'requiredable');
+    }
+
+    public function required(): MorphOne
+    {
+        return $this->morphOne(Prerequisite::class, 'requiredable');
+    }
+
+    public function certificates(): MorphMany
+    {
+        return $this->morphMany(UserCertificate::class, 'certificateable');
+    }
+
+    public function certificate(): MorphOne
+    {
+        return $this->morphOne(UserCertificate::class, 'certificateable');
     }
 }

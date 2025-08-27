@@ -14,6 +14,10 @@ use App\Enums\User\UserMessage;
 use App\Http\Requests\User\AddUserToCourseRequest;
 use App\Http\Requests\User\RemoveUserFromCourseRequest;
 use App\Models\User\User;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\User\InstructorFileNamesResource;
+use App\Http\Resources\User\StudentFileNamesResource;
+use App\Http\Requests\User\RemoveStudentFromInstructorListRequest;
 
 class UserController extends Controller
 {
@@ -125,6 +129,52 @@ class UserController extends Controller
         $this->service->removeStudentFromCourse($request);
 
         return $this->controller->setFunctionName(FunctionName::RemoveStudentFromCourse)
+            ->setModelName(ModelName::Student)
+            ->setData((object) [])
+            ->successResponse();
+    }
+
+    public function instructorFileNames(): JsonResponse
+    {
+        // $this->authorize('instructorFileNames', User::class);
+
+        $user = Auth::user();
+
+        $data = InstructorFileNamesResource::collection(
+            $user->ownedCourses,
+        );
+
+        return $this->controller->setFunctionName(FunctionName::InstructorFileNames)
+            ->setModelName(ModelName::Instructor)
+            ->setData($data)
+            ->successResponse();
+    }
+
+    public function studentFileNames(): JsonResponse
+    {
+        // $this->authorize('studentFileNames', User::class);
+
+        $user = Auth::user();
+
+        $data = $user->enrolledCourses
+            ? $user->enrolledCourses->map(
+                fn($course) => new StudentFileNamesResource($course, $user->id)
+            )
+            : (object) [];
+
+        return $this->controller->setFunctionName(FunctionName::InstructorFileNames)
+            ->setModelName(ModelName::Instructor)
+            ->setData($data)
+            ->successResponse();
+    }
+
+    public function removeStudentFromInstructorList(RemoveStudentFromInstructorListRequest $request): JsonResponse
+    {
+        // $this->authorize('removeStudentFromInstructorList', [User::class, $request->validated('student_id')]);
+
+        $this->service->removeStudentFromInstructorList($request);
+
+        return $this->controller->setFunctionName(FunctionName::RemoveStudentFromInstructorList)
             ->setModelName(ModelName::Student)
             ->setData((object) [])
             ->successResponse();

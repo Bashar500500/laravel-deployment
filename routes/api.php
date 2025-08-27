@@ -29,7 +29,7 @@ use App\Http\Controllers\Progress\ProgressController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\CommunityAccess\CommunityAccessController;
 use App\Http\Controllers\Project\ProjectController;
-use App\Http\Controllers\Ticket\TicketController;
+use App\Http\Controllers\SupportTicket\SupportTicketController;
 use App\Http\Controllers\Assessment\AssessmentController;
 use App\Http\Controllers\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestionController;
 use App\Http\Controllers\AssessmentMultipleTypeQuestion\AssessmentMultipleTypeQuestionController;
@@ -39,15 +39,23 @@ use App\Http\Controllers\AssessmentSubmit\AssessmentSubmitController;
 use App\Http\Controllers\Assignment\AssignmentController;
 use App\Http\Controllers\AssignmentSubmit\AssignmentSubmitController;
 use App\Http\Controllers\Badge\BadgeController;
+use App\Http\Controllers\Certificate\CertificateController;
+use App\Http\Controllers\CertificateTemplate\CertificateTemplateController;
 use App\Http\Controllers\Challenge\ChallengeController;
+use App\Http\Controllers\EnrollmentOption\EnrollmentOptionController;
+use App\Http\Controllers\Plagiarism\PlagiarismController;
+use App\Http\Controllers\Prerequisite\PrerequisiteController;
+use App\Http\Controllers\ProjectSubmit\ProjectSubmitController;
 use App\Http\Controllers\QuestionBank\QuestionBankController;
 use App\Http\Controllers\QuestionBankFillInBlankQuestion\QuestionBankFillInBlankQuestionController;
 use App\Http\Controllers\QuestionBankMultipleTypeQuestion\QuestionBankMultipleTypeQuestionController;
 use App\Http\Controllers\QuestionBankShortAnswerQuestion\QuestionBankShortAnswerQuestionController;
 use App\Http\Controllers\QuestionBankTrueOrFalseQuestion\QuestionBankTrueOrFalseQuestionController;
+use App\Http\Controllers\Rubric\RubricController;
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\TimeLimit\TimeLimitController;
-
+use App\Http\Controllers\Whiteboard\WhiteboardController;
+use App\Http\Controllers\Wiki\WikiController;
 use Illuminate\Support\Facades\Storage;use Illuminate\Http\Request;
 
 Route::post('register', [AuthController::class, 'register']);
@@ -108,7 +116,7 @@ Route::middleware(['auth:api'])->prefix('permissions')->group(function () {
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['auth:api', 'throttle:ip-limit'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::apiResource('chat', ChatController::class)->except(['update']);
     Route::apiResource('message', MessageController::class)->except(['show']);
@@ -119,6 +127,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('download-course-image/{course}', [CourseController::class, 'download']);
     Route::post('upload-course-image/{course}', [CourseController::class, 'upload']);
     Route::delete('delete-course-image/{course}', [CourseController::class, 'destroyAttachment']);
+    Route::get('grade-book/{course}', [CourseController::class, 'gradeBook']);
+    Route::get('calendar/{course}', [CourseController::class, 'calendar']);
     Route::apiResource('group', GroupController::class);
     Route::get('join-group/{group}', [GroupController::class, 'join']);
     Route::get('leave-group/{group}', [GroupController::class, 'leave']);
@@ -174,13 +184,20 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('get-user', [UserController::class, 'user']);
     Route::post('add-student-to-course', [UserController::class, 'addStudentToCourse']);
     Route::post('remove-student-from-course', [UserController::class, 'removeStudentFromCourse']);
+    Route::get('instructor-file-names', [UserController::class, 'instructorFileNames']);
+    Route::get('student-file-names', [UserController::class, 'studentFileNames']);
+    Route::post('remove-student-from-instructor-list', [UserController::class, 'removeStudentFromInstructorList']);
     Route::apiResource('admin-user', AdminController::class);
     Route::apiResource('project', ProjectController::class);
     Route::get('view-project-file/{project}/{fileName}', [ProjectController::class, 'view']);
     Route::get('download-project-file/{project}', [ProjectController::class, 'download']);
     Route::post('upload-project-file/{project}', [ProjectController::class, 'upload']);
     Route::delete('delete-project-file/{project}/{fileName}', [ProjectController::class, 'destroyAttachment']);
-    Route::apiResource('ticket', TicketController::class);
+    Route::post('submit-project', [ProjectController::class, 'submit']);
+    Route::apiResource('project-submit', ProjectSubmitController::class)->except(['store']);
+    Route::get('view-project-submit-file/{projectSubmit}/{fileName}', [ProjectSubmitController::class, 'view']);
+    Route::get('download-project-submit-file/{projectSubmit}', [ProjectSubmitController::class, 'download']);
+    Route::apiResource('support-ticket', SupportTicketController::class);
     Route::apiResource('community-access', CommunityAccessController::class);
     Route::apiResource('assessment', AssessmentController::class);
     Route::post('submit-assessment', [AssessmentController::class, 'submit']);
@@ -214,6 +231,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('add-assessment-true-or-false-question-to-question-bank/{question}', [AssessmentTrueOrFalseQuestionController::class, 'addAssessmentTrueOrFalseQuestionToQuestionBank']);
     Route::apiResource('assessment-submit', AssessmentSubmitController::class)->except(['store']);
     Route::apiResource('assignment', AssignmentController::class);
+    Route::get('view-assignment-file/{assignment}/{fileName}', [AssignmentController::class, 'view']);
+    Route::get('download-assignment-file/{assignment}', [AssignmentController::class, 'download']);
+    Route::post('upload-assignment-file/{assignment}', [AssignmentController::class, 'upload']);
+    Route::delete('delete-assignment-file/{assignment}/{fileName}', [AssignmentController::class, 'destroyAttachment']);
     Route::post('submit-assignment', [AssignmentController::class, 'submit']);
     Route::apiResource('assignment-submit', AssignmentSubmitController::class)->except(['store']);
     Route::get('view-assignment-submit-file/{assignmentSubmit}/{fileName}', [AssignmentSubmitController::class, 'view']);
@@ -251,8 +272,18 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('question-bank-true-or-false-question/{question}', [QuestionBankTrueOrFalseQuestionController::class, 'destroy']);
     Route::post('add-question-bank-true-or-false-question-to-assessment/{question}', [QuestionBankTrueOrFalseQuestionController::class, 'addQuestionBankTrueOrFalseQuestionToAssessment']);
     Route::post('remove-question-bank-true-or-false-question-from-assessment/{question}', [QuestionBankTrueOrFalseQuestionController::class, 'removeQuestionBankTrueOrFalseQuestionFromAssessment']);
-
-
+    Route::apiResource('certificate', CertificateController::class);
+    Route::apiResource('certificate-template', CertificateTemplateController::class);
+    Route::apiResource('enrollment-option', EnrollmentOptionController::class);
+    Route::apiResource('plagiarism', PlagiarismController::class)->except(['store']);
+    Route::apiResource('prerequisite', PrerequisiteController::class);
+    Route::apiResource('rubric', RubricController::class);
+    Route::apiResource('whiteboard', WhiteboardController::class);
+    Route::apiResource('wiki', WikiController::class);
+    Route::get('view-wiki-file/{wiki}/{fileName}', [WikiController::class, 'view']);
+    Route::get('download-wiki-file/{wiki}', [WikiController::class, 'download']);
+    Route::post('upload-wiki-file/{wiki}', [WikiController::class, 'upload']);
+    Route::delete('delete-wiki-file/{wiki}/{fileName}', [WikiController::class, 'destroyAttachment']);
     Route::apiResource('rule', RuleController::class);
     Route::apiResource('time-limit', TimeLimitController::class);
 });
@@ -264,7 +295,9 @@ Route::middleware(['auth:api'])->group(function () {
 // Route::post('section/{section}', [SectionController::class, 'update']);
 // Route::post('learning_activity/{learningActivity}', [LearningActivityController::class, 'update']);
 
-
+Route::middleware(['throttle:ip-limit'])->group(function () {
+    Route::get('testcourse', [CourseController::class, 'index']);
+});
 
 
 Route::post('/private-image', function (Request $request) {

@@ -24,6 +24,7 @@ class ChallengeResource extends JsonResource
             'rewards' => $this->rewards,
             'rules' => RuleResource::collection($this->whenLoaded('challengeRules')),
             'badges' => BadgeResource::collection($this->whenLoaded('challengeBadges')),
+            'challengeCourses' => ChallengeChallengeCoursesResource::collection($this->whenLoaded('challengeCourses')),
             'stats' => ChallengeStatsResource::makeJson($this),
         ];
     }

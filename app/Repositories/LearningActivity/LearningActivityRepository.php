@@ -7,7 +7,7 @@ use App\Models\LearningActivity\LearningActivity;
 use App\DataTransferObjects\LearningActivity\LearningActivityDto;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use App\Enums\LearningActivity\LearningActivityContentType;
+use App\Enums\LearningActivity\LearningActivityType;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
 use App\Exceptions\CustomException;
@@ -50,7 +50,6 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 'flags_is_free_preview' => $dto->learningActivityFlagsDto->isFreePreview,
                 'flags_is_compulsory' => $dto->learningActivityFlagsDto->isCompulsory,
                 'flags_requires_enrollment' => $dto->learningActivityFlagsDto->requiresEnrollment,
-                'content_type' => $dto->learningActivityContentDto->type,
                 'content_data' => $data['contentData'],
                 'thumbnail_url' => $dto->thumbnailUrl,
                 'completion_type' => $dto->learningActivityCompletionDto->type,
@@ -67,26 +66,34 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
             if (!is_null($dto->learningActivityContentDto->pdf) ||
                 !is_null($dto->learningActivityContentDto->video))
             {
-                switch ($dto->learningActivityContentDto->type)
+                switch ($dto->type)
                 {
-                    case LearningActivityContentType::Pdf:
+                    case LearningActivityType::Pdf:
                         $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Pdfs',
                             $dto->learningActivityContentDto->pdf);
+
+                        $size = $dto->learningActivityContentDto->pdf->getSize();
+                        $sizeKb = round($size / 1024, 2);
 
                         $learningActivity->attachment()->create([
                             'reference_field' => AttachmentReferenceField::LearningActivityPdfContentFile,
                             'type' => AttachmentType::Pdf,
                             'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
                         ]);
                         break;
                     default:
                         $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Videos',
                             $dto->learningActivityContentDto->video);
 
+                        $size = $dto->learningActivityContentDto->video->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
                         $learningActivity->attachment()->create([
                             'reference_field' => AttachmentReferenceField::LearningActivityVideoContentFile,
                             'type' => AttachmentType::Video,
                             'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
                         ]);
                         break;
                 }
@@ -111,7 +118,6 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 'flags_is_free_preview' => $dto->learningActivityFlagsDto->isFreePreview ? $dto->learningActivityFlagsDto->isFreePreview : $model->flags_is_free_preview,
                 'flags_is_compulsory' => $dto->learningActivityFlagsDto->isCompulsory ? $dto->learningActivityFlagsDto->isCompulsory : $model->flags_is_compulsory,
                 'flags_requires_enrollment' => $dto->learningActivityFlagsDto->requiresEnrollment ? $dto->learningActivityFlagsDto->requiresEnrollment : $model->flags_requires_enrollment,
-                'content_type' => $dto->learningActivityContentDto->type ? $dto->learningActivityContentDto->type : $model->content_type,
                 'content_data' => $data['contentData'] ? $data['contentData'] : $model->content_data,
                 'thumbnail_url' => $dto->thumbnailUrl ? $dto->thumbnailUrl : $model->thumbnail_url,
                 'completion_type' => $dto->learningActivityCompletionDto->type ? $dto->learningActivityCompletionDto->type : $model->completion_type,
@@ -129,19 +135,23 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 !is_null($dto->learningActivityContentDto->video))
             {
 
-                switch ($dto->learningActivityContentDto->type)
+                switch ($dto->type)
                 {
-                    case LearningActivityContentType::Pdf:
+                    case LearningActivityType::Pdf:
                         Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $learningActivity->attachment?->url);
                         $learningActivity->attachments()->delete();
 
                         $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Pdfs',
                             $dto->learningActivityContentDto->pdf);
 
+                        $size = $dto->learningActivityContentDto->pdf->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
                         $learningActivity->attachment()->create([
                             'reference_field' => AttachmentReferenceField::LearningActivityPdfContentFile,
                             'type' => AttachmentType::Pdf,
                             'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
                         ]);
                         break;
                     default:
@@ -151,10 +161,14 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                         $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Videos',
                             $dto->learningActivityContentDto->video);
 
+                        $size = $dto->learningActivityContentDto->video->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
                         $learningActivity->attachment()->create([
                             'reference_field' => AttachmentReferenceField::LearningActivityVideoContentFile,
                             'type' => AttachmentType::Video,
                             'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
                         ]);
                         break;
                 }
@@ -267,9 +281,9 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
         $model = (object) parent::find($id);
 
         $message = DB::transaction(function () use ($data, $model) {
-            switch ($model->content_type)
+            switch ($model->type)
             {
-                case LearningActivityContentType::Pdf:
+                case LearningActivityType::Pdf:
                     Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
                     $model->attachments()->delete();
 
@@ -279,10 +293,14 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                     array_map('unlink', glob("{$data['finalDir']}/*"));
                     rmdir($data['finalDir']);
 
+                    $size = $data['pdf']->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
                     $model->attachment()->create([
                         'reference_field' => AttachmentReferenceField::LearningActivityPdfContentFile,
                         'type' => AttachmentType::Pdf,
                         'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
                     ]);
 
                     return UploadMessage::Pdf;
@@ -296,10 +314,14 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                     array_map('unlink', glob("{$data['finalDir']}/*"));
                     rmdir($data['finalDir']);
 
+                    $size = $data['video']->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
                     $model->attachment()->create([
                         'reference_field' => AttachmentReferenceField::LearningActivityVideoContentFile,
                         'type' => AttachmentType::Video,
                         'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
                     ]);
 
                     return UploadMessage::Video;

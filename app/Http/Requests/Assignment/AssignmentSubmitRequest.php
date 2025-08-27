@@ -20,7 +20,8 @@ class AssignmentSubmitRequest extends FormRequest
         return [
             'assignment_id' => ['required', 'exists:assignments,id'],
             'type' => ['required', new Enum(AssignmentSubmitType::class)],
-            'file' => ['required_if:type,==,File Upload', 'missing_if:type,==,Text Entry', 'file'],
+            'files' => ['required_if:type,==,File Upload', 'missing_if:type,==,Text Entry', 'array'],
+            'files.*' => ['required_with:files', 'file'],
             'text' => ['required_if:type,==,Text Entry', 'missing_if:type,==,File Upload', 'string'],
         ];
     }
@@ -32,9 +33,11 @@ class AssignmentSubmitRequest extends FormRequest
     //         'assignment_id.exists' => ValidationType::Exists->getMessage(),
     //         'type.required' => ValidationType::Required->getMessage(),
     //         'type.Illuminate\Validation\Rules\Enum' => ValidationType::Enum->getMessage(),
-    //         'file.required_if' => ValidationType::RequiredIf->getMessage(),
-    //         'file.missing_if' => ValidationType::MissingIf->getMessage(),
-    //         'file.file' => ValidationType::File->getMessage(),
+    //         'files.required_if' => ValidationType::RequiredIf->getMessage(),
+    //         'files.missing_if' => ValidationType::MissingIf->getMessage(),
+    //         'files.array' => ValidationType::Array->getMessage(),
+    //         'files.*.required_with' => ValidationType::RequiredWith->getMessage(),
+    //         'files.*.file' => ValidationType::File->getMessage(),
     //         'text.required_if' => ValidationType::RequiredIf->getMessage(),
     //         'text.missing_if' => ValidationType::MissingIf->getMessage(),
     //         'text.string' => ValidationType::String->getMessage(),
@@ -46,7 +49,8 @@ class AssignmentSubmitRequest extends FormRequest
     //     return [
     //         'assignment_id' => FieldName::AssignmentId->getMessage(),
     //         'type' => FieldName::Type->getMessage(),
-    //         'file' => FieldName::File->getMessage(),
+    //         'files' => FieldName::Files->getMessage(),
+    //         'files.*' => FieldName::Files->getMessage(),
     //         'text' => FieldName::Text->getMessage(),
     //     ];
     // }

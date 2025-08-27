@@ -64,18 +64,12 @@ use App\Repositories\Auth\RegisterRepository;
 use App\Repositories\Auth\PasswordResetCodeRepositoryInterface;
 use App\Repositories\Auth\PasswordResetCodeRepository;
 use App\Models\Auth\PasswordResetCode;
-use App\Repositories\Project\ProjectRepositoryInterface;
-use App\Repositories\Project\ProjectRepository;
-use App\Models\Project\Project;
-use App\Repositories\Ticket\TicketRepositoryInterface;
-use App\Repositories\Ticket\TicketRepository;
-use App\Models\Ticket\Ticket;
+use App\Repositories\SupportTicket\SupportTicketRepositoryInterface;
+use App\Repositories\SupportTicket\SupportTicketRepository;
+use App\Models\SupportTicket\SupportTicket;
 use App\Repositories\CommunityAccess\CommunityAccessRepositoryInterface;
 use App\Repositories\CommunityAccess\CommunityAccessRepository;
 use App\Models\CommunityAccess\CommunityAccess;
-use App\Repositories\Assessment\AssessmentRepositoryInterface;
-use App\Repositories\Assessment\AssessmentRepository;
-use App\Models\Assessment\Assessment;
 use App\Repositories\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestionRepositoryInterface;
 use App\Repositories\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestionRepository;
 use App\Models\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestion;
@@ -88,9 +82,6 @@ use App\Models\AssessmentShortAnswerQuestion\AssessmentShortAnswerQuestion;
 use App\Repositories\AssessmentTrueOrFalseQuestion\AssessmentTrueOrFalseQuestionRepositoryInterface;
 use App\Repositories\AssessmentTrueOrFalseQuestion\AssessmentTrueOrFalseQuestionRepository;
 use App\Models\AssessmentTrueOrFalseQuestion\AssessmentTrueOrFalseQuestion;
-use App\Repositories\Assignment\AssignmentRepositoryInterface;
-use App\Repositories\Assignment\AssignmentRepository;
-use App\Models\Assignment\Assignment;
 use App\Repositories\QuestionBank\QuestionBankRepositoryInterface;
 use App\Repositories\QuestionBank\QuestionBankRepository;
 use App\Models\QuestionBank\QuestionBank;
@@ -118,12 +109,46 @@ use App\Models\Rule\Rule;
 use App\Repositories\Badge\BadgeRepositoryInterface;
 use App\Repositories\Badge\BadgeRepository;
 use App\Models\Badge\Badge;
+use App\Repositories\Plagiarism\PlagiarismRepositoryInterface;
+use App\Repositories\Plagiarism\PlagiarismRepository;
+use App\Models\Plagiarism\Plagiarism;
+use App\Repositories\Prerequisite\PrerequisiteRepositoryInterface;
+use App\Repositories\Prerequisite\PrerequisiteRepository;
+use App\Models\Prerequisite\Prerequisite;
+use App\Repositories\Rubric\RubricRepositoryInterface;
+use App\Repositories\Rubric\RubricRepository;
+use App\Models\Rubric\Rubric;
+use App\Repositories\Wiki\WikiRepositoryInterface;
+use App\Repositories\Wiki\WikiRepository;
+use App\Models\Wiki\Wiki;
+use App\Repositories\Certificate\CertificateRepositoryInterface;
+use App\Repositories\Certificate\CertificateRepository;
+use App\Models\Certificate\Certificate;
+use App\Repositories\CertificateTemplate\CertificateTemplateRepositoryInterface;
+use App\Repositories\CertificateTemplate\CertificateTemplateRepository;
+use App\Models\CertificateTemplate\CertificateTemplate;
+use App\Repositories\EnrollmentOption\EnrollmentOptionRepositoryInterface;
+use App\Repositories\EnrollmentOption\EnrollmentOptionRepository;
+use App\Models\EnrollmentOption\EnrollmentOption;
+use App\Repositories\Whiteboard\WhiteboardRepositoryInterface;
+use App\Repositories\Whiteboard\WhiteboardRepository;
+use App\Models\Whiteboard\Whiteboard;
+// use App\Repositories\WikiComment\WikiCommentRepositoryInterface;
+// use App\Repositories\WikiComment\WikiCommentRepository;
+// use App\Models\WikiComment\WikiComment;
+// use App\Repositories\WikiRating\WikiRatingRepositoryInterface;
+// use App\Repositories\WikiRating\WikiRatingRepository;
+// use App\Models\WikiRating\WikiRating;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Gate;
 use App\Models\AssessmentSubmit\AssessmentSubmit;
 use App\Models\AssignmentSubmit\AssignmentSubmit;
+use App\Models\ProjectSubmit\ProjectSubmit;
 use App\Models\Course\Course;
+use App\Models\Assessment\Assessment;
+use App\Models\Assignment\Assignment;
+use App\Models\Project\Project;
 use App\Policies\Assessment\AssessmentPolicy;
 use App\Policies\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestionPolicy;
 use App\Policies\AssessmentMultipleTypeQuestion\AssessmentMultipleTypeQuestionPolicy;
@@ -158,9 +183,19 @@ use App\Policies\ScheduleTiming\ScheduleTimingPolicy;
 use App\Policies\Section\SectionPolicy;
 use App\Policies\SubCategory\SubCategoryPolicy;
 use App\Policies\TeachingHour\TeachingHourPolicy;
-use App\Policies\Ticket\TicketPolicy;
+use App\Policies\SupportTicket\SupportTicketPolicy;
 use App\Policies\TimeLimit\TimeLimitPolicy;
 use App\Policies\User\AdminAndUserPolicy;
+use App\Policies\Plagiarism\PlagiarismPolicy;
+use App\Policies\ProjectSubmit\ProjectSubmitPolicy;
+use App\Policies\Prerequisite\PrerequisitePolicy;
+use App\Policies\Rubric\RubricPolicy;
+use App\Policies\Wiki\WikiPolicy;
+use App\Policies\WikiComment\WikiCommentPolicy;
+use App\Policies\WikiRating\WikiRatingPolicy;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -269,23 +304,13 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind(ProjectRepositoryInterface::class, function (Container $app) {
-            return new ProjectRepository($app->make(Project::class),
-            );
-        });
-
-        $this->app->bind(TicketRepositoryInterface::class, function (Container $app) {
-            return new TicketRepository($app->make(Ticket::class),
+        $this->app->bind(SupportTicketRepositoryInterface::class, function (Container $app) {
+            return new SupportTicketRepository($app->make(SupportTicket::class),
             );
         });
 
         $this->app->bind(CommunityAccessRepositoryInterface::class, function (Container $app) {
             return new CommunityAccessRepository($app->make(CommunityAccess::class),
-            );
-        });
-
-        $this->app->bind(AssessmentRepositoryInterface::class, function (Container $app) {
-            return new AssessmentRepository($app->make(Assessment::class),
             );
         });
 
@@ -306,11 +331,6 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(AssessmentTrueOrFalseQuestionRepositoryInterface::class, function (Container $app) {
             return new AssessmentTrueOrFalseQuestionRepository($app->make(AssessmentTrueOrFalseQuestion::class),
-            );
-        });
-
-        $this->app->bind(AssignmentRepositoryInterface::class, function (Container $app) {
-            return new AssignmentRepository($app->make(Assignment::class),
             );
         });
 
@@ -358,6 +378,56 @@ class AppServiceProvider extends ServiceProvider
             return new BadgeRepository($app->make(Badge::class),
             );
         });
+
+        $this->app->bind(PlagiarismRepositoryInterface::class, function (Container $app) {
+            return new PlagiarismRepository($app->make(Plagiarism::class),
+            );
+        });
+
+        $this->app->bind(PrerequisiteRepositoryInterface::class, function (Container $app) {
+            return new PrerequisiteRepository($app->make(Prerequisite::class),
+            );
+        });
+
+        $this->app->bind(RubricRepositoryInterface::class, function (Container $app) {
+            return new RubricRepository($app->make(Rubric::class),
+            );
+        });
+
+        $this->app->bind(WikiRepositoryInterface::class, function (Container $app) {
+            return new WikiRepository($app->make(Wiki::class),
+            );
+        });
+
+        // $this->app->bind(WikiCommentRepositoryInterface::class, function (Container $app) {
+        //     return new WikiCommentRepository($app->make(WikiComment::class),
+        //     );
+        // });
+
+        // $this->app->bind(WikiRatingRepositoryInterface::class, function (Container $app) {
+        //     return new WikiRatingRepository($app->make(WikiRating::class),
+        //     );
+        // });
+
+        $this->app->bind(CertificateRepositoryInterface::class, function (Container $app) {
+            return new CertificateRepository($app->make(Certificate::class),
+            );
+        });
+
+        $this->app->bind(CertificateTemplateRepositoryInterface::class, function (Container $app) {
+            return new CertificateTemplateRepository($app->make(CertificateTemplate::class),
+            );
+        });
+
+        $this->app->bind(EnrollmentOptionRepositoryInterface::class, function (Container $app) {
+            return new EnrollmentOptionRepository($app->make(EnrollmentOption::class),
+            );
+        });
+
+        $this->app->bind(WhiteboardRepositoryInterface::class, function (Container $app) {
+            return new WhiteboardRepository($app->make(Whiteboard::class),
+            );
+        });
     }
 
     protected $policies = [
@@ -395,9 +465,16 @@ class AppServiceProvider extends ServiceProvider
         Section::class => SectionPolicy::class,
         SubCategory::class => SubCategoryPolicy::class,
         TeachingHour::class => TeachingHourPolicy::class,
-        Ticket::class => TicketPolicy::class,
+        SupportTicket::class => SupportTicketPolicy::class,
         TimeLimit::class => TimeLimitPolicy::class,
         User::class => AdminAndUserPolicy::class,
+        Plagiarism::class => PlagiarismPolicy::class,
+        Prerequisite::class => PrerequisitePolicy::class,
+        ProjectSubmit::class => ProjectSubmitPolicy::class,
+        Rubric::class => RubricPolicy::class,
+        Wiki::class => WikiPolicy::class,
+        // WikiComment::class => WikiCommentPolicy::class,
+        // WikiRating::class => WikiRatingPolicy::class,
     ];
 
     /**
@@ -408,6 +485,17 @@ class AppServiceProvider extends ServiceProvider
         // Queue::looping(function () {
         //     DB::reconnect();
         // });
+
+        // RateLimiter::for('ip-limit', function (Request $request) {
+        //     return Limit::perSecond(20)->by($request->user()?->id ?: $request->ip());
+        // });
+
+        RateLimiter::for('ip-limit', function (Request $request) {
+            // return Limit::perSecond(20)->by($request->ip())->response(function () {
+            return Limit::perMinute(100)->by($request->ip())->response(function () {
+                return response()->json(['message' => 'Rate limit exceeded'], 429);
+            });
+        });
 
         foreach ($this->policies as $model => $policy) {
             Gate::policy($model, $policy);

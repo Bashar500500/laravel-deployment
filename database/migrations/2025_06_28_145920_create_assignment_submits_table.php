@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('assignment_id')->constrained('assignments')->cascadeOnDelete();
             $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
+            $table->string('status');
             $table->text('text')->nullable();
             $table->integer('score')->nullable();
             $table->string('feedback')->nullable();
+            $table->json('detailed_results')->nullable();
             $table->timestamps();
         });
     }

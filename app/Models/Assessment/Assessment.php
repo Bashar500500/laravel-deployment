@@ -4,6 +4,7 @@ namespace App\Models\Assessment;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\Assessment\AssessmentType;
+use App\Enums\Assessment\AssessmentStatus;
 use App\Models\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestion;
 use App\Models\AssessmentMultipleTypeQuestion\AssessmentMultipleTypeQuestion;
 use App\Models\AssessmentShortAnswerQuestion\AssessmentShortAnswerQuestion;
@@ -32,6 +33,8 @@ class Assessment extends Model
         'type',
         'title',
         'description',
+        'status',
+        'weight',
         'available_from',
         'available_to',
         'attempts_allowed',
@@ -41,6 +44,7 @@ class Assessment extends Model
 
     protected $casts = [
         'type' => AssessmentType::class,
+        'status' => AssessmentStatus::class,
         'feedback_options' => 'array',
     ];
 

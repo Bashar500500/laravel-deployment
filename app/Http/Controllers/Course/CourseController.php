@@ -15,6 +15,8 @@ use App\Models\Course\Course;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Http\Requests\Upload\Image\ImageUploadRequest;
 use App\Enums\Upload\UploadMessage;
+use App\Http\Resources\Course\CalendarResource;
+use App\Http\Resources\Course\GradeBookResource;
 
 class CourseController extends Controller
 {
@@ -143,6 +145,34 @@ class CourseController extends Controller
         return $this->controller->setFunctionName(FunctionName::Delete)
             ->setModelName(ModelName::Image)
             ->setData((object) [])
+            ->successResponse();
+    }
+
+    public function gradeBook(Course $course): JsonResponse
+    {
+        // $this->authorize('gradeBook', Course::class);
+
+        $data = GradeBookResource::make(
+            $course,
+        );
+
+        return $this->controller->setFunctionName(FunctionName::GradeBook)
+            ->setModelName(ModelName::Course)
+            ->setData($data)
+            ->successResponse();
+    }
+
+    public function calendar(Course $course): JsonResponse
+    {
+        // $this->authorize('calendar', Course::class);
+
+        $data = CalendarResource::make(
+            $course,
+        );
+
+        return $this->controller->setFunctionName(FunctionName::Calendar)
+            ->setModelName(ModelName::Course)
+            ->setData($data)
             ->successResponse();
     }
 }

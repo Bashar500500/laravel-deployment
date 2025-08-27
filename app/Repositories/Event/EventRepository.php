@@ -22,7 +22,8 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
 
     public function all(EventDto $dto): object
     {
-        return (object) $this->model->with('course', 'attachments')
+        return (object) $this->model->where('course_id', $dto->courseId)
+            ->with('course', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -34,7 +35,8 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
 
     public function allWithFilter(EventDto $dto): object
     {
-        return (object) $this->model->where('recurrence', $dto->recurrence)
+        return (object) $this->model->where('course_id', $dto->courseId)
+            ->where('recurrence', $dto->recurrence)
             ->with('course', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
@@ -73,10 +75,14 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
                     $storedFile = Storage::disk('supabase')->putFile('Event/' . $event->id . '/Files',
                         $file);
 
+                    $size = $file->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
                     $event->attachment()->create([
                         'reference_field' => AttachmentReferenceField::EventAttachmentsFile,
                         'type' => AttachmentType::File,
                         'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
                     ]);
                 }
             }
@@ -122,17 +128,21 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
                 {
                     Storage::disk('supabase')->delete('Event/' . $event->id . '/Files/' . $attachment?->url);
                 }
-                $attachments->delete();
+                $event->attachments()->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->delete();
 
                 foreach ($dto->eventAttachmentsDto->files as $file)
                 {
                     $storedFile = Storage::disk('supabase')->putFile('Event/' . $event->id . '/Files',
                         $file);
 
+                    $size = $file->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
                     $event->attachment()->create([
                         'reference_field' => AttachmentReferenceField::EventAttachmentsFile,
                         'type' => AttachmentType::File,
                         'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
                     ]);
                 }
             }
@@ -238,10 +248,14 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
+            $size = $data['file']->getSize();
+            $sizeKb = round($size / 1024, 2);
+
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::EventAttachmentsFile,
                 'type' => AttachmentType::File,
                 'url' => basename($storedFile),
+                'size_kb' => $sizeKb,
             ]);
         });
 

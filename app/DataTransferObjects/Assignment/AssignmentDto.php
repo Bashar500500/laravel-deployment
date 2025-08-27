@@ -12,6 +12,7 @@ class AssignmentDto
         public readonly ?int $courseId,
         public readonly ?int $currentPage,
         public readonly ?int $pageSize,
+        public readonly ?int $rubricId,
         public readonly ?string $title,
         public readonly ?AssignmentStatus $status,
         public readonly ?string $description,
@@ -20,6 +21,7 @@ class AssignmentDto
         public readonly ?int $points,
         public readonly ?array $submissionSettings,
         public readonly ?array $policies,
+        public readonly ?array $files,
     ) {}
 
     public static function fromIndexRequest(AssignmentRequest $request): AssignmentDto
@@ -28,6 +30,7 @@ class AssignmentDto
             courseId: $request->validated('course_id'),
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
+            rubricId: null,
             title: null,
             status: null,
             description: null,
@@ -36,6 +39,7 @@ class AssignmentDto
             points: null,
             submissionSettings: null,
             policies: null,
+            files: null,
         );
     }
 
@@ -45,6 +49,7 @@ class AssignmentDto
             currentPage: null,
             pageSize: null,
             courseId: $request->validated('course_id'),
+            rubricId: $request->validated('rubric_id'),
             title: $request->validated('title'),
             status: AssignmentStatus::from($request->validated('status')),
             description: $request->validated('description'),
@@ -53,6 +58,7 @@ class AssignmentDto
             points: $request->validated('points'),
             submissionSettings: $request->validated('submission_settings'),
             policies: $request->validated('policies'),
+            files: $request->validated('files'),
         );
     }
 
@@ -62,6 +68,7 @@ class AssignmentDto
             currentPage: null,
             pageSize: null,
             courseId: null,
+            rubricId: $request->validated('rubric_id'),
             title: $request->validated('title'),
             status: $request->validated('status') ?
                 AssignmentStatus::from($request->validated('status')) :
@@ -74,6 +81,7 @@ class AssignmentDto
             points: $request->validated('points'),
             submissionSettings: $request->validated('submission_settings'),
             policies: $request->validated('policies'),
+            files: $request->validated('files'),
         );
     }
 }

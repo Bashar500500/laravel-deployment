@@ -15,6 +15,8 @@ use App\Models\Project\Project;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Http\Requests\Upload\File\FileUploadRequest;
 use App\Enums\Upload\UploadMessage;
+use App\Http\Requests\Project\ProjectSubmitRequest;
+use App\Http\Resources\ProjectSubmit\ProjectSubmitResource;
 
 class ProjectController extends Controller
 {
@@ -143,6 +145,20 @@ class ProjectController extends Controller
         return $this->controller->setFunctionName(FunctionName::Delete)
             ->setModelName(ModelName::File)
             ->setData((object) [])
+            ->successResponse();
+    }
+
+    public function submit(ProjectSubmitRequest $request): JsonResponse
+    {
+        // $this->authorize('submit', [Project::class, $request->validated('project_id')]);
+
+        $data = ProjectSubmitResource::make(
+            $this->projectService->submit($request),
+        );
+
+        return $this->controller->setFunctionName(FunctionName::Submit)
+            ->setModelName(ModelName::Project)
+            ->setData($data)
             ->successResponse();
     }
 }

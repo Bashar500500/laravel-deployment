@@ -20,6 +20,8 @@ use App\Models\Category\Category;
 use App\Models\SubCategory\SubCategory;
 use App\Models\Profile\Profile;
 use App\Models\Project\Project;
+use App\Models\Assignment\Assignment;
+use App\Models\Wiki\Wiki;
 use Illuminate\Support\Facades\Auth;
 
 class UploadService
@@ -296,6 +298,58 @@ class UploadService
 
             $repository = $this->factory->make(ModelName::Project);
             return $repository->upload($project->id, $data);
+        }
+
+        return UploadMessage::Chunk;
+    }
+
+    public function uploadAssignmentFile(FileUploadRequest $request, Assignment $assignment): UploadMessage
+    {
+        $dto = UploadDto::fromFileUploadRequest($request);
+
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
+        $extension = $dto->file->getClientOriginalExtension();
+
+        if (!file_exists($chunkDir))
+        {
+            mkdir($chunkDir, 0777, true);
+        }
+
+        $dto->file->move($chunkDir, "chunk_{$dto->dzChunkIndex}");
+
+        if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
+        {
+            $data = $this->mergeChunks(AttachmentType::File, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+
+            $repository = $this->factory->make(ModelName::Assignment);
+            return $repository->upload($assignment->id, $data);
+        }
+
+        return UploadMessage::Chunk;
+    }
+
+    public function uploadWikiFile(FileUploadRequest $request, Wiki $wiki): UploadMessage
+    {
+        $dto = UploadDto::fromFileUploadRequest($request);
+
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
+        $extension = $dto->file->getClientOriginalExtension();
+
+        if (!file_exists($chunkDir))
+        {
+            mkdir($chunkDir, 0777, true);
+        }
+
+        $dto->file->move($chunkDir, "chunk_{$dto->dzChunkIndex}");
+
+        if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
+        {
+            $data = $this->mergeChunks(AttachmentType::File, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount);
+
+            $repository = $this->factory->make(ModelName::Wiki);
+            return $repository->upload($wiki->id, $data);
         }
 
         return UploadMessage::Chunk;

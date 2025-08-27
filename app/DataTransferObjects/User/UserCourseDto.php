@@ -3,6 +3,7 @@ namespace App\DataTransferObjects\User;
 
 use App\Http\Requests\User\AddUserToCourseRequest;
 use App\Http\Requests\User\RemoveUserFromCourseRequest;
+use App\Http\Requests\User\RemoveStudentFromInstructorListRequest;
 
 class UserCourseDto
 {
@@ -10,6 +11,7 @@ class UserCourseDto
         public readonly ?string $email,
         public readonly ?int $courseId,
         public readonly ?string $studentCode,
+        public readonly ?string $studentId,
     ) {}
 
     public static function fromAddStudentToCourseRequest(AddUserToCourseRequest $request): UserCourseDto
@@ -18,6 +20,7 @@ class UserCourseDto
             email: $request->validated('email'),
             courseId: $request->validated('course_id'),
             studentCode: $request->validated('student_code'),
+            studentId: null,
         );
     }
 
@@ -27,6 +30,17 @@ class UserCourseDto
             email: null,
             courseId: null,
             studentCode: $request->validated('student_code'),
+            studentId: null,
+        );
+    }
+
+    public static function fromRemoveStudentFromInstructorListRequest(RemoveStudentFromInstructorListRequest $request): UserCourseDto
+    {
+        return new self(
+            email: null,
+            courseId: null,
+            studentCode: $request->validated('student_code'),
+            studentId: $request->validated('student_id'),
         );
     }
 }

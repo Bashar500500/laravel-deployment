@@ -42,6 +42,10 @@ enum FunctionName: string
     case SubmitTimer = 'submit_timer';
     case TimerStatus = 'timer_status';
     case Analytics = 'analytics';
+    case InstructorFileNames = 'instructor_file_names';
+    case RemoveStudentFromInstructorList = 'remove_student_from_instructor_list';
+    case GradeBook = 'grade_book';
+    case Calendar = 'calendar';
 
     public function getMessage(): string
     {

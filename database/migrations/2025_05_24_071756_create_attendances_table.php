@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('section_id')->constrained('sections')->cascadeOnDelete();
+            $table->foreignId('learning_activity_id')->constrained('learning_activities')->cascadeOnDelete();
             $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
             $table->boolean('is_present');
-            $table->unique(['section_id', 'student_id']);
+            $table->unique(['learning_activity_id', 'student_id']);
             $table->timestamps();
         });
     }

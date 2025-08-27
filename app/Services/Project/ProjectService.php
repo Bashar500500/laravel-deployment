@@ -2,31 +2,38 @@
 
 namespace App\Services\Project;
 
-use App\Repositories\Project\ProjectRepositoryInterface;
+use App\Factories\Project\ProjectRepositoryFactory;
 use App\Http\Requests\Project\ProjectRequest;
 use App\Models\Project\Project;
 use App\DataTransferObjects\Project\ProjectDto;
+use App\DataTransferObjects\Project\ProjectSubmitDto;
 use App\Models\User\User;
 use App\Models\Group\Group;
 use App\Exceptions\CustomException;
 use App\Enums\Trait\ModelName;
 use App\Enums\Exception\ForbiddenExceptionMessage;
+use App\Http\Requests\Project\ProjectSubmitRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectService
 {
     public function __construct(
-        protected ProjectRepositoryInterface $repository,
+        protected ProjectRepositoryFactory $factory,
     ) {}
 
     public function index(ProjectRequest $request): object
     {
         $dto = ProjectDto::fromIndexRequest($request);
-        return $this->repository->all($dto);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->all($dto);
     }
 
     public function show(Project $project): object
     {
-        return $this->repository->find($project->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->find($project->id);
     }
 
     public function store(ProjectRequest $request): object
@@ -46,32 +53,52 @@ class ProjectService
             throw CustomException::forbidden(ModelName::Project, ForbiddenExceptionMessage::ProjectGroupNotInCourse);
         }
 
-        return $this->repository->create($dto);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->create($dto);
     }
 
     public function update(ProjectRequest $request, Project $project): object
     {
         $dto = ProjectDto::fromUpdateRequest($request);
-        return $this->repository->update($dto, $project->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->update($dto, $project->id);
     }
 
     public function destroy(Project $project): object
     {
-        return $this->repository->delete($project->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->delete($project->id);
     }
 
     public function view(Project $project, string $fileName): string
     {
-        return $this->repository->view($project->id, $fileName);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->view($project->id, $fileName);
     }
 
     public function download(Project $project): string
     {
-        return $this->repository->download($project->id);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->download($project->id);
     }
 
     public function destroyAttachment(Project $project, string $fileName): void
     {
-        $this->repository->deleteAttachment($project->id, $fileName);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        $repository->deleteAttachment($project->id, $fileName);
+    }
+
+    public function submit(ProjectSubmitRequest $request): object
+    {
+        $dto = ProjectSubmitDto::fromRequest($request);
+        $role = Auth::user()->getRoleNames();
+        $repository = $this->factory->make($role[0]);
+        return $repository->submit($dto);
     }
 }

@@ -105,10 +105,14 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
                 $storedFile = Storage::disk('supabase')->putFile('Group/' . $group->id . '/Images',
                     $dto->image);
 
+                $size = $dto->image->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $group->attachment()->create([
                     'reference_field' => AttachmentReferenceField::GroupImageUrl,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
@@ -139,10 +143,14 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
                 $storedFile = Storage::disk('supabase')->putFile('Group/' . $group->id . '/Images',
                     $dto->image);
 
+                $size = $dto->image->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $group->attachment()->create([
                     'reference_field' => AttachmentReferenceField::GroupImageUrl,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
@@ -161,6 +169,27 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
 
             foreach ($projects as $project)
             {
+                $projectSubmits = $project->projectSubmits;
+
+                foreach ($projectSubmits as $projectSubmit)
+                {
+                    $attachments = $projectSubmit->attachments;
+                    foreach ($attachments as $attachment)
+                    {
+                        $reference_field = $attachment->reference_field;
+                        switch ($reference_field)
+                        {
+                            case AttachmentReferenceField::ProjectSubmitInstructorFiles:
+                                Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Instructor/' . $attachment?->url);
+                                break;
+                            default:
+                                Storage::disk('supabase')->delete('ProjectSubmit/' . $project->id . '/Files/Student/' . $attachment?->url);
+                                break;
+                        }
+                    }
+                    $projectSubmit->attachments()->delete();
+                }
+
                 $attachments = $project->attachments;
                 foreach ($attachments as $attachment)
                 {
@@ -232,10 +261,14 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
+            $size = $data['image']->getSize();
+            $sizeKb = round($size / 1024, 2);
+
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::GroupImageUrl,
                 'type' => AttachmentType::Image,
                 'url' => basename($storedFile),
+                'size_kb' => $sizeKb,
             ]);
         });
 

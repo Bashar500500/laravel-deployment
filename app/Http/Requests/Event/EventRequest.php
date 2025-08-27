@@ -19,6 +19,7 @@ class EventRequest extends FormRequest
 
     protected function onIndex() {
         return [
+            'course_id' => ['required', 'exists:courses,id'],
             'recurrence' => ['sometimes', new Enum(EventRecurrence::class)],
             'page' => ['required', 'integer', 'gt:0'],
             'page_size' => ['sometimes', 'integer', 'gt:0'],

@@ -14,9 +14,7 @@ class TeachingHourResource extends JsonResource
             'instructorName' => $this->whenLoaded('instructor')->first_name .
                 $this->whenLoaded('instructor')->last_name,
             'totalHours' => $this->total_hours,
-            'completedHours' => $this->completed_hours,
             'upcoming' => $this->upcoming,
-            'break' => $this->break,
             'status' => $this->status,
         ];
     }

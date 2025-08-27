@@ -34,6 +34,10 @@ enum ForbiddenExceptionMessage: string
     case AssessmentNotAvailable = 'assessment_not_available';
     case ChallengeUserExsits = 'challenge_user_exsits';
     case ChallengeHasMaxParticipants = 'challenge_has_max_participants';
+    case RubricCriteriaWeightNotEqual = 'rubric_criteria_weight_not_equal';
+    case ProjectStartOrEndDate = 'project_start_or_end_date';
+    case ProjectMaxSubmits = 'project_max_submits';
+    case CertificateTypeCondition = 'certificate_type_condition';
 
     public function getDescription(): string
     {

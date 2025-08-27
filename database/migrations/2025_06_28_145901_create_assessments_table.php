@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('type');
             $table->string('title');
             $table->text('description');
+            $table->string('status');
+            $table->integer('weight');
             $table->date('available_from');
             $table->date('available_to');
             $table->integer('attempts_allowed');

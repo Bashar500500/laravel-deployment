@@ -29,29 +29,33 @@ class AssignmentRequest extends FormRequest
     protected function onStore() {
         return [
             'course_id' => ['required', 'exists:courses,id'],
+            'rubric_id' => ['required', 'exists:rubrics,id'],
             'title' => ['required', 'string'],
             'status' => ['required', new Enum(AssignmentStatus::class)],
-            'description' => ['required', 'string'],
-            'instructions' => ['required', 'string'],
+            'description' => ['sometimes', 'string'],
+            'instructions' => ['sometimes', 'string'],
             'due_date' => ['required', 'date', 'date_format:Y-m-d'],
             'points' => ['required', 'integer', 'gt:0'],
-            'submission_settings' => ['required', 'array'],
-            'submission_settings.type' => ['required', new Enum(AssignmentType::class)],
+            'submission_settings' => ['sometimes', 'array'],
+            'submission_settings.type' => ['sometimes', new Enum(AssignmentType::class)],
             'submission_settings.allowed_file_types' => ['sometimes', 'array'],
             'submission_settings.allowed_file_types.*' => ['required_with:submission_settings.allowed_file_types', new Enum(AssignmentAllowedFileTypes::class)],
             'submission_settings.max_file_size_mb' => ['sometimes', 'integer', 'gt:0'],
-            'submission_settings.group_assignment' => ['required', 'boolean'],
-            'submission_settings.plagiarism_check' => ['required', 'boolean'],
-            'policies' => ['required', 'array'],
-            'policies.late_submission' => ['required', 'array'],
-            'policies.late_submission.policy' => ['required', new Enum(AssignmentLateSubmissionPolicy::class)],
+            'submission_settings.group_assignment' => ['sometimes', 'boolean'],
+            'submission_settings.plagiarism_check' => ['sometimes', 'boolean'],
+            'policies' => ['sometimes', 'array'],
+            'policies.late_submission' => ['sometimes', 'array'],
+            'policies.late_submission.policy' => ['sometimes', new Enum(AssignmentLateSubmissionPolicy::class)],
             'policies.late_submission.penalty_percentage' => ['sometimes', 'integer', 'gt:0', 'max:100'],
             'policies.late_submission.cutoff_date' => ['sometimes', 'date', 'date_format:Y-m-d', 'after_or_equal:due_date'],
+            'files' => ['sometimes', 'array'],
+            'files.*' => ['required_with:files', 'file'],
         ];
     }
 
     protected function onUpdate() {
         return [
+            'rubric_id' => ['sometimes', 'exists:rubrics,id'],
             'title' => ['sometimes', 'string'],
             'status' => ['sometimes', new Enum(AssignmentStatus::class)],
             'description' => ['sometimes', 'string'],
@@ -70,6 +74,8 @@ class AssignmentRequest extends FormRequest
             'policies.late_submission.policy' => ['required_with:policies.late_submission', new Enum(AssignmentLateSubmissionPolicy::class)],
             'policies.late_submission.penalty_percentage' => ['sometimes', 'integer', 'gt:0', 'max:100'],
             'policies.late_submission.cutoff_date' => ['sometimes', 'date', 'date_format:Y-m-d', 'after_or_equal:due_date'],
+            'files' => ['sometimes', 'array'],
+            'files.*' => ['required_with:files', 'file'],
         ];
     }
 
@@ -99,6 +105,8 @@ class AssignmentRequest extends FormRequest
     //         'page.gt' => ValidationType::GreaterThanZero->getMessage(),
     //         'page_size.integer' => ValidationType::Integer->getMessage(),
     //         'page_size.gt' => ValidationType::GreaterThanZero->getMessage(),
+    //         'rubric_id.required' => ValidationType::Required->getMessage(),
+    //         'rubric_id.exists' => ValidationType::Exists->getMessage(),
     //         'title.required' => ValidationType::Required->getMessage(),
     //         'title.string' => ValidationType::String->getMessage(),
     //         'status.required' => ValidationType::Required->getMessage(),
@@ -144,6 +152,9 @@ class AssignmentRequest extends FormRequest
     //         'policies.late_submission.cutoff_date.date' => ValidationType::Date->getMessage(),
     //         'policies.late_submission.cutoff_date.date_format' => ValidationType::DateFormat->getMessage(),
     //         'policies.late_submission.cutoff_date.after_or_equal' => ValidationType::AfterOrEqual->getMessage(),
+    //         'files.array' => ValidationType::Array->getMessage(),
+    //         'files.*.required_with' => ValidationType::RequiredWith->getMessage(),
+    //         'files.*.file' => ValidationType::File->getMessage(),
     //     ];
     // }
 
@@ -153,6 +164,7 @@ class AssignmentRequest extends FormRequest
     //         'course_id' => FieldName::CourseId->getMessage(),
     //         'page' => FieldName::Page->getMessage(),
     //         'page_size' => FieldName::PageSize->getMessage(),
+    //         'rubric_id' => FieldName::RubricId->getMessage(),
     //         'title' => FieldName::Title->getMessage(),
     //         'status' => FieldName::Status->getMessage(),
     //         'description' => FieldName::Description->getMessage(),
@@ -171,6 +183,8 @@ class AssignmentRequest extends FormRequest
     //         'policies.late_submission.policy' => FieldName::Policy->getMessage(),
     //         'policies.late_submission.penalty_percentage' => FieldName::PenaltyPercentage->getMessage(),
     //         'policies.late_submission.cutoff_date' => FieldName::CutoffDate->getMessage(),
+    //         'files' => FieldName::Files->getMessage(),
+    //         'files.*' => FieldName::Files->getMessage(),
     //     ];
     // }
 }

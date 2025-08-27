@@ -12,6 +12,8 @@ enum ModelTypePath: string
     case Badge = 'App\Models\Badge\Badge';
     case Assessment = 'App\Models\Assessment\Assessment';
     case Assignment = 'App\Models\Assignment\Assignment';
+    case Course = 'App\Models\Course\Course';
+    case Section = 'App\Models\Section\Section';
 
     public function getTypePath(): string
     {
@@ -24,6 +26,8 @@ enum ModelTypePath: string
             self::Badge => 'App\Models\Badge\Badge',
             self::Assessment => 'App\Models\Assessment\Assessment',
             self::Assignment => 'App\Models\Assignment\Assignment',
+            self::Course => 'App\Models\Course\Course',
+            self::Section => 'App\Models\Section\Section',
         };
     }
 }

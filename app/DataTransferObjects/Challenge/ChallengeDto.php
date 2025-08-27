@@ -57,7 +57,9 @@ class ChallengeDto
             type: ChallengeType::from($request->validated('type')),
             category: ChallengeCategory::from($request->validated('category')),
             difficulty: ChallengeDifficulty::from($request->validated('difficulty')),
-            status: ChallengeStatus::from($request->validated('status')),
+            status: $request->validated('status') ?
+                ChallengeStatus::from($request->validated('status')) :
+                null,
             description: $request->validated('description'),
             courses: $request->validated('courses'),
             rules: $request->validated('rules'),

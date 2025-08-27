@@ -51,10 +51,14 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
                 $storedFile = Storage::disk('supabase')->putFile('SubCategory/' . $subCategory->id . '/Images',
                     $dto->subCategoryImage);
 
+                $size = $dto->subCategoryImage->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $subCategory->attachment()->create([
                     'reference_field' => AttachmentReferenceField::SubCategoryImage,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
@@ -83,10 +87,14 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
                 $storedFile = Storage::disk('supabase')->putFile('SubCategory/' . $subCategory->id . '/Images',
                     $dto->subCategoryImage);
 
+                $size = $dto->subCategoryImage->getSize();
+                $sizeKb = round($size / 1024, 2);
+
                 $subCategory->attachment()->create([
                     'reference_field' => AttachmentReferenceField::SubCategoryImage,
                     'type' => AttachmentType::Image,
                     'url' => basename($storedFile),
+                    'size_kb' => $sizeKb,
                 ]);
             }
 
@@ -160,10 +168,14 @@ class SubCategoryRepository extends BaseRepository implements SubCategoryReposit
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
+            $size = $data['image']->getSize();
+            $sizeKb = round($size / 1024, 2);
+
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::SubCategoryImage,
                 'type' => AttachmentType::Image,
                 'url' => basename($storedFile),
+                'size_kb' => $sizeKb,
             ]);
         });
 

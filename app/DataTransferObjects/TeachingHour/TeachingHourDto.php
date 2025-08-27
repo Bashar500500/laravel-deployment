@@ -12,9 +12,7 @@ class TeachingHourDto
         public readonly ?int $pageSize,
         public readonly ?int $instructorId,
         public readonly ?int $totalHours,
-        public readonly ?int $completedHours,
         public readonly ?int $upcoming,
-        public readonly ?int $break,
         public readonly ?TeachingHourStatus $status,
     ) {}
 
@@ -25,9 +23,7 @@ class TeachingHourDto
             pageSize: $request->validated('page_size') ?? 20,
             instructorId: null,
             totalHours: null,
-            completedHours: null,
             upcoming: null,
-            break: null,
             status: null,
         );
     }
@@ -39,9 +35,7 @@ class TeachingHourDto
             pageSize: null,
             instructorId: $request->validated('instructor_id'),
             totalHours: $request->validated('total_hours'),
-            completedHours: $request->validated('completed_hours'),
             upcoming: $request->validated('upcoming'),
-            break: $request->validated('break'),
             status: TeachingHourStatus::from($request->validated('status')),
         );
     }
@@ -53,9 +47,7 @@ class TeachingHourDto
             pageSize: null,
             instructorId: null,
             totalHours: $request->validated('total_hours'),
-            completedHours: $request->validated('completed_hours'),
             upcoming: $request->validated('upcoming'),
-            break: $request->validated('break'),
             status: $request->validated('status') ?
                 TeachingHourStatus::from($request->validated('status')) :
                 null,

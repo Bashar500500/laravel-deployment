@@ -24,6 +24,8 @@ class Badge extends Model
         'sub_category',
         'difficulty',
         'icon',
+        'color',
+        'shape',
         'image_url',
         'status',
         'reward',

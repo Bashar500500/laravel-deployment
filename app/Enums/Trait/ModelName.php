@@ -42,7 +42,7 @@ enum ModelName: string
     case Email = 'email';
     case Question = 'question';
     case Project = 'project';
-    case Ticket = 'ticket';
+    case SupportTicket = 'support_ticket';
     case CommunityAccess = 'community_access';
     case Assessment = 'assessment';
     case AssessmentFillInBlankQuestion = 'assessment_fill_in_blank_question';
@@ -64,6 +64,19 @@ enum ModelName: string
     case Blank = 'blank';
     case Option = 'option';
     case Analytics = 'analytics';
+    case Instructor = 'instructor';
+    case Rubric = 'rubric';
+    case RubricCriteria = 'rubric_criteria';
+    case Plagiarism = 'plagiarism';
+    case ProjectSubmit = 'project_submit';
+    case Wiki = 'wiki';
+    case WikiComment = 'wiki_comment';
+    case WikiRating = 'wiki_rating';
+    case Prerequisite = 'prerequisite';
+    case Certificate = 'certificate';
+    case CertificateTemplate = 'certificate_template';
+    case EnrollmentOption = 'enrollment_option';
+    case Whiteboard = 'whiteboard';
     case NoName = '';
 
     public static function getEnum(string $value): self
@@ -107,7 +120,7 @@ enum ModelName: string
             $value =='Email' => self::Email,
             $value =='Question' => self::Question,
             $value =='Project' => self::Project,
-            $value =='Ticket' => self::Ticket,
+            $value =='SupportTicket' => self::SupportTicket,
             $value =='CommunityAccess' => self::CommunityAccess,
             $value =='Assessment' => self::Assessment,
             $value =='AssessmentFillInBlankQuestion' => self::AssessmentFillInBlankQuestion,
@@ -129,6 +142,19 @@ enum ModelName: string
             $value =='Blank' => self::Blank,
             $value =='Option' => self::Option,
             $value =='Analytics' => self::Analytics,
+            $value =='Instructor' => self::Instructor,
+            $value =='Rubric' => self::Rubric,
+            $value =='RubricCriteria' => self::RubricCriteria,
+            $value =='Plagiarism' => self::Plagiarism,
+            $value =='ProjectSubmit' => self::ProjectSubmit,
+            $value =='Wiki' => self::Wiki,
+            $value =='WikiComment' => self::WikiComment,
+            $value =='WikiRating' => self::WikiRating,
+            $value =='Prerequisite' => self::Prerequisite,
+            $value =='Certificate' => self::Certificate,
+            $value =='CertificateTemplate' => self::CertificateTemplate,
+            $value =='EnrollmentOption' => self::EnrollmentOption,
+            $value =='Whiteboard' => self::Whiteboard,
         };
     }
 
@@ -173,7 +199,7 @@ enum ModelName: string
             self::Email => 'Email',
             self::Question => 'Question',
             self::Project => 'Project',
-            self::Ticket => 'Ticket',
+            self::SupportTicket => 'SupportTicket',
             self::CommunityAccess => 'CommunityAccess',
             self::Assessment => 'Assessment',
             self::AssessmentFillInBlankQuestion => 'AssessmentFillInBlankQuestion',
@@ -195,6 +221,19 @@ enum ModelName: string
             self::Blank => 'Blank',
             self::Option => 'Option',
             self::Analytics => 'Analytics',
+            self::Instructor => 'Instructor',
+            self::Rubric => 'Rubric',
+            self::RubricCriteria => 'RubricCriteria',
+            self::Plagiarism => 'Plagiarism',
+            self::ProjectSubmit => 'ProjectSubmit',
+            self::Wiki => 'Wiki',
+            self::WikiComment => 'WikiComment',
+            self::WikiRating => 'WikiRating',
+            self::Prerequisite => 'Prerequisite',
+            self::Certificate => 'Certificate',
+            self::CertificateTemplate => 'CertificateTemplate',
+            self::EnrollmentOption => 'EnrollmentOption',
+            self::Whiteboard => 'Whiteboard',
         };
     }
 

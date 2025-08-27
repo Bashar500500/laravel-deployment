@@ -48,13 +48,15 @@ class ProjectPolicy
 
     public function view(User $user, Project $project): bool
     {
-        return ($this->checkIfEnrolled($user, $project->course->id) ||
+        return (($this->checkIfEnrolled($user, $project->course->id) &&
+            $this->checkIfExists($user, $project)) ||
             $this->checkIfOwned($user, $project->course->id));
     }
 
     public function download(User $user, Project $project): bool
     {
-        return ($this->checkIfEnrolled($user, $project->course->id) ||
+        return (($this->checkIfEnrolled($user, $project->course->id) &&
+            $this->checkIfExists($user, $project)) ||
             $this->checkIfOwned($user, $project->course->id));
     }
 
@@ -70,10 +72,24 @@ class ProjectPolicy
             $this->checkIfOwned($user, $project->course->id));
     }
 
+    public function submit(User $user, string $model, int $projectId): bool
+    {
+        $project = Project::find($projectId);
+
+        return ($this->checkIfEnrolled($user, $project->course->id) &&
+            $this->checkIfExists($user, $project));
+    }
+
     private function checkIfEnrolled(User $user, int $courseId): bool
     {
         $exists = $user->enrolledCourses->where('id', $courseId)->first();
         return $exists ? true : false;
+    }
+
+    private function checkIfExists(User $user, Project $project): bool
+    {
+        $studentIds = $project->group->students->pluck('student_id')->toArray();
+        return ($user->id == $project->leader_id) || in_array($user->id, $studentIds);
     }
 
     private function checkIfOwned(User $user, int $courseId): bool

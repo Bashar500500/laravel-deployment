@@ -68,6 +68,7 @@ enum FieldName: string
     case Max = 'max';
     case Current = 'current';
     case SectionId = 'section_id';
+    case LearningActivityId = 'learning_activity_id';
     case Flags = 'flags';
     case IsFreePreview = 'is_free_preview';
     case IsCompulsory = 'is_compulsory';
@@ -283,6 +284,49 @@ enum FieldName: string
     case FcmToken = 'fcm_token';
     case Year = 'year';
     case Students = 'students';
+    case MaxSubmits = 'max_submits';
+    case Weight = 'weight';
+    case RubricId = 'rubric_id';
+    case RubricCriterias = 'rubric_criterias';
+    case Levels = 'levels';
+    case Excellent = 'excellent';
+    case ExcellentPoints = 'excellent_points';
+    case ExcellentDescription = 'excellent_description';
+    case Good = 'good';
+    case GoodPoints = 'good_points';
+    case GoodDescription = 'good_description';
+    case S1 = 's1';
+    case S1Points = 's1_points';
+    case S1Description = 's1_description';
+    case S2 = 's2';
+    case S2Points = 's2_points';
+    case S2Description = 's2_description';
+    case Bad = 'bad';
+    case BadPoints = 'bad_points';
+    case BadDescription = 'bad_description';
+    case AssignmentSubmitId = 'assignment_submit_id';
+    case RubricCriteriaId = 'rubric_criteria_id';
+    case PlagiarismScore = 'plagiarism_score';
+    case ProjectId = 'project_id';
+    case Tags = 'tags';
+    case Collaborators = 'collaborators';
+    case WikiId = 'wiki_id';
+    case Comment = 'comment';
+    case Rating = 'rating';
+    case Prerequisite = 'prerequisite';
+    case AppliesTo = 'applies_to';
+    case RequiredFor = 'required_for';
+    case Condition = 'condition';
+    case AllowOverride = 'allow_override';
+    case CertificateTemplateId = 'certificate_template_id';
+    case Color = 'color';
+    case Period = 'period';
+    case AllowSelfEnrollment = 'allow_self_enrollment';
+    case EnableWaitingList = 'enable_waiting_list';
+    case RequireInstructorApproval = 'require_instructor_approval';
+    case RequirePrerequisites = 'require_prerequisites';
+    case EnableNotifications = 'enable_notifications';
+    case EnableEmails = 'enable_emails';
 
     public function getMessage(): string
     {

@@ -28,8 +28,8 @@ class ProfileResource extends JsonResource
             'enrollmentDate' => $this->enrollment_date,
             'batch' => $this->batch,
             'currentSemester' => $this->current_semester,
-            'enrolledCourses' => $this->user
-                ? $this->user->enrolledCourses->map(
+            'enrolledCourses' => $this->whenLoaded('user')
+                ? $this->whenLoaded('user')->enrolledCourses->map(
                     fn($course) => new ProfileEnrolledCoursesResource($course, $this->user->id)
                 )
                 : [],

@@ -8,6 +8,7 @@ use App\DataTransferObjects\Assignment\AssignmentDto;
 use Illuminate\Support\Facades\DB;
 use App\DataTransferObjects\Assignment\AssignmentSubmitDto;
 use App\Enums\Assessment\AssessmentType;
+use App\Enums\AssignmentSubmit\AssignmentSubmitStatus;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
@@ -24,7 +25,11 @@ use App\Enums\Grade\GradeCategory;
 use App\Enums\Grade\GradeResubmission;
 use App\Enums\Grade\GradeStatus;
 use App\Enums\Grade\GradeTrend;
+use App\Enums\Plagiarism\PlagiarismStatus;
 use App\Exceptions\CustomException;
+use ZipArchive;
+use Illuminate\Support\Facades\File;
+use App\Enums\Upload\UploadMessage;
 
 class AssignmentRepository extends BaseRepository implements AssignmentRepositoryInterface
 {
@@ -56,15 +61,36 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
         $assignment = DB::transaction(function () use ($dto) {
             $assignment = (object) $this->model->create([
                 'course_id' => $dto->courseId,
+                'rubric_id' => $dto->rubricId,
                 'title' => $dto->title,
                 'status' => $dto->status,
                 'description' => $dto->description,
                 'instructions' => $dto->instructions,
                 'due_date' => $dto->dueDate,
                 'points' => $dto->points,
+                'peer_review_settings' => [],
                 'submission_settings' => $dto->submissionSettings,
                 'policies' => $dto->policies,
             ]);
+
+            if ($dto->files)
+            {
+                foreach ($dto->files as $file)
+                {
+                    $storedFile = Storage::disk('supabase')->putFile('Assignment/' . $assignment->id . '/Files',
+                        $file);
+
+                    $size = $file->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
+                    $assignment->attachment()->create([
+                        'reference_field' => AttachmentReferenceField::AssignmentFiles,
+                        'type' => AttachmentType::File,
+                        'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
+                    ]);
+                }
+            }
 
             $students = $assignment->course->students;
             foreach ($students as $student)
@@ -97,6 +123,7 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
 
         $assignment = DB::transaction(function () use ($dto, $model) {
             $assignment = tap($model)->update([
+                'rubric_id' => $dto->rubricId ? $dto->rubricId : $model->rubric_id,
                 'title' => $dto->title ? $dto->title : $model->title,
                 'status' => $dto->status ? $dto->status : $model->status,
                 'description' => $dto->description ? $dto->description : $model->description,
@@ -106,6 +133,32 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
                 'submission_settings' => $dto->submissionSettings ? $dto->submissionSettings : $model->submission_settings,
                 'policies' => $dto->policies ? $dto->policies : $model->policies,
             ]);
+
+            if ($dto->files)
+            {
+                $attachments = $assignment->attachments;
+                foreach ($attachments as $attachment)
+                {
+                    Storage::disk('supabase')->delete('Assignment/' . $assignment->id . '/Files/' . $attachment?->url);
+                }
+                $assignment->attachments()->delete();
+
+                foreach ($dto->files as $file)
+                {
+                    $storedFile = Storage::disk('supabase')->putFile('Assignment/' . $assignment->id . '/Files',
+                        $file);
+
+                    $size = $file->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
+                    $assignment->attachment()->create([
+                        'reference_field' => AttachmentReferenceField::AssignmentFiles,
+                        'type' => AttachmentType::File,
+                        'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
+                    ]);
+                }
+            }
 
             return $assignment;
         });
@@ -125,15 +178,120 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
                 $attachments = $assignmentSubmit->attachments;
                 foreach ($attachments as $attachment)
                 {
-                    Storage::disk('supabase')->delete('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $assignmentSubmit->student_id . '/' . $attachment?->url);
+                    $reference_field = $attachment->reference_field;
+                    switch ($reference_field)
+                    {
+                        case AttachmentReferenceField::AssignmentSubmitInstructorFiles:
+                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Instructor/' . $attachment?->url);
+                            break;
+                        default:
+                            Storage::disk('supabase')->delete('AssignmentSubmit/' . $model->id . '/Files/' . $model->student_id . '/Student/' . $attachment?->url);
+                            break;
+                    }
                 }
                 $assignmentSubmit->attachments()->delete();
             }
+
+            $attachments = $model->attachments;
+            foreach ($attachments as $attachment)
+            {
+                Storage::disk('supabase')->delete('Assignment/' . $model->id . '/Files/' . $attachment?->url);
+            }
+            $model->attachments()->delete();
 
             return parent::delete($id);
         });
 
         return (object) $assignment;
+    }
+
+    public function view(int $id, string $fileName): string
+    {
+        $model = (object) parent::find($id);
+
+        $exists = Storage::disk('supabase')->exists('Assignment/' . $model->id . '/Files/' . $fileName);
+
+        if (! $exists)
+        {
+            throw CustomException::notFound('File');
+        }
+
+        $file = Storage::disk('supabase')->get('Assignment/' . $model->id . '/Files/' . $fileName);
+        $tempPath = storage_path('app/private/' . $fileName);
+        file_put_contents($tempPath, $file);
+
+        return $tempPath;
+    }
+
+    public function download(int $id): string
+    {
+        $model = (object) parent::find($id);
+        $attachments = $model->attachments;
+
+        if (count($attachments) == 0)
+        {
+            throw CustomException::notFound('Files');
+        }
+
+        $zip = new ZipArchive();
+        $zipName = 'Assignment-Files.zip';
+        $zipPath = storage_path('app/private/' . $zipName);
+        $tempFiles = [];
+
+        if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
+            foreach ($attachments as $attachment) {
+                $file = Storage::disk('supabase')->get('Assignment/' . $model->id . '/Files/' . $attachment?->url);
+                $tempPath = storage_path('app/private/' . $attachment?->url);
+                file_put_contents($tempPath, $file);
+                $zip->addFromString(basename($tempPath), file_get_contents($tempPath));
+                $tempFiles[] = $tempPath;
+            }
+            $zip->close();
+            File::delete($tempFiles);
+        }
+
+        return $zipPath;
+    }
+
+    public function upload(int $id, array $data): UploadMessage
+    {
+        $model = (object) parent::find($id);
+
+        DB::transaction(function () use ($data, $model) {
+            $storedFile = Storage::disk('supabase')->putFile('Assignment/' . $model->id . '/Files',
+                $data['file']);
+
+            array_map('unlink', glob("{$data['finalDir']}/*"));
+            rmdir($data['finalDir']);
+
+            $size = $data['file']->getSize();
+            $sizeKb = round($size / 1024, 2);
+
+            $model->attachment()->create([
+                'reference_field' => AttachmentReferenceField::AssignmentFiles,
+                'type' => AttachmentType::File,
+                'url' => basename($storedFile),
+                'size_kb' => $sizeKb,
+            ]);
+        });
+
+        return UploadMessage::File;
+    }
+
+    public function deleteAttachment(int $id, string $fileName): void
+    {
+        $model = (object) parent::find($id);
+
+        $exists = Storage::disk('supabase')->exists('Assignment/' . $model->id . '/Files/' . $fileName);
+
+        if (! $exists)
+        {
+            throw CustomException::notFound('File');
+        }
+
+        $attachment = $model->attachments()->where('url', $fileName)->first();
+        Storage::disk('supabase')->delete('Assignment/' . $model->id . '/Files/' . $attachment?->url);
+        $model->attachments()->where('url', $fileName)->delete();
     }
 
     public function submit(AssignmentSubmitDto $dto, array $data): object
@@ -153,66 +311,69 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
 
                 if ($model->submission_settings['type'] == 'File Upload')
                 {
-                    $fileSize = $dto->file->getSize();
-
-                    if ($fileSize > $model->submission_settings['max_file_size_mb'])
+                    foreach ($dto->files as $file)
                     {
-                        throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileSize);
-                    }
+                        $fileSize = $file->getSize();
 
-                    foreach ($model->submission_settings['allowed_file_types'] as $item)
-                    {
-                        switch ($item)
+                        if ($fileSize > $model->submission_settings['max_file_size_mb'])
                         {
-                            case 'PDF':
-                                $mime = $dto->file->getMimeType();
-                                if ($mime != 'application/pdf')
-                                {
-                                    throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
-                                }
-                                break;
-                            case 'Word Document':
-                                $mime = $dto->file->getMimeType();
-                                if ($mime != 'application/msword' || $mime != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-                                {
-                                    throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
-                                }
-                                break;
-                            case 'Text File':
-                                $mime = $dto->file->getMimeType();
-                                if ($mime != 'text/plain')
-                                {
-                                    throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
-                                }
-                                break;
-                            case 'JPEG Image':
-                                $mime = $dto->file->getMimeType();
-                                if ($mime != 'image/jpeg')
-                                {
-                                    throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
-                                }
-                                break;
-                            case 'PNG Image':
-                                $mime = $dto->file->getMimeType();
-                                if ($mime != 'image/png')
-                                {
-                                    throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
-                                }
-                                break;
-                            case 'ZIP Archive':
-                                $mime = $dto->file->getMimeType();
-                                if ($mime != 'application/zip')
-                                {
-                                    throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
-                                }
-                                break;
-                            default:
-                                $mime = $dto->file->getMimeType();
-                                if ($mime != 'application/msword' || $mime != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-                                {
-                                    throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
-                                }
-                                break;
+                            throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileSize);
+                        }
+
+                        foreach ($model->submission_settings['allowed_file_types'] as $item)
+                        {
+                            switch ($item)
+                            {
+                                case 'PDF':
+                                    $mime = $file->getMimeType();
+                                    if ($mime != 'application/pdf')
+                                    {
+                                        throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
+                                    }
+                                    break;
+                                case 'Word Document':
+                                    $mime = $file->getMimeType();
+                                    if ($mime != 'application/msword' || $mime != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                                    {
+                                        throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
+                                    }
+                                    break;
+                                case 'Text File':
+                                    $mime = $file->getMimeType();
+                                    if ($mime != 'text/plain')
+                                    {
+                                        throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
+                                    }
+                                    break;
+                                case 'JPEG Image':
+                                    $mime = $file->getMimeType();
+                                    if ($mime != 'image/jpeg')
+                                    {
+                                        throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
+                                    }
+                                    break;
+                                case 'PNG Image':
+                                    $mime = $file->getMimeType();
+                                    if ($mime != 'image/png')
+                                    {
+                                        throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
+                                    }
+                                    break;
+                                case 'ZIP Archive':
+                                    $mime = $file->getMimeType();
+                                    if ($mime != 'application/zip')
+                                    {
+                                        throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
+                                    }
+                                    break;
+                                default:
+                                    $mime = $file->getMimeType();
+                                    if ($mime != 'application/msword' || $mime != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                                    {
+                                        throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -253,20 +414,32 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
         $assignmentSubmit = DB::transaction(function () use ($dto, $model, $data) {
             $assignmentSubmit = $model->assignmentSubmits()->create([
                 'student_id' => $data['studentId'],
+                'status' => AssignmentSubmitStatus::NotCorrected,
                 'text' => $dto->text ? $dto->text : null,
             ]);
 
-            if ($dto->file)
+            if ($dto->files)
             {
-                $storedFile = Storage::disk('supabase')->putFile('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $data['studentId'],
-                    $dto->file);
+                foreach ($dto->files as $file)
+                {
+                    $storedFile = Storage::disk('supabase')->putFile('AssignmentSubmit/' . $assignmentSubmit->id . '/Files/' . $data['studentId'] . '/Student',
+                        $file);
 
-                $assignmentSubmit->attachment()->create([
-                    'reference_field' => AttachmentReferenceField::AssignmentSubmitFile,
-                    'type' => AttachmentType::File,
-                    'url' => basename($storedFile),
-                ]);
+                    $size = $file->getSize();
+                    $sizeKb = round($size / 1024, 2);
+
+                    $assignmentSubmit->attachment()->create([
+                        'reference_field' => AttachmentReferenceField::AssignmentSubmitStudentFiles,
+                        'type' => AttachmentType::File,
+                        'url' => basename($storedFile),
+                        'size_kb' => $sizeKb,
+                    ]);
+                }
             }
+
+            $assignmentSubmit->plagiarism()->create([
+                'status' => PlagiarismStatus::Pendding,
+            ]);
 
             $this->checkChallengeSubmitAssignmentOnTimeRule($assignmentSubmit);
 

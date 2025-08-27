@@ -18,6 +18,8 @@ class BadgeResource extends JsonResource
             'subCategory' => $this->sub_category,
             'difficulty' => $this->difficulty,
             'icon' => $this->icon,
+            'color' => $this->color,
+            'shape' => $this->shape,
             'imageUrl' => $this->image_url,
             'status' => $this->status,
             'reward' => $this->reward,

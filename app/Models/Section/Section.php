@@ -13,10 +13,11 @@ use App\Models\SectionGroup\SectionGroup;
 use App\Models\Group\Group;
 use App\Models\LearningActivity\LearningActivity;
 use Illuminate\Database\Eloquent\Collection;
-use App\Models\Attendance\Attendance;
+use App\Models\SectionCompletion\SectionCompletion;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use App\Models\Attachment\Attachment;
+use App\Models\Prerequisite\Prerequisite;
 
 class Section extends Model
 {
@@ -76,9 +77,9 @@ class Section extends Model
             ->select('id')->get();
     }
 
-    public function attendances(): HasMany
+    public function sectionCompletions(): HasMany
     {
-        return $this->hasMany(Attendance::class, 'section_id');
+        return $this->hasMany(SectionCompletion::class, 'section_id');
     }
 
     public function attachments(): MorphMany
@@ -89,5 +90,25 @@ class Section extends Model
     public function attachment(): MorphOne
     {
         return $this->morphOne(Attachment::class, 'attachmentable');
+    }
+
+    public function prerequisites(): MorphMany
+    {
+        return $this->morphMany(Prerequisite::class, 'prerequisiteable');
+    }
+
+    public function prerequisite(): MorphOne
+    {
+        return $this->morphOne(Prerequisite::class, 'prerequisiteable');
+    }
+
+    public function requireds(): MorphMany
+    {
+        return $this->morphMany(Prerequisite::class, 'requiredable');
+    }
+
+    public function required(): MorphOne
+    {
+        return $this->morphOne(Prerequisite::class, 'requiredable');
     }
 }

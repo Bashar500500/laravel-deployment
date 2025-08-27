@@ -23,6 +23,8 @@ class SectionResource extends JsonResource
             'activities' => LearningActivityResource::collection($this->whenLoaded('learningActivities')->load('attachment')),
             'resources' => $this->whenLoaded('attachments')->count() == 0 ?
                 null : SectionResourcesResource::makeJson($this),
+            'prerequisites' => $this->whenLoaded('requireds')->count() == 0 ?
+                null : SectionPrerequisitesResource::makeJson($this),
         ];
     }
 }

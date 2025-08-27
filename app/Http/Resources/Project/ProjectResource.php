@@ -16,6 +16,9 @@ class ProjectResource extends JsonResource
             'startDate' => $this->start_date,
             'endDate' => $this->end_date,
             'description' => $this->description,
+            'maxSubmits' => $this->max_submits,
+            'progress' => $this->prepareProgressData($this->whenLoaded('projectSubmits')->count(),
+                $this->max_submits),
             'courseId' => $this->course_id,
             'leader_image' => $this->whenLoaded('leader')->profile ?
                 ($this->whenLoaded('leader')->profile->attachment->url ?
@@ -36,5 +39,10 @@ class ProjectResource extends JsonResource
         $encoded = base64_encode($file);
         $mimeType = Storage::disk('supabase')->mimeType('Profile/' . $id . '/Images/' . $url);
         return 'data:' . $mimeType . ';base64,' . $encoded;
+    }
+
+    private function prepareProgressData(int $count, int $max_submits): float
+    {
+        return $count == 0 ? 0 : ($count / $max_submits) * 100;
     }
 }

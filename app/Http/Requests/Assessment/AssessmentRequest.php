@@ -5,6 +5,7 @@ namespace App\Http\Requests\Assessment;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\Assessment\AssessmentType;
+use App\Enums\Assessment\AssessmentStatus;
 use App\Enums\Request\ValidationType;
 use App\Enums\Request\FieldName;
 
@@ -30,6 +31,8 @@ class AssessmentRequest extends FormRequest
             'type' => ['required', new Enum(AssessmentType::class)],
             'title' => ['required', 'string'],
             'description' => ['required', 'string'],
+            'status' => ['required', new Enum(AssessmentStatus::class)],
+            'weight' => ['required', 'integer'],
             'available_from' => ['required', 'date', 'date_format:Y-m-d'],
             'available_to' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:available_from'],
             'attempts_allowed' => ['required', 'integer', 'gt:0'],
@@ -46,6 +49,8 @@ class AssessmentRequest extends FormRequest
             'type' => ['sometimes', new Enum(AssessmentType::class)],
             'title' => ['sometimes', 'string'],
             'description' => ['sometimes', 'string'],
+            'status' => ['sometimes', new Enum(AssessmentStatus::class)],
+            'weight' => ['sometimes', 'integer'],
             'available_from' => ['sometimes', 'date', 'date_format:Y-m-d'],
             'available_to' => ['required_with:available_from', 'date', 'date_format:Y-m-d', 'after_or_equal:available_from'],
             'attempts_allowed' => ['sometimes', 'integer', 'gt:0'],
@@ -90,6 +95,10 @@ class AssessmentRequest extends FormRequest
     //         'title.string' => ValidationType::String->getMessage(),
     //         'description.required' => ValidationType::Required->getMessage(),
     //         'description.string' => ValidationType::String->getMessage(),
+    //         'status.required' => ValidationType::Required->getMessage(),
+    //         'status.Illuminate\Validation\Rules\Enum' => ValidationType::Enum->getMessage(),
+    //         'weight.required' => ValidationType::Required->getMessage(),
+    //         'weight.integer' => ValidationType::Integer->getMessage(),
     //         'available_from.required' => ValidationType::Required->getMessage(),
     //         'available_from.date' => ValidationType::Date->getMessage(),
     //         'available_from.date_format' => ValidationType::DateFormat->getMessage(),
@@ -122,6 +131,8 @@ class AssessmentRequest extends FormRequest
     //         'type' => FieldName::Type->getMessage(),
     //         'title' => FieldName::Title->getMessage(),
     //         'description' => FieldName::Description->getMessage(),
+    //         'status' => FieldName::Status->getMessage(),
+    //         'weight' => FieldName::Weight->getMessage(),
     //         'available_from' => FieldName::AvailableFrom->getMessage(),
     //         'available_to' => FieldName::AvailableTo->getMessage(),
     //         'attempts_allowed' => FieldName::AttemptsAllowed->getMessage(),

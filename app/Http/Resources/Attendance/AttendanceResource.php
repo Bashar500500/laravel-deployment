@@ -11,7 +11,7 @@ class AttendanceResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'sectionTitle' => $this->whenLoaded('section')->title,
+            'learningActivityTitle' => $this->whenLoaded('learningActivity')->title,
             'studentName' => $this->whenLoaded('student')->first_name .
                 $this->whenLoaded('student')->last_name,
             'isPresent' => $this->is_present,

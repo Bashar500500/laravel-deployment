@@ -9,7 +9,7 @@ class AttendanceDto
     public function __construct(
         public readonly ?int $currentPage,
         public readonly ?int $pageSize,
-        public readonly ?int $sectionId,
+        public readonly ?int $learningActivityId,
         public readonly ?int $studentId,
         public readonly ?bool $isPresent,
     ) {}
@@ -17,7 +17,7 @@ class AttendanceDto
     public static function fromIndexRequest(AttendanceRequest $request): AttendanceDto
     {
         return new self(
-            sectionId: $request->validated('section_id'),
+            learningActivityId: $request->validated('learning_activity_id'),
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
             studentId: null,
@@ -30,7 +30,7 @@ class AttendanceDto
         return new self(
             currentPage: null,
             pageSize: null,
-            sectionId: $request->validated('section_id'),
+            learningActivityId: $request->validated('learning_activity_id'),
             studentId: $request->validated('student_id'),
             isPresent: $request->validated('is_present'),
         );
@@ -41,7 +41,7 @@ class AttendanceDto
         return new self(
             currentPage: null,
             pageSize: null,
-            sectionId: null,
+            learningActivityId: null,
             studentId: null,
             isPresent: $request->validated('is_present'),
         );

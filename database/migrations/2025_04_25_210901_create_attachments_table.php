@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('reference_field');
             $table->string('type');
             $table->string('url');
+            $table->decimal('size_kb');
             $table->morphs('attachmentable');
             $table->timestamps();
         });

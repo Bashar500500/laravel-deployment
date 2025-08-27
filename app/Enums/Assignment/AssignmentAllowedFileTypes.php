@@ -11,4 +11,5 @@ enum AssignmentAllowedFileTypes: string
     case JPEGImage = 'JPEG Image';
     case PNGImage = 'PNG Image';
     case ZIPArchive = 'ZIP Archive';
+    case Blender = 'Blender';
 }

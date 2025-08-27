@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('status');
-            $table->date('access_release_date')->nullable();
-            $table->boolean('access_has_prerequest');
+            $table->date('access_release_date');
+            $table->boolean('access_has_prerequest')->nullable();
             $table->boolean('access_is_password_protected')->nullable();
             $table->string('access_password')->nullable();
             $table->softDeletes();

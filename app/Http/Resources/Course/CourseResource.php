@@ -32,6 +32,8 @@ class CourseResource extends JsonResource
             'price' => $this->price,
             'accessSettings' => CourseAccessSettingResource::makeJson($this),
             'features' => CourseFeatureResource::makeJson($this),
+            'prerequisites' => $this->whenLoaded('requireds')->count() == 0 ?
+                null : CoursePrerequisitesResource::makeJson($this),
         ];
     }
 

@@ -17,5 +17,10 @@ enum AttachmentReferenceField: string
     case EventAttachmentsLink = 'event_attachments_link';
     case UserImage = 'user_image';
     case ProjectFiles = 'project_files';
-    case AssignmentSubmitFile = 'assignment_submit_file';
+    case AssignmentSubmitStudentFiles = 'assignment_submit_student_files';
+    case AssignmentSubmitInstructorFiles = 'assignment_submit_instructor_files';
+    case AssignmentFiles = 'assignment_files';
+    case ProjectSubmitStudentFiles = 'project_submit_student_files';
+    case ProjectSubmitInstructorFiles = 'project_submit_instructor_files';
+    case WikiFiles = 'wiki_files';
 }
