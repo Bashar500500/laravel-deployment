@@ -13,6 +13,8 @@ use App\Repositories\LearningActivity\LearningActivityRepository;
 use App\Repositories\LearningActivity\LearningActivityRepositoryInterface;
 use App\Repositories\Section\SectionRepository;
 use App\Repositories\Section\SectionRepositoryInterface;
+use App\Repositories\Event\EventRepository;
+use App\Repositories\Event\EventRepositoryInterface;
 use App\Repositories\Category\CategoryRepository;
 use App\Repositories\Category\CategoryRepositoryInterface;
 use App\Repositories\SubCategory\SubCategoryRepository;
@@ -36,7 +38,7 @@ class UploadRepositoryFactory
         protected Container $container,
     ) {}
 
-    public function make(ModelName $name): AdminProfileRepositoryInterface|CategoryRepositoryInterface|CourseRepositoryInterface|GroupRepositoryInterface|LearningActivityRepositoryInterface|ProjectRepositoryInterface|SectionRepositoryInterface|SubCategoryRepositoryInterface|UserProfileRepositoryInterface|AssignmentRepositoryInterface|WikiRepositoryInterface
+    public function make(ModelName $name): AdminProfileRepositoryInterface|CategoryRepositoryInterface|CourseRepositoryInterface|GroupRepositoryInterface|LearningActivityRepositoryInterface|ProjectRepositoryInterface|SectionRepositoryInterface|EventRepositoryInterface|SubCategoryRepositoryInterface|UserProfileRepositoryInterface|AssignmentRepositoryInterface|WikiRepositoryInterface
     {
         $role = Auth::user()->getRoleNames();
         return match ($name) {
@@ -46,6 +48,7 @@ class UploadRepositoryFactory
                 $this->container->make(InstructorGroupRepository::class),
             ModelName::LearningActivity => $this->container->make(LearningActivityRepository::class),
             ModelName::Section => $this->container->make(SectionRepository::class),
+            ModelName::Event => $this->container->make(EventRepository::class),
             ModelName::Category => $this->container->make(CategoryRepository::class),
             ModelName::SubCategory => $this->container->make(SubCategoryRepository::class),
             ModelName::UserProfile => $role[0] == 'student' ?
