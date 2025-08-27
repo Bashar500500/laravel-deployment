@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\Request\ValidationType;
 use App\Enums\Request\FieldName;
-use App\Enums\LearningActivity\LearningActivityContentType;
+use App\Enums\LearningActivity\LearningActivityType;
 
 class ContentUploadRequest extends FormRequest
 {
@@ -18,9 +18,9 @@ class ContentUploadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content_type' => ['required', new Enum(LearningActivityContentType::class)],
-            'pdf' => ['required_if:content_type,==,PDF', 'missing_if:content_type,==,' . implode(',', LearningActivityContentType::Pdf->getEnumsExceptValue()), 'file', 'mimes:pdf'],
-            'video' => ['required_if:content_type,==,Video', 'missing_if:content_type,==,' . implode(',', LearningActivityContentType::Video->getEnumsExceptValue()), 'file', 'mimes:mp4,mov,ogg,qt,ogx,oga,ogv,webm'],
+            'content_type' => ['required', new Enum(LearningActivityType::class)],
+            'pdf' => ['required_if:content_type,==,PDF', 'missing_if:content_type,==,' . implode(',', LearningActivityType::Pdf->getEnumsExceptValue()), 'file', 'mimes:pdf'],
+            'video' => ['required_if:content_type,==,Video', 'missing_if:content_type,==,' . implode(',', LearningActivityType::Video->getEnumsExceptValue()), 'file', 'mimes:mp4,mov,ogg,qt,ogx,oga,ogv,webm'],
             'dz_uuid' => ['required', 'string', 'uuid'],
             'dz_chunk_index' => ['required', 'integer', 'gte:0'],
             'dz_total_chunk_count' => ['required', 'integer', 'gt:dz_chunk_index'],

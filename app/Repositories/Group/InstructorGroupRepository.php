@@ -261,14 +261,11 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
-            $size = $data['image']->getSize();
-            $sizeKb = round($size / 1024, 2);
-
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::GroupImageUrl,
                 'type' => AttachmentType::Image,
                 'url' => basename($storedFile),
-                'size_kb' => $sizeKb,
+                'size_kb' => $data['sizeKb'],
             ]);
         });
 

@@ -248,14 +248,11 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
-            $size = $data['file']->getSize();
-            $sizeKb = round($size / 1024, 2);
-
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::EventAttachmentsFile,
                 'type' => AttachmentType::File,
                 'url' => basename($storedFile),
-                'size_kb' => $sizeKb,
+                'size_kb' => $data['sizeKb'],
             ]);
         });
 

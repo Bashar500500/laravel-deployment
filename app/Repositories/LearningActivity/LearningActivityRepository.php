@@ -293,14 +293,11 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                     array_map('unlink', glob("{$data['finalDir']}/*"));
                     rmdir($data['finalDir']);
 
-                    $size = $data['pdf']->getSize();
-                    $sizeKb = round($size / 1024, 2);
-
                     $model->attachment()->create([
                         'reference_field' => AttachmentReferenceField::LearningActivityPdfContentFile,
                         'type' => AttachmentType::Pdf,
                         'url' => basename($storedFile),
-                        'size_kb' => $sizeKb,
+                        'size_kb' => $data['sizeKb'],
                     ]);
 
                     return UploadMessage::Pdf;
@@ -314,14 +311,11 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                     array_map('unlink', glob("{$data['finalDir']}/*"));
                     rmdir($data['finalDir']);
 
-                    $size = $data['video']->getSize();
-                    $sizeKb = round($size / 1024, 2);
-
                     $model->attachment()->create([
                         'reference_field' => AttachmentReferenceField::LearningActivityVideoContentFile,
                         'type' => AttachmentType::Video,
                         'url' => basename($storedFile),
-                        'size_kb' => $sizeKb,
+                        'size_kb' => $data['sizeKb'],
                     ]);
 
                     return UploadMessage::Video;

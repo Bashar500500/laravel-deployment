@@ -343,14 +343,11 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
             array_map('unlink', glob("{$data['finalDir']}/*"));
             rmdir($data['finalDir']);
 
-            $size = $data['image']->getSize();
-            $sizeKb = round($size / 1024, 2);
-
             $model->attachment()->create([
                 'reference_field' => AttachmentReferenceField::CategoryImage,
                 'type' => AttachmentType::Image,
                 'url' => basename($storedFile),
-                'size_kb' => $sizeKb,
+                'size_kb' => $data['sizeKb'],
             ]);
         });
 
