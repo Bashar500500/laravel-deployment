@@ -13,9 +13,9 @@ use App\Enums\Trait\FunctionName;
 use App\Enums\Trait\ModelName;
 use App\Models\LearningActivity\LearningActivity;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use App\Http\Requests\Upload\Content\ContentUploadRequest;
+use App\Http\Requests\Upload\Content\LearningActivityContentUploadRequest;
 use App\Enums\Upload\UploadMessage;
-use App\Enums\LearningActivity\LearningActivityContentType;
+use App\Enums\LearningActivity\LearningActivityType;
 
 class LearningActivityController extends Controller
 {
@@ -117,7 +117,7 @@ class LearningActivityController extends Controller
             ->downloadFileResponse();
     }
 
-    public function upload(ContentUploadRequest $request, LearningActivity $learningActivity): JsonResponse
+    public function upload(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): JsonResponse
     {
         // $this->authorize('upload', $learningActivity);
 
@@ -130,6 +130,10 @@ class LearningActivityController extends Controller
                 ->successResponse(),
             UploadMessage::Video => $this->controller->setFunctionName(FunctionName::Upload)
                 ->setModelName(ModelName::Video)
+                ->setData((object) [])
+                ->successResponse(),
+            UploadMessage::Audio => $this->controller->setFunctionName(FunctionName::Upload)
+                ->setModelName(ModelName::Audio)
                 ->setData((object) [])
                 ->successResponse(),
             UploadMessage::Chunk => $this->controller->setFunctionName(FunctionName::Upload)
@@ -146,12 +150,16 @@ class LearningActivityController extends Controller
         $this->learningActivityService->destroyAttachment($learningActivity);
 
         return match ($learningActivity->content_type) {
-            LearningActivityContentType::Pdf => $this->controller->setFunctionName(FunctionName::Delete)
+            LearningActivityType::Pdf => $this->controller->setFunctionName(FunctionName::Delete)
                 ->setModelName(ModelName::Pdf)
                 ->setData((object) [])
                 ->successResponse(),
-            LearningActivityContentType::Video => $this->controller->setFunctionName(FunctionName::Delete)
+            LearningActivityType::Video => $this->controller->setFunctionName(FunctionName::Delete)
                 ->setModelName(ModelName::Video)
+                ->setData((object) [])
+                ->successResponse(),
+            LearningActivityType::Audio => $this->controller->setFunctionName(FunctionName::Delete)
+                ->setModelName(ModelName::Audio)
                 ->setData((object) [])
                 ->successResponse(),
         };

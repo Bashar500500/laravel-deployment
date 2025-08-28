@@ -5,12 +5,20 @@ namespace App\Repositories\AssignmentSubmit;
 use App\Repositories\BaseRepository;
 use App\Models\AssignmentSubmit\AssignmentSubmit;
 use App\DataTransferObjects\AssignmentSubmit\AssignmentSubmitDto;
+use App\Enums\AssignmentSubmit\AssignmentSubmitLevel;
+use App\Enums\AssignmentSubmit\AssignmentSubmitStatus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Exceptions\CustomException;
 use ZipArchive;
 use Illuminate\Support\Facades\File;
 use App\Enums\Attachment\AttachmentReferenceField;
+use App\Enums\Attachment\AttachmentType;
+use App\Enums\Exception\ForbiddenExceptionMessage;
+use App\Enums\Grade\GradeTrend;
+use App\Enums\Model\ModelTypePath;
+use App\Enums\Plagiarism\PlagiarismStatus;
+use App\Enums\Trait\ModelName;
 
 class StudentAssignmentSubmitRepository extends BaseRepository implements AssignmentSubmitRepositoryInterface
 {
@@ -40,7 +48,123 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
 
     public function update(AssignmentSubmitDto $dto, int $id): object
     {
-        return (object) [];
+        $model = (object) parent::find($id);
+        $points = 0;
+        $detailedResults = [];
+        $assignment = $model->assignment;
+        $rubric = $assignment->rubric;
+        $grade = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->first();
+        $grades = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->all();
+        $gradeScoreSum = $grades->sum('points_earned');
+
+        $assignmentSubmit = DB::transaction(function () use ($dto, $model, $points, $detailedResults, $rubric, $grade, $assignment, $gradeScoreSum, $grades) {
+            if ($model->status == AssignmentSubmitStatus::NotCorrected)
+            {
+                $correctionsCount = 0;
+            }
+            else
+            {
+                $correctionsCount = count($model->detailed_results);
+            }
+
+            if ($correctionsCount == $assignment->peer_review_settings['allowed_reviews'])
+            {
+                throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentAllowedReviews);
+            }
+
+            foreach ($dto->rubricCriterias as $item)
+            {
+                $rubricCriteria = $rubric->rubricCriterias->where('id', $item['rubric_criteria_id'])->first();
+
+                if (! $rubricCriteria)
+                {
+                    throw CustomException::notFound('RubricCriteria');
+                }
+
+                switch ($item['level'])
+                {
+                    case AssignmentSubmitLevel::Excellent->getType():
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::Excellent->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                    case AssignmentSubmitLevel::Good->getType():
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::Good->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                    case AssignmentSubmitLevel::S1->getType():
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::S1->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                    case AssignmentSubmitLevel::S2->getType():
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::S2->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                    default:
+                        $data = $this->calculateAssignmentPointsDependingOnLevel(
+                            $rubricCriteria,
+                            $assignment->points,
+                            AssignmentSubmitLevel::Bad->value);
+                        $points += $data['points'];
+                        array_push($detailedResults, $data['result']);
+                        break;
+                }
+            }
+
+            $isLastSubmit = $correctionsCount == ($assignment->peer_review_settings['allowed_reviews']) - 1;
+            $assignmentSubmit = tap($model)->update([
+                'status' => $isLastSubmit ? AssignmentSubmitStatus::Corrected : AssignmentSubmitStatus::Pending,
+                'score' => $correctionsCount == 0 ? $points : ($model->points + $points) / ($correctionsCount + 1),
+                'detailed_results' => array_push($model->detailed_results, $detailedResults),
+                'feedback' => $dto->feedback ? $dto->feedback : $model->feedback,
+            ]);
+
+            $plagiarism = $assignmentSubmit->plagiarism;
+            $plagiarism->update([
+                'score' => $correctionsCount == 0 ? $dto->plagiarismScore : ($plagiarism->score + $dto->plagiarismScore) / ($correctionsCount + 1),
+                'status' => $isLastSubmit ?
+                    ($dto->plagiarismScore < 30 ? PlagiarismStatus::Clear : PlagiarismStatus::Flagged) :
+                    PlagiarismStatus::Pending,
+            ]);
+
+            if ($isLastSubmit)
+            {
+                $oldTrendArray = $grade->trend_data;
+                $newTrendArray = $oldTrendArray;
+                array_push($newTrendArray, $assignmentSubmit->score);
+                $trend = $this->calculateTrend($newTrendArray);
+
+                $grade->update([
+                    'due_date' => $assignment->due_date,
+                    'points_earned' => $assignmentSubmit->score,
+                    'max_points' => $assignment->points,
+                    'percentage' => (1 / ($assignment->points / $assignmentSubmit->score)) * 100,
+                    'class_average' => ($gradeScoreSum / count($grades)),
+                    'trend' => $trend,
+                    'trend_data' => $newTrendArray,
+                    'resubmission_due' => $assignment->policies['late_submission']['cutoff_date'],
+                ]);
+            }
+
+            return $assignmentSubmit;
+        });
+
+        return (object) $assignmentSubmit->load('assignment', 'student', 'attachments');
     }
 
     public function delete(int $id): object
@@ -129,5 +253,39 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
         }
 
         return $zipPath;
+    }
+
+    private function calculateAssignmentPointsDependingOnLevel(object $rubricCriteria, int $assignmentPoints, string $level): array
+    {
+        $rubricCriteriaPointsToEarn = $rubricCriteria->levels[$level]['points'];
+        $rubricCriteriaMaxPoints = $rubricCriteria->levels['excellent']['points'];
+        $pointsEarned = ($rubricCriteriaPointsToEarn / 100) * $assignmentPoints;
+        $pointsPossible = ($rubricCriteriaMaxPoints / 100) * $assignmentPoints;
+
+        $result['criteria'] = $rubricCriteria->name;
+        $result['level'] = $level;
+        $result['description'] = $rubricCriteria->description;
+        $result['points_earned'] = $pointsEarned;
+        $result['points_possible'] = $pointsPossible;
+
+        return [
+            'points'=> $pointsEarned,
+            'result'=> $result,
+        ];
+    }
+
+    private function calculateTrend(array $values): GradeTrend
+    {
+        $average = array_sum($values) / count($values);
+
+        if ($average >= 0 && $average <= 40) {
+            $trend = GradeTrend::Down;
+        } elseif ($average >= 41 && $average <= 59) {
+            $trend = GradeTrend::Neutral;
+        } elseif ($average >= 60 && $average <= 100) {
+            $trend = GradeTrend::Up;
+        }
+
+        return $trend;
     }
 }

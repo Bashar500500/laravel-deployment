@@ -12,6 +12,8 @@ use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
 use App\Exceptions\CustomException;
 use App\Enums\Upload\UploadMessage;
+use App\Models\InteractiveContent\InteractiveContent;
+use App\Models\ReusableContent\ReusableContent;
 
 class LearningActivityRepository extends BaseRepository implements LearningActivityRepositoryInterface
 {
@@ -82,7 +84,21 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                             'size_kb' => $sizeKb,
                         ]);
                         break;
-                    default:
+                    case LearningActivityType::Audio:
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Audios',
+                            $dto->learningActivityContentDto->audio);
+
+                        $size = $dto->learningActivityContentDto->audio->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
+                        $learningActivity->attachment()->create([
+                            'reference_field' => AttachmentReferenceField::LearningActivityAudioContentFile,
+                            'type' => AttachmentType::Audio,
+                            'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
+                        ]);
+                        break;
+                    case LearningActivityType::Video:
                         $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Videos',
                             $dto->learningActivityContentDto->video);
 
@@ -154,7 +170,24 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                             'size_kb' => $sizeKb,
                         ]);
                         break;
-                    default:
+                    case LearningActivityType::Audio:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Audios/' . $learningActivity->attachment?->url);
+                        $learningActivity->attachments()->delete();
+
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Audios',
+                            $dto->learningActivityContentDto->audio);
+
+                        $size = $dto->learningActivityContentDto->audio->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
+                        $learningActivity->attachment()->create([
+                            'reference_field' => AttachmentReferenceField::LearningActivityAudioContentFile,
+                            'type' => AttachmentType::Audio,
+                            'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
+                        ]);
+                        break;
+                    case LearningActivityType::Video:
                         Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Videos/' . $learningActivity->attachment?->url);
                         $learningActivity->attachments()->delete();
 
@@ -191,7 +224,10 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 case AttachmentType::Pdf:
                     Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $attachment?->url);
                     break;
-                default:
+                case AttachmentType::Audio:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Audios/' . $attachment?->url);
+                    break;
+                case AttachmentType::Video:
                     Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $attachment?->url);
                     break;
             }
@@ -206,9 +242,9 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
     {
         $model = (object) parent::find($id);
 
-        switch ($model->attachment->type)
+        switch ($model->type)
         {
-            case AttachmentType::Pdf:
+            case LearningActivityType::Pdf:
                 $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
 
                 if (! $exists)
@@ -221,7 +257,20 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 file_put_contents($tempPath, $file);
 
                 break;
-            default:
+            case LearningActivityType::Audio:
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Audios/' . $model->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('Audio');
+                }
+
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Audios/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::Video:
                 $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
 
                 if (! $exists)
@@ -230,6 +279,34 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 }
 
                 $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::InteractiveContent:
+                $interactiveContent = InteractiveContent::find($model->content_data['interactiveContentId']);
+                $exists = Storage::disk('supabase')->exists('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . 's/' . $interactiveContent->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('InteractiveContent');
+                }
+
+                $file = Storage::disk('supabase')->get('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . 's/' . $interactiveContent->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::ReusableContent:
+                $reusableContent = ReusableContent::find($model->content_data['reusableContentId']);
+                $exists = Storage::disk('supabase')->exists('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . 's/' . $reusableContent->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('ReusableContent');
+                }
+
+                $file = Storage::disk('supabase')->get('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . 's/' . $reusableContent->attachment?->url);
                 $tempPath = storage_path('app/private/' . $model->attachment?->url);
                 file_put_contents($tempPath, $file);
 
@@ -243,9 +320,9 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
     {
         $model = (object) parent::find($id);
 
-        switch ($model->attachment->type)
+        switch ($model->type)
         {
-            case AttachmentType::Pdf:
+            case LearningActivityType::Pdf:
                 $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
 
                 if (! $exists)
@@ -258,7 +335,20 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 file_put_contents($tempPath, $file);
 
                 break;
-            default:
+            case LearningActivityType::Audio:
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Audios/' . $model->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('Audio');
+                }
+
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Audios/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::Video:
                 $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
 
                 if (! $exists)
@@ -267,6 +357,34 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 }
 
                 $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::InteractiveContent:
+                $interactiveContent = InteractiveContent::find($model->content_data['interactiveContentId']);
+                $exists = Storage::disk('supabase')->exists('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . 's/' . $interactiveContent->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('InteractiveContent');
+                }
+
+                $file = Storage::disk('supabase')->get('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . 's/' . $interactiveContent->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::ReusableContent:
+                $reusableContent = ReusableContent::find($model->content_data['reusableContentId']);
+                $exists = Storage::disk('supabase')->exists('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . 's/' . $reusableContent->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('ReusableContent');
+                }
+
+                $file = Storage::disk('supabase')->get('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . 's/' . $reusableContent->attachment?->url);
                 $tempPath = storage_path('app/private/' . $model->attachment?->url);
                 file_put_contents($tempPath, $file);
 
@@ -301,7 +419,25 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                     ]);
 
                     return UploadMessage::Pdf;
-                default:
+                case LearningActivityType::Audio:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Audios/' . $model->attachment?->url);
+                    $model->attachments()->delete();
+
+                    $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $model->id . '/Audios',
+                        $data['audio']);
+
+                    array_map('unlink', glob("{$data['finalDir']}/*"));
+                    rmdir($data['finalDir']);
+
+                    $model->attachment()->create([
+                        'reference_field' => AttachmentReferenceField::LearningActivityAudioContentFile,
+                        'type' => AttachmentType::Audio,
+                        'url' => basename($storedFile),
+                        'size_kb' => $data['sizeKb'],
+                    ]);
+
+                    return UploadMessage::Audio;
+                case LearningActivityType::Video:
                     Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
                     $model->attachments()->delete();
 
@@ -335,7 +471,11 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $model->attachment?->url);
 
                 break;
-            default:
+            case AttachmentType::Audio:
+                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Audios/' . $model->attachment?->url);
+
+                break;
+            case AttachmentType::Video:
                 Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
 
                 break;

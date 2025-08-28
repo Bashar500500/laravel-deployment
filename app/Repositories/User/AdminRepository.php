@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
+use App\Enums\User\UserRole;
 
 class AdminRepository extends BaseRepository implements AdminRepositoryInterface
 {
@@ -20,13 +21,38 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
 
     public function all(AdminDto $dto): object
     {
+        if ($dto->role)
+        {
+            switch ($dto->role)
+            {
+                case UserRole::Instructor:
+                    return (object) $this->model->role('instructor')
+                    ->latest('created_at')
+                        ->simplePaginate(
+                            $dto->pageSize,
+                            ['*'],
+                            'page',
+                            $dto->currentPage,
+                        );
+                case UserRole::Student:
+                    return (object) $this->model->role('student')
+                    ->latest('created_at')
+                        ->simplePaginate(
+                            $dto->pageSize,
+                            ['*'],
+                            'page',
+                            $dto->currentPage,
+                        );
+            }
+        }
+
         return (object) $this->model->latest('created_at')
-            ->simplePaginate(
-                $dto->pageSize,
-                ['*'],
-                'page',
-                $dto->currentPage,
-            );
+                ->simplePaginate(
+                    $dto->pageSize,
+                    ['*'],
+                    'page',
+                    $dto->currentPage,
+                );
     }
 
     public function find(int $id): object
@@ -123,7 +149,7 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
                 foreach ($learningActivities as $learningActivity)
                 {
                     $attachment = $learningActivity->attachment;
-                    switch ($attachment->type)
+                    switch ($attachment?->type)
                     {
                         case AttachmentType::Pdf:
                             Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment?->url);

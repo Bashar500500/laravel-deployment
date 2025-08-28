@@ -98,9 +98,18 @@ return [
         'description' => 'Project start or end date is not valid. Try again with correct data.'
     ],
     'project_max_submits' => [
-        'description' => 'Project project max submits are reached. Try again with correct data.'
+        'description' => 'Project reached the max submits. Try again with correct data.'
     ],
     'certificate_type_condition' => [
         'description' => 'Certificate type does not match condition. Try again with correct data.'
+    ],
+    'interactive_content' => [
+        'description' => 'The request interactive content content type dose not match the type stored in database. Try again with correct data.'
+    ],
+    'reusable_content' => [
+        'description' => 'The request reusable content content type dose not match the type stored in database. Try again with correct data.'
+    ],
+    'assignment_allowed_reviews' => [
+        'description' => 'Assignment reached the allowed reviews. Try again with correct data.'
     ],
 ];

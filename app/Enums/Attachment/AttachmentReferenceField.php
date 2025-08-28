@@ -23,4 +23,12 @@ enum AttachmentReferenceField: string
     case ProjectSubmitStudentFiles = 'project_submit_student_files';
     case ProjectSubmitInstructorFiles = 'project_submit_instructor_files';
     case WikiFiles = 'wiki_files';
+    case InteractiveContentVideoFile = 'interactive_content_video_file';
+    case InteractiveContentPresentationFile = 'interactive_content_presentation_file';
+    case InteractiveContentQuizFile = 'interactive_content_quiz_file';
+    case ReusableContentVideoFile = 'reusable_content_video_file';
+    case ReusableContentPresentationFile = 'reusable_content_presentation_file';
+    case ReusableContentPdfFile = 'reusable_content_pdf_file';
+    case ReusableContentQuizFile = 'reusable_content_quiz_file';
+    case LearningActivityAudioContentFile = 'learning_activity_audio_content_file';
 }

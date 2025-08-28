@@ -43,6 +43,7 @@ use App\Http\Controllers\Certificate\CertificateController;
 use App\Http\Controllers\CertificateTemplate\CertificateTemplateController;
 use App\Http\Controllers\Challenge\ChallengeController;
 use App\Http\Controllers\EnrollmentOption\EnrollmentOptionController;
+use App\Http\Controllers\InteractiveContent\InteractiveContentController;
 use App\Http\Controllers\Plagiarism\PlagiarismController;
 use App\Http\Controllers\Prerequisite\PrerequisiteController;
 use App\Http\Controllers\ProjectSubmit\ProjectSubmitController;
@@ -51,6 +52,7 @@ use App\Http\Controllers\QuestionBankFillInBlankQuestion\QuestionBankFillInBlank
 use App\Http\Controllers\QuestionBankMultipleTypeQuestion\QuestionBankMultipleTypeQuestionController;
 use App\Http\Controllers\QuestionBankShortAnswerQuestion\QuestionBankShortAnswerQuestionController;
 use App\Http\Controllers\QuestionBankTrueOrFalseQuestion\QuestionBankTrueOrFalseQuestionController;
+use App\Http\Controllers\ReusableContent\ReusableContentController;
 use App\Http\Controllers\Rubric\RubricController;
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\TimeLimit\TimeLimitController;
@@ -284,11 +286,22 @@ Route::middleware(['auth:api', 'throttle:ip-limit'])->group(function () {
     Route::get('download-wiki-file/{wiki}', [WikiController::class, 'download']);
     Route::post('upload-wiki-file/{wiki}', [WikiController::class, 'upload']);
     Route::delete('delete-wiki-file/{wiki}/{fileName}', [WikiController::class, 'destroyAttachment']);
+    Route::apiResource('interactive-content', InteractiveContentController::class);
+    Route::get('view-interactive-content-file/{interactiveContent}/{fileName}', [InteractiveContentController::class, 'view']);
+    Route::get('download-interactive-content-file/{interactiveContent}', [InteractiveContentController::class, 'download']);
+    Route::post('upload-interactive-content-file/{interactiveContent}', [InteractiveContentController::class, 'upload']);
+    Route::delete('delete-interactive-content-file/{interactiveContent}/{fileName}', [InteractiveContentController::class, 'destroyAttachment']);
+    Route::apiResource('reusable-content', ReusableContentController::class);
+    Route::get('view-reusable-content-file/{reusableContent}/{fileName}', [ReusableContentController::class, 'view']);
+    Route::get('download-reusable-content-file/{reusableContent}', [ReusableContentController::class, 'download']);
+    Route::post('upload-reusable-content-file/{reusableContent}', [ReusableContentController::class, 'upload']);
+    Route::delete('delete-reusable-content-file/{reusableContent}/{fileName}', [ReusableContentController::class, 'destroyAttachment']);
     Route::apiResource('rule', RuleController::class);
     Route::apiResource('time-limit', TimeLimitController::class);
 });
-// Route::apiResource('user', UserController::class)->only(['index']);
-
+Route::middleware(['throttle:ip-limit'])->group(function () {
+    Route::get('guest-courses', [CourseController::class, 'guestIndex']);
+});
 
 // Route::post('course/{course}', [CourseController::class, 'update']);
 // Route::post('group/{group}', [GroupController::class, 'update']);

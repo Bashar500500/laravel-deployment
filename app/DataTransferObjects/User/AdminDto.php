@@ -20,13 +20,15 @@ class AdminDto
     public static function fromIndexRequest(AdminRequest $request): AdminDto
     {
         return new self(
+            role: $request->validated('role') ?
+                UserRole::from($request->validated('role')) :
+                null,
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
             firstName: null,
             lastName: null,
             email: null,
             password: null,
-            role: null,
             fcmToken: null,
         );
     }

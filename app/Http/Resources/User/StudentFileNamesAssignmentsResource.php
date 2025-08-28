@@ -21,11 +21,11 @@ class StudentFileNamesAssignmentsResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'files' => $this->load('attachments')->count() == 0 ?
+            'files' => $this->attachments->count() == 0 ?
                 null :
-                FileNamesAttachmentResource::collection($this->load('attachments')),
+                FileNamesAttachmentResource::collection($this->attachments),
             'assignmentSubmits' => StudentFileNamesAssignmentAssignmentSubmitsResource::collection(
-                $this->load('assignmentSubmits')->where('student_id', $studentId)),
+                $this->assignmentSubmits->where('student_id', $studentId)),
         ];
     }
 }

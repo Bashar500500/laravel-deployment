@@ -11,6 +11,9 @@ class LearningActivityContentDto
     public function __construct(
         public readonly ?UploadedFile $pdf,
         public readonly ?UploadedFile $video,
+        public readonly ?UploadedFile $audio,
+        public readonly ?int $interactiveContentId,
+        public readonly ?int $reusableContentId,
         public readonly ?LearningActivityContentCaptionsDto $learningActivityContentCaptionsDto,
     ) {}
 
@@ -20,6 +23,9 @@ class LearningActivityContentDto
         return match ($type) {
             LearningActivityType::Pdf => LearningActivityContentDto::fromPdfType($request),
             LearningActivityType::Video => LearningActivityContentDto::fromVideoType($request),
+            LearningActivityType::Audio => LearningActivityContentDto::fromAudioType($request),
+            LearningActivityType::InteractiveContent => LearningActivityContentDto::fromInteractiveContentType($request),
+            LearningActivityType::ReusableContent => LearningActivityContentDto::fromReusableContentType($request),
         };
     }
 
@@ -30,6 +36,9 @@ class LearningActivityContentDto
                 UploadedFile::createFromBase($request->validated('content.data.pdf')) :
                 null,
             video: null,
+            audio: null,
+            interactiveContentId: null,
+            reusableContentId: null,
             learningActivityContentCaptionsDto: null,
         );
     }
@@ -41,6 +50,47 @@ class LearningActivityContentDto
             video: $request->validated('content.data.video') ?
                 UploadedFile::createFromBase($request->validated('content.data.video')) :
                 null,
+            audio: null,
+            interactiveContentId: null,
+            reusableContentId: null,
+            learningActivityContentCaptionsDto: LearningActivityContentCaptionsDto::from($request),
+        );
+    }
+
+    private static function fromAudioType(LearningActivityRequest $request): LearningActivityContentDto
+    {
+        return new self(
+            pdf: null,
+            video: null,
+            audio: $request->validated('content.data.audio') ?
+                UploadedFile::createFromBase($request->validated('content.data.audio')) :
+                null,
+            interactiveContentId: null,
+            reusableContentId: null,
+            learningActivityContentCaptionsDto: LearningActivityContentCaptionsDto::from($request),
+        );
+    }
+
+    private static function fromInteractiveContentType(LearningActivityRequest $request): LearningActivityContentDto
+    {
+        return new self(
+            pdf: null,
+            video: null,
+            audio: null,
+            interactiveContentId: $request->validated('content.data.interactive_content_id'),
+            reusableContentId: null,
+            learningActivityContentCaptionsDto: LearningActivityContentCaptionsDto::from($request),
+        );
+    }
+
+    private static function fromReusableContentType(LearningActivityRequest $request): LearningActivityContentDto
+    {
+        return new self(
+            pdf: null,
+            video: null,
+            audio: null,
+            interactiveContentId: null,
+            reusableContentId: $request->validated('content.data.reusable_content_id'),
             learningActivityContentCaptionsDto: LearningActivityContentCaptionsDto::from($request),
         );
     }

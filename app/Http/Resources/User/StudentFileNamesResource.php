@@ -21,15 +21,15 @@ class StudentFileNamesResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'sections' => FileNamesSectionsResource::collection($this->load('sections')),
-            'events' => FileNamesEventsResource::collection($this->load('events')),
-            'assignments' => StudentFileNamesAssignmentsResource::collection($this->load('assignments')),
+            'sections' => FileNamesSectionsResource::collection($this->sections),
+            'events' => FileNamesEventsResource::collection($this->events),
+            'assignments' => StudentFileNamesAssignmentsResource::collection($this->assignments),
             'projects' => $this->studentProjects($studentId)
                 ? $this->studentProjects($studentId)->map(
                     fn($project) => new FileNamesProjectsResource($project, $studentId)
                 )
                 : [],
-            'wikis' => FileNamesWikisResource::collection($this->load('wikis')),
+            'wikis' => FileNamesWikisResource::collection($this->wikis),
         ];
     }
 }

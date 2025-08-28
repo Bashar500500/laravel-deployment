@@ -26,6 +26,13 @@ class CourseService
         };
     }
 
+    public function guestIndex(CourseRequest $request): object
+    {
+        $dto = CourseDto::fromIndexRequest($request);
+        $repository = $this->factory->make('guest');
+        return $repository->all($dto, []);
+    }
+
     public function show(Course $course): object
     {
         $role = Auth::user()->getRoleNames();

@@ -9,4 +9,7 @@ enum AttachmentType: string
     case Video = 'video';
     case File = 'file';
     case Link = 'link';
+    case Presentation = 'presentation';
+    case Quiz = 'quiz';
+    case Audio = 'audio';
 }

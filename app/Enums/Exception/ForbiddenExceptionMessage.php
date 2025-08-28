@@ -38,6 +38,9 @@ enum ForbiddenExceptionMessage: string
     case ProjectStartOrEndDate = 'project_start_or_end_date';
     case ProjectMaxSubmits = 'project_max_submits';
     case CertificateTypeCondition = 'certificate_type_condition';
+    case InteractiveContent = 'interactive_content';
+    case ReusableContent = 'reusable_content';
+    case AssignmentAllowedReviews = 'assignment_allowed_reviews';
 
     public function getDescription(): string
     {

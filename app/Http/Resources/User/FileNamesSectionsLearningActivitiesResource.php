@@ -12,7 +12,7 @@ class FileNamesSectionsLearningActivitiesResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'file' => $this->load('attachment') ? $this->load('attachment')->url : null,
+            'file' => $this->attachment ? $this->attachment->url : null,
         ];
     }
 }

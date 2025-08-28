@@ -66,8 +66,14 @@ class LearningActivityService
 
         switch ($dto->type)
         {
-            case LearningActivityType::Video:
+            case LearningActivityType::LiveSession:
                 $data['contentData']['captions']['url'] = $dto->learningActivityContentDto->learningActivityContentCaptionsDto->url;
+                break;
+            case LearningActivityType::InteractiveContent:
+                $data['contentData']['interactiveContentId'] = $dto->learningActivityContentDto->interactiveContentId;
+                break;
+            case LearningActivityType::ReusableContent:
+                $data['contentData']['reusableContentId'] = $dto->learningActivityContentDto->reusableContentId;
                 break;
         }
 

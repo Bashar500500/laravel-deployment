@@ -6,20 +6,26 @@ enum LearningActivityType: string
 {
     case Video = 'Video';
     case Pdf = 'PDF';
+    case LiveSession = 'LiveSession';
+    case InteractiveContent = 'InteractiveContent';
+    case ReusableContent = 'ReusableContent';
+    case Audio = 'Audio';
     // case Scorm = 'SCORM';
     // case Presentation = 'Presentation';
-    // case Audio = 'Audio';
     // case Embedded = 'Embedded';
     // case Assessment = 'Assessment';
     // case Discussion = 'Discussion';
-    // case LiveSession = 'LiveSession';
     // case Archived = 'Archived';
 
     public function getEnumsExceptValue(): array
     {
         return match ($this) {
-            self::Pdf => ['Video'],
-            self::Video => ['PDF'],
+            self::Pdf => ['Video', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Audio'],
+            self::Video => ['Pdf', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Audio'],
+            self::LiveSession => ['Pdf', 'Video', 'InteractiveContent', 'ReusableContent', 'Audio'],
+            self::InteractiveContent => ['Pdf', 'Video', 'LiveSession', 'ReusableContent', 'Audio'],
+            self::ReusableContent => ['Pdf', 'Video', 'LiveSession', 'InteractiveContent', 'Audio'],
+            self::Audio => ['Pdf', 'Video', 'LiveSession', 'InteractiveContent', 'ReusableContent'],
         };
     }
 }

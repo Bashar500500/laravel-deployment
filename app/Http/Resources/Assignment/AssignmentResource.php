@@ -18,6 +18,7 @@ class AssignmentResource extends JsonResource
             'instructions' => $this->instructions,
             'dueDate' => $this->due_date,
             'points' => $this->points,
+            'peerReviewSettings' => $this->peer_review_settings,
             'submissionSettings' => $this->submission_settings,
             'policies' => $this->policies,
             'files' => $this->whenLoaded('attachments')->count() == 0 ?

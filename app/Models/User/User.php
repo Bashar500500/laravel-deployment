@@ -40,7 +40,9 @@ use App\Models\Holiday\Holiday;
 use App\Models\Leave\Leave;
 use App\Models\Section\Section;
 use App\Models\Event\Event;
+use App\Models\GradeAppeal\GradeAppeal;
 use App\Models\InstructorStudent\InstructorStudent;
+use App\Models\InteractiveContent\InteractiveContent;
 use App\Models\Rubric\Rubric;
 use App\Models\Wiki\Wiki;
 use App\Models\WikiComment\WikiComment;
@@ -49,6 +51,7 @@ use App\Models\Prerequisite\Prerequisite;
 use App\Models\UserCertificate\UserCertificate;
 use App\Models\Whiteboard\Whiteboard;
 use App\Models\Notification\Notification;
+use App\Models\ReusableContent\ReusableContent;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -302,6 +305,21 @@ class User extends Authenticatable
     public function whiteboards(): HasMany
     {
         return $this->hasMany(Whiteboard::class, 'instructor_id');
+    }
+
+    public function interactiveContents(): HasMany
+    {
+        return $this->hasMany(InteractiveContent::class, 'instructor_id');
+    }
+
+    public function reusableContents(): HasMany
+    {
+        return $this->hasMany(ReusableContent::class, 'instructor_id');
+    }
+
+    public function gradeAppeals(): HasMany
+    {
+        return $this->hasMany(GradeAppeal::class, 'student_id');
     }
 
     public function notifications(): HasMany

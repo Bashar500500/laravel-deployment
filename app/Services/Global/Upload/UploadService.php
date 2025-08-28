@@ -7,12 +7,16 @@ use App\Http\Requests\Upload\Image\ImageUploadRequest;
 use App\Models\Course\Course;
 use App\DataTransferObjects\Upload\UploadDto;
 use App\Enums\Attachment\AttachmentType;
+use App\Enums\InteractiveContent\InteractiveContentType;
 use App\Enums\Trait\ModelName;
 use App\Enums\Upload\UploadMessage;
 use App\Models\Group\Group;
-use App\Http\Requests\Upload\Content\ContentUploadRequest;
+use App\Http\Requests\Upload\Content\LearningActivityContentUploadRequest;
 use App\Models\LearningActivity\LearningActivity;
 use App\Enums\LearningActivity\LearningActivityType;
+use App\Enums\ReusableContent\ReusableContentType;
+use App\Http\Requests\Upload\Content\InteractiveContentContentUploadRequest;
+use App\Http\Requests\Upload\Content\ReusableContentContentUploadRequest;
 use App\Http\Requests\Upload\File\FileUploadRequest;
 use App\Models\Section\Section;
 use App\Models\Event\Event;
@@ -21,6 +25,8 @@ use App\Models\SubCategory\SubCategory;
 use App\Models\Profile\Profile;
 use App\Models\Project\Project;
 use App\Models\Assignment\Assignment;
+use App\Models\InteractiveContent\InteractiveContent;
+use App\Models\ReusableContent\ReusableContent;
 use App\Models\Wiki\Wiki;
 use Illuminate\Support\Facades\Auth;
 
@@ -86,18 +92,24 @@ class UploadService
         return UploadMessage::Chunk;
     }
 
-    public function uploadLearningActivityContent(ContentUploadRequest $request, LearningActivity $learningActivity): UploadMessage
+    public function uploadLearningActivityContent(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadMessage
     {
         switch ($learningActivity->type)
         {
             case LearningActivityType::Pdf:
-                $dto = UploadDto::fromPdfUploadRequest($request, $learningActivity);
+                $dto = UploadDto::fromLearningActivityPdfUploadRequest($request, $learningActivity);
                 $type = AttachmentType::Pdf;
                 $extension = $dto->pdf->getClientOriginalExtension();
                 $file = $dto->pdf;
                 break;
+            case LearningActivityType::Audio:
+                $dto = UploadDto::fromLearningActivityAudioUploadRequest($request, $learningActivity);
+                $type = AttachmentType::Audio;
+                $extension = $dto->audio->getClientOriginalExtension();
+                $file = $dto->audio;
+                break;
             default:
-                $dto = UploadDto::fromVideoUploadRequest($request, $learningActivity);
+                $dto = UploadDto::fromLearningActivityVideoUploadRequest($request, $learningActivity);
                 $type = AttachmentType::Video;
                 $extension = $dto->video->getClientOriginalExtension();
                 $file = $dto->video;
@@ -379,6 +391,106 @@ class UploadService
         return UploadMessage::Chunk;
     }
 
+    public function uploadInteractiveContentFile(InteractiveContentContentUploadRequest $request, InteractiveContent $interactiveContent): UploadMessage
+    {
+        switch ($interactiveContent->type)
+        {
+            case InteractiveContentType::Video:
+                $dto = UploadDto::fromInteractiveContentVideoUploadRequest($request, $interactiveContent);
+                $type = AttachmentType::Video;
+                $extension = $dto->video->getClientOriginalExtension();
+                $file = $dto->video;
+                break;
+            case InteractiveContentType::Presentation:
+                $dto = UploadDto::fromInteractiveContentPresentationUploadRequest($request, $interactiveContent);
+                $type = AttachmentType::Presentation;
+                $extension = $dto->presentation->getClientOriginalExtension();
+                $file = $dto->presentation;
+                break;
+            default:
+                $dto = UploadDto::fromInteractiveContentQuizUploadRequest($request, $interactiveContent);
+                $type = AttachmentType::Quiz;
+                $extension = $dto->quiz->getClientOriginalExtension();
+                $file = $dto->quiz;
+                break;
+        };
+
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
+
+        if (!file_exists($chunkDir))
+        {
+            mkdir($chunkDir, 0777, true);
+        }
+
+        $size = $file->getSize();
+        $sizeKb = round($size / 1024, 2);
+        $file->move($chunkDir, "chunk_{$dto->dzChunkIndex}");
+
+        if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
+        {
+            $data = $this->mergeChunks($type, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount, $sizeKb);
+
+            $repository = $this->factory->make(ModelName::InteractiveContent);
+            return $repository->upload($interactiveContent->id, $data);
+        }
+
+        return UploadMessage::Chunk;
+    }
+
+    public function uploadReusableContentFile(ReusableContentContentUploadRequest $request, ReusableContent $reusableContent): UploadMessage
+    {
+        switch ($reusableContent->type)
+        {
+            case ReusableContentType::Video:
+                $dto = UploadDto::fromReusableContentVideoUploadRequest($request, $reusableContent);
+                $type = AttachmentType::Video;
+                $extension = $dto->video->getClientOriginalExtension();
+                $file = $dto->video;
+                break;
+            case ReusableContentType::Presentation:
+                $dto = UploadDto::fromReusableContentPresentationUploadRequest($request, $reusableContent);
+                $type = AttachmentType::Presentation;
+                $extension = $dto->presentation->getClientOriginalExtension();
+                $file = $dto->presentation;
+                break;
+            case ReusableContentType::Pdf:
+                $dto = UploadDto::fromReusableContentPdfUploadRequest($request, $reusableContent);
+                $type = AttachmentType::Pdf;
+                $extension = $dto->pdf->getClientOriginalExtension();
+                $file = $dto->pdf;
+                break;
+            default:
+                $dto = UploadDto::fromReusableContentQuizUploadRequest($request, $reusableContent);
+                $type = AttachmentType::Quiz;
+                $extension = $dto->quiz->getClientOriginalExtension();
+                $file = $dto->quiz;
+                break;
+        };
+
+        $dzuuid = str()->uuid();
+        $chunkDir = storage_path("app/chunks/{$dzuuid}");
+
+        if (!file_exists($chunkDir))
+        {
+            mkdir($chunkDir, 0777, true);
+        }
+
+        $size = $file->getSize();
+        $sizeKb = round($size / 1024, 2);
+        $file->move($chunkDir, "chunk_{$dto->dzChunkIndex}");
+
+        if (count(scandir($chunkDir)) - 2 == $dto->dzTotalChunkCount)
+        {
+            $data = $this->mergeChunks($type, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount, $sizeKb);
+
+            $repository = $this->factory->make(ModelName::InteractiveContent);
+            return $repository->upload($reusableContent->id, $data);
+        }
+
+        return UploadMessage::Chunk;
+    }
+
     private function mergeChunks(
         AttachmentType $type,
         string $uuid,
@@ -431,6 +543,16 @@ class UploadService
             ],
             AttachmentType::Video => [
                 'video' => $file,
+                'finalDir' => $finalDir,
+                'sizeKb' => $sizeKb,
+            ],
+            AttachmentType::Presentation => [
+                'presentation' => $file,
+                'finalDir' => $finalDir,
+                'sizeKb' => $sizeKb,
+            ],
+            AttachmentType::Quiz => [
+                'quiz' => $file,
                 'finalDir' => $finalDir,
                 'sizeKb' => $sizeKb,
             ],

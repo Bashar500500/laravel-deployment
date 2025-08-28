@@ -11,7 +11,7 @@ class CalendarLearningActivitiesGroupsResource extends JsonResource
     {
         return [
             'name' => $this->name,
-            'students' => CalendarStudentsResource::collection($this->load('students')),
+            'students' => CalendarStudentsResource::collection($this->students),
         ];
     }
 }

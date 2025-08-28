@@ -17,6 +17,7 @@ class AdminRequest extends FormRequest
 
     protected function onIndex() {
         return [
+            'role' => ['sometimes', new Enum(UserRole::class)],
             'page' => ['required', 'integer', 'gt:0'],
             'page_size' => ['sometimes', 'integer', 'gt:0'],
         ];

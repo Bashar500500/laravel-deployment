@@ -4,7 +4,7 @@ namespace App\Enums\Plagiarism;
 
 enum PlagiarismStatus: string
 {
-    case Pendding = 'Pendding';
+    case Pending = 'Pending';
     case Clear = 'Clear';
     case Flagged = 'Flagged';
 }

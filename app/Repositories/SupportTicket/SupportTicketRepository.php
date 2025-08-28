@@ -13,7 +13,7 @@ class SupportTicketRepository extends BaseRepository implements SupportTicketRep
         parent::__construct($supportTicket);
     }
 
-    public function all(SupportTicketDto $dto): object
+    public function all(SupportTicketDto $dto, array $data): object
     {
         return (object) $this->model->with('user')
             ->latest('created_at')

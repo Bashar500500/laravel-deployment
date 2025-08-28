@@ -68,7 +68,7 @@ class InstructorAssignmentRepository extends BaseRepository implements Assignmen
                 'instructions' => $dto->instructions,
                 'due_date' => $dto->dueDate,
                 'points' => $dto->points,
-                'peer_review_settings' => [],
+                'peer_review_settings' => $dto->peerReviewSettings,
                 'submission_settings' => $dto->submissionSettings,
                 'policies' => $dto->policies,
             ]);
@@ -130,6 +130,7 @@ class InstructorAssignmentRepository extends BaseRepository implements Assignmen
                 'instructions' => $dto->instructions ? $dto->instructions : $model->instructions,
                 'due_date' => $dto->dueDate ? $dto->dueDate : $model->due_date,
                 'points' => $dto->points ? $dto->points : $model->points,
+                'peer_review_settings' => $dto->peerReviewSettings ? $dto->peerReviewSettings : $model->peer_review_settings,
                 'submission_settings' => $dto->submissionSettings ? $dto->submissionSettings : $model->submission_settings,
                 'policies' => $dto->policies ? $dto->policies : $model->policies,
             ]);

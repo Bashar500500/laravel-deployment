@@ -438,7 +438,7 @@ class AssignmentRepository extends BaseRepository implements AssignmentRepositor
             }
 
             $assignmentSubmit->plagiarism()->create([
-                'status' => PlagiarismStatus::Pendding,
+                'status' => PlagiarismStatus::Pending,
             ]);
 
             $this->checkChallengeSubmitAssignmentOnTimeRule($assignmentSubmit);

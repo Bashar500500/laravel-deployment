@@ -201,6 +201,13 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
                                         throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
                                     }
                                     break;
+                                case 'Blender':
+                                    $mime = $file->getMimeType();
+                                    if ($mime != 'application/x-blender')
+                                    {
+                                        throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileConflict);
+                                    }
+                                    break;
                                 default:
                                     $mime = $file->getMimeType();
                                     if ($mime != 'application/msword' || $mime != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
@@ -273,7 +280,7 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
             }
 
             $assignmentSubmit->plagiarism()->create([
-                'status' => PlagiarismStatus::Pendding,
+                'status' => PlagiarismStatus::Pending,
             ]);
 
             $this->checkChallengeSubmitAssignmentOnTimeRule($assignmentSubmit);

@@ -5,7 +5,6 @@ namespace App\Http\Resources\Course;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
 
 class CourseResource extends JsonResource
 {

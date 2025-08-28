@@ -42,6 +42,18 @@ class CourseController extends Controller
             ->successResponse();
     }
 
+    public function guestIndex(CourseRequest $request): JsonResponse
+    {
+        $data = CourseResource::collection(
+            $this->courseService->guestIndex($request),
+        );
+
+        return $this->controller->setFunctionName(FunctionName::Index)
+            ->setModelName(ModelName::Course)
+            ->setData($data)
+            ->successResponse();
+    }
+
     public function show(Course $course): JsonResponse
     {
         // $this->authorize('show', $course);

@@ -30,6 +30,8 @@ use App\Repositories\Assignment\AssignmentRepository;
 use App\Repositories\Assignment\AssignmentRepositoryInterface;
 use App\Repositories\Wiki\WikiRepository;
 use App\Repositories\Wiki\WikiRepositoryInterface;
+use App\Repositories\InteractiveContent\InteractiveContentRepository;
+use App\Repositories\InteractiveContent\InteractiveContentRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
 class UploadRepositoryFactory
@@ -38,7 +40,7 @@ class UploadRepositoryFactory
         protected Container $container,
     ) {}
 
-    public function make(ModelName $name): AdminProfileRepositoryInterface|CategoryRepositoryInterface|CourseRepositoryInterface|GroupRepositoryInterface|LearningActivityRepositoryInterface|ProjectRepositoryInterface|SectionRepositoryInterface|EventRepositoryInterface|SubCategoryRepositoryInterface|UserProfileRepositoryInterface|AssignmentRepositoryInterface|WikiRepositoryInterface
+    public function make(ModelName $name): AdminProfileRepositoryInterface|CategoryRepositoryInterface|CourseRepositoryInterface|GroupRepositoryInterface|LearningActivityRepositoryInterface|ProjectRepositoryInterface|SectionRepositoryInterface|EventRepositoryInterface|SubCategoryRepositoryInterface|UserProfileRepositoryInterface|AssignmentRepositoryInterface|WikiRepositoryInterface|InteractiveContentRepositoryInterface
     {
         $role = Auth::user()->getRoleNames();
         return match ($name) {
@@ -58,6 +60,7 @@ class UploadRepositoryFactory
             ModelName::Project => $this->container->make(ProjectRepository::class),
             ModelName::Assignment => $this->container->make(AssignmentRepository::class),
             ModelName::Wiki => $this->container->make(WikiRepository::class),
+            ModelName::InteractiveContent => $this->container->make(InteractiveContentRepository::class),
         };
     }
 }

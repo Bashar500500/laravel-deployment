@@ -17,6 +17,8 @@ enum ModelName: string
     case Image = 'image';
     case Pdf = 'pdf';
     case Video = 'video';
+    case Presentation = 'presentation';
+    case Quiz = 'quiz';
     case File = 'file';
     case Files = 'files';
     case Chunk = 'chunk';
@@ -77,6 +79,9 @@ enum ModelName: string
     case CertificateTemplate = 'certificate_template';
     case EnrollmentOption = 'enrollment_option';
     case Whiteboard = 'whiteboard';
+    case InteractiveContent = 'interactive_content';
+    case ReusableContent = 'reusable_content';
+    case Audio = 'audio';
     case NoName = '';
 
     public static function getEnum(string $value): self
@@ -155,6 +160,9 @@ enum ModelName: string
             $value =='CertificateTemplate' => self::CertificateTemplate,
             $value =='EnrollmentOption' => self::EnrollmentOption,
             $value =='Whiteboard' => self::Whiteboard,
+            $value =='InteractiveContent' => self::InteractiveContent,
+            $value =='ReusableContent' => self::ReusableContent,
+            $value =='Audio' => self::Audio,
         };
     }
 
@@ -234,6 +242,9 @@ enum ModelName: string
             self::CertificateTemplate => 'CertificateTemplate',
             self::EnrollmentOption => 'EnrollmentOption',
             self::Whiteboard => 'Whiteboard',
+            self::InteractiveContent => 'InteractiveContent',
+            self::ReusableContent => 'ReusableContent',
+            self::Audio => 'Audio',
         };
     }
 

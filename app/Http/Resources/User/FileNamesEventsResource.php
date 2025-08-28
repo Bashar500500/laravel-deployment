@@ -13,9 +13,9 @@ class FileNamesEventsResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'files' => $this->load('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->count() == 0 ?
+            'files' => $this->attachments->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)->count() == 0 ?
                 null :
-                FileNamesAttachmentResource::collection($this->load('attachments')->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)),
+                FileNamesAttachmentResource::collection($this->attachments->where('reference_field', AttachmentReferenceField::EventAttachmentsFile)),
         ];
     }
 }

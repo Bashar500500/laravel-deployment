@@ -8,7 +8,7 @@ use App\Enums\Request\ValidationType;
 use App\Enums\Request\FieldName;
 use App\Enums\LearningActivity\LearningActivityType;
 
-class ContentUploadRequest extends FormRequest
+class LearningActivityContentUploadRequest extends FormRequest
 {
     public function authorize(): bool
     {

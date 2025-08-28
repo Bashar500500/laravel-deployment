@@ -167,7 +167,7 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
                 foreach ($learningActivities as $learningActivity)
                 {
                     $attachment = $learningActivity->attachment;
-                    switch ($attachment->type)
+                    switch ($attachment?->type)
                     {
                         case AttachmentType::Pdf:
                             Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Pdfs/' . $attachment?->url);

@@ -12,11 +12,11 @@ class InstructorFileNamesResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'sections' => FileNamesSectionsResource::collection($this->load('sections')),
-            'events' => FileNamesEventsResource::collection($this->load('events')),
-            'assignments' => InstructorFileNamesAssignmentsResource::collection($this->load('assignments')),
-            'projects' => FileNamesProjectsResource::collection($this->load('projects')),
-            'wikis' => FileNamesWikisResource::collection($this->load('wikis')),
+            'sections' => FileNamesSectionsResource::collection($this->sections),
+            'events' => FileNamesEventsResource::collection($this->events),
+            'assignments' => InstructorFileNamesAssignmentsResource::collection($this->assignments),
+            'projects' => FileNamesProjectsResource::collection($this->projects),
+            'wikis' => FileNamesWikisResource::collection($this->wikis),
         ];
     }
 }

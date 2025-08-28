@@ -64,9 +64,6 @@ use App\Repositories\Auth\RegisterRepository;
 use App\Repositories\Auth\PasswordResetCodeRepositoryInterface;
 use App\Repositories\Auth\PasswordResetCodeRepository;
 use App\Models\Auth\PasswordResetCode;
-use App\Repositories\SupportTicket\SupportTicketRepositoryInterface;
-use App\Repositories\SupportTicket\SupportTicketRepository;
-use App\Models\SupportTicket\SupportTicket;
 use App\Repositories\CommunityAccess\CommunityAccessRepositoryInterface;
 use App\Repositories\CommunityAccess\CommunityAccessRepository;
 use App\Models\CommunityAccess\CommunityAccess;
@@ -133,6 +130,12 @@ use App\Models\EnrollmentOption\EnrollmentOption;
 use App\Repositories\Whiteboard\WhiteboardRepositoryInterface;
 use App\Repositories\Whiteboard\WhiteboardRepository;
 use App\Models\Whiteboard\Whiteboard;
+use App\Repositories\InteractiveContent\InteractiveContentRepositoryInterface;
+use App\Repositories\InteractiveContent\InteractiveContentRepository;
+use App\Models\InteractiveContent\InteractiveContent;
+use App\Repositories\ReusableContent\ReusableContentRepositoryInterface;
+use App\Repositories\ReusableContent\ReusableContentRepository;
+use App\Models\ReusableContent\ReusableContent;
 // use App\Repositories\WikiComment\WikiCommentRepositoryInterface;
 // use App\Repositories\WikiComment\WikiCommentRepository;
 // use App\Models\WikiComment\WikiComment;
@@ -149,6 +152,7 @@ use App\Models\Course\Course;
 use App\Models\Assessment\Assessment;
 use App\Models\Assignment\Assignment;
 use App\Models\Project\Project;
+use App\Models\SupportTicket\SupportTicket;
 use App\Policies\Assessment\AssessmentPolicy;
 use App\Policies\AssessmentFillInBlankQuestion\AssessmentFillInBlankQuestionPolicy;
 use App\Policies\AssessmentMultipleTypeQuestion\AssessmentMultipleTypeQuestionPolicy;
@@ -304,11 +308,6 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind(SupportTicketRepositoryInterface::class, function (Container $app) {
-            return new SupportTicketRepository($app->make(SupportTicket::class),
-            );
-        });
-
         $this->app->bind(CommunityAccessRepositoryInterface::class, function (Container $app) {
             return new CommunityAccessRepository($app->make(CommunityAccess::class),
             );
@@ -426,6 +425,16 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(WhiteboardRepositoryInterface::class, function (Container $app) {
             return new WhiteboardRepository($app->make(Whiteboard::class),
+            );
+        });
+
+        $this->app->bind(InteractiveContentRepositoryInterface::class, function (Container $app) {
+            return new InteractiveContentRepository($app->make(InteractiveContent::class),
+            );
+        });
+
+        $this->app->bind(ReusableContentRepositoryInterface::class, function (Container $app) {
+            return new ReusableContentRepository($app->make(ReusableContent::class),
             );
         });
     }

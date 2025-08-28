@@ -211,4 +211,13 @@ return [
     'whiteboard' => [
         'message' => 'Whiteboard'
     ],
+    'interactive_content' => [
+        'message' => 'Interactive content'
+    ],
+    'reusable_content' => [
+        'message' => 'Reusable content'
+    ],
+    'audio' => [
+        'message' => 'Audio'
+    ],
 ];

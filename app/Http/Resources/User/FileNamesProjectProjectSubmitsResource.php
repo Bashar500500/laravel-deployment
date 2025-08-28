@@ -12,15 +12,15 @@ class FileNamesProjectProjectSubmitsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'instructorFiles' => $this->load('attachments')
+            'instructorFiles' => $this->attachments
                 ->where('reference_field', AttachmentReferenceField::ProjectSubmitInstructorFiles)
                 ->count() == 0 ? null :
-                FileNamesAttachmentResource::collection($this->load('attachments')
+                FileNamesAttachmentResource::collection($this->attachments
                     ->where('reference_field', AttachmentReferenceField::ProjectSubmitInstructorFiles)),
-            'studentFiles' => $this->load('attachments')
+            'studentFiles' => $this->attachments
                 ->where('reference_field', AttachmentReferenceField::ProjectSubmitStudentFiles)
                 ->count() == 0 ? null :
-                FileNamesAttachmentResource::collection($this->load('attachments')
+                FileNamesAttachmentResource::collection($this->attachments
                     ->where('reference_field', AttachmentReferenceField::ProjectSubmitStudentFiles)),
         ];
     }

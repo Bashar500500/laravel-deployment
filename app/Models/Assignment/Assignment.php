@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use App\Models\Grade\Grade;
 use App\Models\Attachment\Attachment;
+use App\Models\GradeAppeal\GradeAppeal;
 use App\Models\Rubric\Rubric;
 
 class Assignment extends Model
@@ -60,6 +61,11 @@ class Assignment extends Model
     public function grade(): MorphOne
     {
         return $this->morphOne(Grade::class, 'gradeable');
+    }
+
+    public function gradeAppeals(): HasMany
+    {
+        return $this->hasMany(GradeAppeal::class, 'assignment_id');
     }
 
     public function attachments(): MorphMany

@@ -6,7 +6,7 @@ use App\DataTransferObjects\SupportTicket\SupportTicketDto;
 
 interface SupportTicketRepositoryInterface
 {
-    public function all(SupportTicketDto $dto): object;
+    public function all(SupportTicketDto $dto, array $data): object;
 
     public function allWithFilter(SupportTicketDto $dto): object;
 
