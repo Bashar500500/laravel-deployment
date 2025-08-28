@@ -141,7 +141,7 @@ class UserController extends Controller
         $user = Auth::user();
 
         $data = InstructorFileNamesResource::collection(
-            $user->ownedCourses,
+            collect($user->ownedCourses),
         );
 
         return $this->controller->setFunctionName(FunctionName::InstructorFileNames)

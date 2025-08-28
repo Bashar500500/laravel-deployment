@@ -15,7 +15,7 @@ class FileNamesProjectsResource extends JsonResource
             'files' => $this->attachments->count() == 0 ?
                 null :
                 FileNamesAttachmentResource::collection($this->attachments),
-            'projectSubmits' => FileNamesProjectProjectSubmitsResource::collection($this->projectSubmits),
+            'projectSubmits' => FileNamesProjectProjectSubmitsResource::collection(collect($this->projectSubmits)),
         ];
     }
 }
