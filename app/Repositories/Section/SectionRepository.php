@@ -93,6 +93,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
                         'reference_field' => AttachmentReferenceField::SectionResourcesLink,
                         'type' => AttachmentType::Link,
                         'url' => $link,
+                        'size_kb' => 0.0,
                     ]);
                 }
             }
@@ -168,6 +169,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
                         'reference_field' => AttachmentReferenceField::SectionResourcesLink,
                         'type' => AttachmentType::Link,
                         'url' => $link,
+                        'size_kb' => 0.0,
                     ]);
                 }
             }

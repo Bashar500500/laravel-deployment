@@ -95,6 +95,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
                         'reference_field' => AttachmentReferenceField::EventAttachmentsLink,
                         'type' => AttachmentType::Link,
                         'url' => $link,
+                        'size_kb' => 0.0,
                     ]);
                 }
             }
@@ -157,6 +158,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
                         'reference_field' => AttachmentReferenceField::EventAttachmentsLink,
                         'type' => AttachmentType::Link,
                         'url' => $link,
+                        'size_kb' => 0.0,
                     ]);
                 }
             }
