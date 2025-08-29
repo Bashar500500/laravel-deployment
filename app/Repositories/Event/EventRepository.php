@@ -23,7 +23,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
     public function all(EventDto $dto): object
     {
         return (object) $this->model->where('course_id', $dto->courseId)
-            ->with('course', 'groups', 'attachments')
+            ->with('course', 'sectionEventGroups', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -37,7 +37,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
     {
         return (object) $this->model->where('course_id', $dto->courseId)
             ->where('recurrence', $dto->recurrence)
-            ->with('course', 'groups', 'attachments')
+            ->with('course', 'sectionEventGroups', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -50,7 +50,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('course', 'groups', 'attachments');
+            ->load('course', 'sectionEventGroups', 'attachments');
     }
 
     public function create(EventDto $dto): object
@@ -113,7 +113,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
             return $event;
         });
 
-        return (object) $event->load('course', 'groups', 'attachments');
+        return (object) $event->load('course', 'sectionEventGroups', 'attachments');
     }
 
     public function update(EventDto $dto, int $id): object
@@ -188,7 +188,7 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
             return $event;
         });
 
-        return (object) $event->load('course', 'groups', 'attachments');
+        return (object) $event->load('course', 'sectionEventGroups', 'attachments');
     }
 
     public function delete(int $id): object

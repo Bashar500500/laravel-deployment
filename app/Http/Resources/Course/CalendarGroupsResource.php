@@ -10,8 +10,8 @@ class CalendarGroupsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name' => $this->name,
-            'students' => CalendarStudentsResource::collection(collect($this->students)),
+            'name' => $this->group->name,
+            'students' => CalendarStudentsResource::collection(collect($this->group?->students)),
         ];
     }
 }

@@ -20,7 +20,7 @@ class RubricResource extends JsonResource
             'maxPoints' => $this->whenLoaded('rubricCriterias')->sum('weight'),
             'used' => $this->whenLoaded('assignments')->count(),
             'averageScore' => $this->averageScore(),
-            'rubricCriterias' => RubricRubricCriteriasResource::collection($this->activeTimers()),
+            'rubricCriterias' => RubricRubricCriteriasResource::collection($this->whenLoaded('rubricCriterias')),
         ];
     }
 }

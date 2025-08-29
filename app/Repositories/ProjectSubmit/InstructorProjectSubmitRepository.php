@@ -76,19 +76,19 @@ class InstructorProjectSubmitRepository extends BaseRepository implements Projec
                         $points += $data['points'];
                         array_push($detailedResults, $data['result']);
                         break;
-                    case ProjectSubmitLevel::S1->getType():
+                    case ProjectSubmitLevel::Satisfactory->getType():
                         $data = $this->calculateProjectPointsDependingOnLevel(
                             $rubricCriteria,
                             $project->points,
-                            ProjectSubmitLevel::S1->value);
+                            ProjectSubmitLevel::Satisfactory->value);
                         $points += $data['points'];
                         array_push($detailedResults, $data['result']);
                         break;
-                    case ProjectSubmitLevel::S2->getType():
+                    case ProjectSubmitLevel::NeedsImprovement->getType():
                         $data = $this->calculateProjectPointsDependingOnLevel(
                             $rubricCriteria,
                             $project->points,
-                            ProjectSubmitLevel::S2->value);
+                            ProjectSubmitLevel::NeedsImprovement->value);
                         $points += $data['points'];
                         array_push($detailedResults, $data['result']);
                         break;
@@ -96,7 +96,7 @@ class InstructorProjectSubmitRepository extends BaseRepository implements Projec
                         $data = $this->calculateProjectPointsDependingOnLevel(
                             $rubricCriteria,
                             $project->points,
-                            ProjectSubmitLevel::Bad->value);
+                            ProjectSubmitLevel::Unsatisfactory->value);
                         $points += $data['points'];
                         array_push($detailedResults, $data['result']);
                         break;

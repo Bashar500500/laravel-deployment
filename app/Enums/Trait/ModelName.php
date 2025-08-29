@@ -85,6 +85,15 @@ enum ModelName: string
     case Word = 'word';
     case PowerPoint = 'power_point';
     case Zip = 'zip';
+    case UserActivity = 'user_activity';
+    case ForumPost = 'forum_post';
+    case PageView = 'page_view';
+    case UserInteraction = 'user_interaction';
+    case ContentEngagement = 'content_engagement';
+    case MediaEngagement = 'media_engagement';
+    case LearningGap = 'learning_gap';
+    case LearningRecommendation = 'learning_recommendation';
+    case CourseReview = 'course_review';
     case NoName = '';
 
     public static function getEnum(string $value): self
@@ -169,6 +178,15 @@ enum ModelName: string
             $value =='Word' => self::Word,
             $value =='PowerPoint' => self::PowerPoint,
             $value =='Zip' => self::Zip,
+            $value =='UserActivity' => self::UserActivity,
+            $value =='ForumPost' => self::ForumPost,
+            $value =='PageView' => self::PageView,
+            $value =='UserInteraction' => self::UserInteraction,
+            $value =='ContentEngagement' => self::ContentEngagement,
+            $value =='MediaEngagement' => self::MediaEngagement,
+            $value =='LearningGap' => self::LearningGap,
+            $value =='LearningRecommendation' => self::LearningRecommendation,
+            $value =='CourseReview' => self::CourseReview,
         };
     }
 
@@ -254,6 +272,15 @@ enum ModelName: string
             self::Word => 'Word',
             self::PowerPoint => 'PowerPoint',
             self::Zip => 'Zip',
+            self::UserActivity => 'UserActivity',
+            self::ForumPost => 'ForumPost',
+            self::PageView => 'PageView',
+            self::UserInteraction => 'UserInteraction',
+            self::ContentEngagement => 'ContentEngagement',
+            self::MediaEngagement => 'MediaEngagement',
+            self::LearningGap => 'LearningGap',
+            self::LearningRecommendation => 'LearningRecommendation',
+            self::CourseReview => 'CourseReview',
         };
     }
 

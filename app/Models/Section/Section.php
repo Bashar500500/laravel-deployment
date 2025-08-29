@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use App\Enums\Section\SectionStatus;
 use App\Models\Course\Course;
 use App\Models\SectionEventGroup\SectionEventGroup;
@@ -51,16 +50,6 @@ class Section extends Model
     public function sectionEventGroup(): MorphOne
     {
         return $this->morphOne(SectionEventGroup::class, 'groupable');
-    }
-
-    public function groups(): HasManyThrough
-    {
-        return $this->hasManyThrough(Group::class, SectionEventGroup::class,
-            'groupable_id',
-            'id',
-            'id',
-            'group_id'
-        )->with('course', 'sectionGroups', 'students', 'attachment');
     }
 
     public function learningActivities(): HasMany

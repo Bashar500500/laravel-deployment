@@ -11,9 +11,9 @@ class SectionGroupCapacityResource extends JsonResource
     ): array
     {
         return [
-            'min' => $sectionGroupResource->capacity_min,
-            'max' => $sectionGroupResource->capacity_max,
-            'current' => $sectionGroupResource->whenLoaded('students')->count(),
+            'min' => $sectionGroupResource->group->capacity_min,
+            'max' => $sectionGroupResource->group->capacity_max,
+            'current' => $sectionGroupResource->group->students?->count(),
         ];
     }
 }

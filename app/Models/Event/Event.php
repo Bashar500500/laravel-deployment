@@ -11,7 +11,6 @@ use App\Models\Course\Course;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use App\Models\Attachment\Attachment;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use App\Models\Group\Group;
 use App\Models\SectionEventGroup\SectionEventGroup;
 
@@ -48,16 +47,6 @@ class Event extends Model
     public function sectionEventGroup(): MorphOne
     {
         return $this->morphOne(SectionEventGroup::class, 'groupable');
-    }
-
-    public function groups(): HasManyThrough
-    {
-        return $this->hasManyThrough(Group::class, SectionEventGroup::class,
-            'groupable_id',
-            'id',
-            'id',
-            'group_id'
-        )->with('course', 'sectionGroups', 'students', 'attachment');
     }
 
     public function attachments(): MorphMany

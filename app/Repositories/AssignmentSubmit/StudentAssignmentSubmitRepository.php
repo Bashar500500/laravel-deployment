@@ -115,19 +115,19 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
                         $points += $data['points'];
                         array_push($detailedResults, $data['result']);
                         break;
-                    case AssignmentSubmitLevel::S1->getType():
+                    case AssignmentSubmitLevel::Satisfactory->getType():
                         $data = $this->calculateAssignmentPointsDependingOnLevel(
                             $rubricCriteria,
                             $assignment->points,
-                            AssignmentSubmitLevel::S1->value);
+                            AssignmentSubmitLevel::Satisfactory->value);
                         $points += $data['points'];
                         array_push($detailedResults, $data['result']);
                         break;
-                    case AssignmentSubmitLevel::S2->getType():
+                    case AssignmentSubmitLevel::NeedsImprovement->getType():
                         $data = $this->calculateAssignmentPointsDependingOnLevel(
                             $rubricCriteria,
                             $assignment->points,
-                            AssignmentSubmitLevel::S2->value);
+                            AssignmentSubmitLevel::NeedsImprovement->value);
                         $points += $data['points'];
                         array_push($detailedResults, $data['result']);
                         break;
@@ -135,7 +135,7 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
                         $data = $this->calculateAssignmentPointsDependingOnLevel(
                             $rubricCriteria,
                             $assignment->points,
-                            AssignmentSubmitLevel::Bad->value);
+                            AssignmentSubmitLevel::Unsatisfactory->value);
                         $points += $data['points'];
                         array_push($detailedResults, $data['result']);
                         break;

@@ -11,17 +11,17 @@ class EventGroupResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'courseId' => $this->course_id,
-            'name' => $this->name,
-            'description' => $this->description,
+            'id' => $this->group->id,
+            'courseId' => $this->group->course_id,
+            'name' => $this->group->name,
+            'description' => $this->group->description,
             // 'imageUrl' => $this->whenLoaded('attachment') ? $this->whenLoaded('attachment')->url : null,
-            'imageUrl' => $this->whenLoaded('attachment') ?
-                $this->prepareAttachmentData($this->id, $this->whenLoaded('attachment')->url)
+            'imageUrl' => $this->group->attachment ?
+                $this->prepareAttachmentData($this->group->id, $this->group->attachment->url)
                 : null,
             'capacity' => EventGroupCapacityResource::makeJson($this),
-            'instructorId' => $this->whenLoaded('course')->instructor->id,
-            'students' => $this->whenLoaded('students')->select('id'),
+            'instructorId' => $this->group->course->instructor->id,
+            'students' => $this->group->students?->select('id'),
         ];
     }
 

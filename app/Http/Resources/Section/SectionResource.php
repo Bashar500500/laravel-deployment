@@ -19,7 +19,7 @@ class SectionResource extends JsonResource
             'status' => $this->status,
             'access' => SectionAccessResource::makeJson($this),
             'primaryInstructorId' => $this->whenLoaded('course')->instructor->id,
-            'groups' => SectionGroupResource::collection($this->whenLoaded('groups')),
+            'groups' => SectionGroupResource::collection($this->whenLoaded('sectionEventGroups')),
             'activities' => LearningActivityResource::collection($this->whenLoaded('learningActivities')->load('attachment')),
             'resources' => $this->whenLoaded('attachments')->count() == 0 ?
                 null : SectionResourcesResource::makeJson($this),

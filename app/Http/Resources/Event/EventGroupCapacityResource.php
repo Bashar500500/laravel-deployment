@@ -11,9 +11,9 @@ class EventGroupCapacityResource extends JsonResource
     ): array
     {
         return [
-            'min' => $eventGroupResource->capacity_min,
-            'max' => $eventGroupResource->capacity_max,
-            'current' => $eventGroupResource->whenLoaded('students')->count(),
+            'min' => $eventGroupResource->group->capacity_min,
+            'max' => $eventGroupResource->group->capacity_max,
+            'current' => $eventGroupResource->group->students?->count(),
         ];
     }
 }

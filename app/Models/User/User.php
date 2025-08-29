@@ -34,15 +34,20 @@ use App\Models\Challenge\Challenge;
 use App\Models\Badge\Badge;
 use App\Models\AssignmentSubmit\AssignmentSubmit;
 use App\Models\ChallengeUser\ChallengeUser;
+use App\Models\ContentEngagement\ContentEngagement;
+use App\Models\CourseReview\CourseReview;
 use App\Models\UserAward\UserAward;
 use App\Models\UserRule\UserRule;
 use App\Models\Holiday\Holiday;
 use App\Models\Leave\Leave;
 use App\Models\Section\Section;
 use App\Models\Event\Event;
+use App\Models\ForumPost\ForumPost;
 use App\Models\GradeAppeal\GradeAppeal;
 use App\Models\InstructorStudent\InstructorStudent;
 use App\Models\InteractiveContent\InteractiveContent;
+use App\Models\LearningGap\LearningGap;
+use App\Models\MediaEngagement\MediaEngagement;
 use App\Models\Rubric\Rubric;
 use App\Models\Wiki\Wiki;
 use App\Models\WikiComment\WikiComment;
@@ -51,7 +56,10 @@ use App\Models\Prerequisite\Prerequisite;
 use App\Models\UserCertificate\UserCertificate;
 use App\Models\Whiteboard\Whiteboard;
 use App\Models\Notification\Notification;
+use App\Models\PageView\PageView;
 use App\Models\ReusableContent\ReusableContent;
+use App\Models\UserActivity\UserActivity;
+use App\Models\UserInteraction\UserInteraction;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -325,6 +333,46 @@ class User extends Authenticatable
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_id');
+    }
+
+    public function userActivities(): HasMany
+    {
+        return $this->hasMany(UserActivity::class, 'student_id');
+    }
+
+    public function forumPosts(): HasMany
+    {
+        return $this->hasMany(ForumPost::class, 'student_id');
+    }
+
+    public function pageViews(): HasMany
+    {
+        return $this->hasMany(PageView::class, 'student_id');
+    }
+
+    public function userInteractions(): HasMany
+    {
+        return $this->hasMany(UserInteraction::class, 'student_id');
+    }
+
+    public function contentEngagements(): HasMany
+    {
+        return $this->hasMany(ContentEngagement::class, 'student_id');
+    }
+
+    public function mediaEngagements(): HasMany
+    {
+        return $this->hasMany(MediaEngagement::class, 'student_id');
+    }
+
+    public function learningGaps(): HasMany
+    {
+        return $this->hasMany(LearningGap::class, 'student_id');
+    }
+
+    public function courseReviews(): HasMany
+    {
+        return $this->hasMany(CourseReview::class, 'student_id');
     }
 
     // public function notifications(): MorphMany

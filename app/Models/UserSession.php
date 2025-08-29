@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\UserSession;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class UserSession extends Model
 {
@@ -11,4 +12,9 @@ class UserSession extends Model
         'session_end',
         'session_duration',
     ];
+
+    public function sessionable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 }

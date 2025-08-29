@@ -24,7 +24,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
     public function all(SectionDto $dto): object
     {
         return (object) $this->model->where('course_id', $dto->courseId)
-            ->with('course', 'groups', 'learningActivities', 'attachments', 'requireds')
+            ->with('course', 'sectionEventGroups', 'learningActivities', 'attachments', 'requireds')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -37,7 +37,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('course', 'groups', 'learningActivities', 'attachments', 'requireds');
+            ->load('course', 'sectionEventGroups', 'learningActivities', 'attachments', 'requireds');
     }
 
     public function create(SectionDto $dto): object
@@ -101,7 +101,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
             return $section;
         });
 
-        return (object) $section->load('course', 'groups', 'learningActivities', 'attachments', 'requireds');
+        return (object) $section->load('course', 'sectionEventGroups', 'learningActivities', 'attachments', 'requireds');
     }
 
     public function update(SectionDto $dto, int $id): object
@@ -177,7 +177,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
             return $section;
         });
 
-        return (object) $section->load('course', 'groups', 'learningActivities', 'attachments', 'requireds');
+        return (object) $section->load('course', 'sectionEventGroups', 'learningActivities', 'attachments', 'requireds');
     }
 
     public function delete(int $id): object

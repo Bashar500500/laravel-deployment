@@ -1,9 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\PageView;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\PageView\PageViewPageType;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\models\User\User;
+use App\models\Course\Course;
 
 class PageView extends Model
 {
@@ -21,4 +24,14 @@ class PageView extends Model
     protected $casts = [
         'page_type' => PageViewPageType::class,
     ];
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class, 'course_id');
+    }
 }

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('learning_recommendations', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
             $table->foreignId('gap_id')->constrained('learning_gaps')->cascadeOnDelete();
             $table->string('recommendation_type');
             $table->integer('resource_id');

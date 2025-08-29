@@ -31,8 +31,16 @@ use App\Models\EnrollmentOption\EnrollmentOption;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use App\Models\Attachment\Attachment;
+use App\Models\ContentEngagement\ContentEngagement;
+use App\Models\CourseReview\CourseReview;
+use App\Models\ForumPost\ForumPost;
+use App\Models\LearningRecommendation\LearningRecommendation;
+use App\Models\MediaEngagement\MediaEngagement;
+use App\Models\PageView\PageView;
 use App\Models\Prerequisite\Prerequisite;
+use App\Models\UserActivity\UserActivity;
 use App\Models\UserCertificate\UserCertificate;
+use App\Models\UserInteraction\UserInteraction;
 
 class Course extends Model
 {
@@ -218,5 +226,45 @@ class Course extends Model
     public function certificate(): MorphOne
     {
         return $this->morphOne(UserCertificate::class, 'certificateable');
+    }
+
+    public function userActivities(): HasMany
+    {
+        return $this->hasMany(UserActivity::class, 'course_id');
+    }
+
+    public function forumPosts(): HasMany
+    {
+        return $this->hasMany(ForumPost::class, 'course_id');
+    }
+
+    public function pageViews(): HasMany
+    {
+        return $this->hasMany(PageView::class, 'course_id');
+    }
+
+    public function userInteractions(): HasMany
+    {
+        return $this->hasMany(UserInteraction::class, 'course_id');
+    }
+
+    public function contentEngagements(): HasMany
+    {
+        return $this->hasMany(ContentEngagement::class, 'course_id');
+    }
+
+    public function mediaEngagements(): HasMany
+    {
+        return $this->hasMany(MediaEngagement::class, 'course_id');
+    }
+
+    public function learningRecommendations(): HasMany
+    {
+        return $this->hasMany(LearningRecommendation::class, 'course_id');
+    }
+
+    public function courseReviews(): HasMany
+    {
+        return $this->hasMany(CourseReview::class, 'course_id');
     }
 }

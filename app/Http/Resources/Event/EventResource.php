@@ -13,7 +13,7 @@ class EventResource extends JsonResource
             'id' => $this->id,
             'courseName' => $this->whenLoaded('course')->name,
             'name' => $this->name,
-            'groups' => EventGroupResource::collection($this->whenLoaded('groups')),
+            'groups' => EventGroupResource::collection($this->whenLoaded('sectionEventGroups')),
             'type' => $this->type,
             'date' => $this->date,
             'startTime' => $this->start_time,

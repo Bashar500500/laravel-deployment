@@ -30,7 +30,7 @@ class LearningActivityService
     {
         $dto = LearningActivityDto::fromStoreRequest($request);
         $data = $this->prepareStoreAndUpdateData($dto);
-        return $this->repository->create($dto,$data);
+        return $this->repository->create($dto, $data);
     }
 
     public function update(LearningActivityRequest $request, LearningActivity $learningActivity): object

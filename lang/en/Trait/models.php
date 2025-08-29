@@ -229,4 +229,31 @@ return [
     'zip' => [
         'message' => 'Zip'
     ],
+    'user_activity' => [
+        'message' => 'User activity'
+    ],
+    'forum_post' => [
+        'message' => 'Forum post'
+    ],
+    'page_view' => [
+        'message' => 'Page view'
+    ],
+    'user_interaction' => [
+        'message' => 'User interaction'
+    ],
+    'content_engagement' => [
+        'message' => 'Content engagement'
+    ],
+    'media_engagement' => [
+        'message' => 'Media engagement'
+    ],
+    'learning_gap' => [
+        'message' => 'Learning gap'
+    ],
+    'learning_recommendation' => [
+        'message' => 'Learning recommendation'
+    ],
+    'course_review' => [
+        'message' => 'Course review'
+    ],
 ];
