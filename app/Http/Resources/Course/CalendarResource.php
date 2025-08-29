@@ -12,15 +12,19 @@ class CalendarResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'events' => CalendarEventsResource::collection($this->events
-                ->whereDate('date', '>', Carbon::today())
-                ->whereDate('date', '<=', Carbon::today()->addMonth())
+            'events' => CalendarEventsResource::collection(collect($this->events)
+                ->filter(function ($event) {
+                    return Carbon::parse($event->date)->isAfter(Carbon::today()) &&
+                        Carbon::parse($event->date)->lessThanOrEqualTo(Carbon::today()->addMonth());
+                })
             ),
-            'eventStudents' => CalendarStudentsResource::collection($this->students),
-            'learningActivities' => CalendarLearningActivitiesResource::collection($this->learningActivities
-                ->where('type', LearningActivityType::LiveSession)
-                ->whereDate('availability_start', '>', Carbon::today())
-                ->whereDate('availability_start', '<=', Carbon::today()->addMonth())
+            'eventStudents' => CalendarStudentsResource::collection(collect($this->students)),
+            'learningActivities' => CalendarLearningActivitiesResource::collection(collect($this->learningActivities)
+                ->filter(function ($activity) {
+                    return $activity->type == LearningActivityType::LiveSession &&
+                        Carbon::parse($activity->availability_start)->isAfter(Carbon::today()) &&
+                        Carbon::parse($activity->availability_start)->lessThanOrEqualTo(Carbon::today()->addMonth());
+                })
             ),
         ];
     }

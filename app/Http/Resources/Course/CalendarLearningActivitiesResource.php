@@ -17,7 +17,7 @@ class CalendarLearningActivitiesResource extends JsonResource
             'start' => $this->availability_start,
             'end' => $this->availability_end,
             'url' => $this->content_data['captions']['url'],
-            'groups' => CalendarLearningActivitiesGroupsResource::collection($this->section?->groups),
+            'groups' => CalendarLearningActivitiesGroupsResource::collection(collect($this->section)->load('groups')),
         ];
     }
 }
