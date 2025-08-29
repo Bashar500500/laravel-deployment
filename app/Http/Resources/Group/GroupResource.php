@@ -24,7 +24,7 @@ class GroupResource extends JsonResource
             'capacity' => GroupCapacityResource::makeJson($this),
             'instructorId' => $this->whenLoaded('course')->instructor->id,
             'students' => GroupStudentsResource::collection($this->whenLoaded('students')),
-            'sectionIds' => GroupSectionsResource::collection($this->whenLoaded('sectionGroups')),
+            'sectionIds' => GroupSectionsResource::collection($this->whenLoaded('sectionEventGroups')),
             'startDate' => $this->created_at,
         ];
     }

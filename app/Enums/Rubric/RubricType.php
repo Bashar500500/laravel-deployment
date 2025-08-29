@@ -4,5 +4,7 @@ namespace App\Enums\Rubric;
 
 enum RubricType: string
 {
-    case Academic = 'Academic';
+    case Assignment = 'Assignment';
+    case Project = 'Project';
+    case PeerReview = 'PeerReview';
 }

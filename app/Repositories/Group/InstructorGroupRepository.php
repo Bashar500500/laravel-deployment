@@ -32,7 +32,7 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
         return (object) $this->model->whereHas('course', function ($courseQuery) use ($instructor) {
                 $courseQuery->whereIn('id', $instructor->ownedCourses->pluck('id'));
             })
-            ->with('course', 'sectionGroups', 'students', 'attachment')
+            ->with('course', 'sectionEventGroups', 'students', 'attachment')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -45,7 +45,7 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
     public function allWithFilter(GroupDto $dto): object
     {
         return (object) $this->model->where('course_id', $dto->courseId)
-            ->with('course', 'sectionGroups', 'students', 'attachment')
+            ->with('course', 'sectionEventGroups', 'students', 'attachment')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -58,7 +58,7 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('course', 'sectionGroups', 'students', 'attachment');
+            ->load('course', 'sectionEventGroups', 'students', 'attachment');
     }
 
     public function create(GroupDto $dto): object
@@ -119,7 +119,7 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
             return $group;
         });
 
-        return (object) $group->load('course', 'sectionGroups', 'students', 'attachment');
+        return (object) $group->load('course', 'sectionEventGroups', 'students', 'attachment');
     }
 
     public function update(GroupDto $dto, int $id): object
@@ -157,7 +157,7 @@ class InstructorGroupRepository extends BaseRepository implements GroupRepositor
             return $group;
         });
 
-        return (object) $group->load('course', 'sectionGroups', 'students', 'attachment');
+        return (object) $group->load('course', 'sectionEventGroups', 'students', 'attachment');
     }
 
     public function delete(int $id): object

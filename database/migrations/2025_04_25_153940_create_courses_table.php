@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('duration');
             $table->integer('estimated_duration_hours');
             $table->decimal('price')->nullable();
+            $table->string('code')->nullable();
             $table->string('access_settings_access_type')->nullable();
             $table->boolean('access_settings_price_hidden')->nullable();
             $table->boolean('access_settings_is_secret')->nullable();

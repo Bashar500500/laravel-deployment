@@ -66,7 +66,11 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
             ]);
 
             if (!is_null($dto->learningActivityContentDto->pdf) ||
-                !is_null($dto->learningActivityContentDto->video))
+                !is_null($dto->learningActivityContentDto->video) ||
+                !is_null($dto->learningActivityContentDto->audio) ||
+                !is_null($dto->learningActivityContentDto->word) ||
+                !is_null($dto->learningActivityContentDto->powerPoint) ||
+                !is_null($dto->learningActivityContentDto->zip))
             {
                 switch ($dto->type)
                 {
@@ -112,6 +116,48 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                             'size_kb' => $sizeKb,
                         ]);
                         break;
+                    case LearningActivityType::Word:
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Words',
+                            $dto->learningActivityContentDto->word);
+
+                        $size = $dto->learningActivityContentDto->word->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
+                        $learningActivity->attachment()->create([
+                            'reference_field' => AttachmentReferenceField::LearningActivityWordContentFile,
+                            'type' => AttachmentType::Word,
+                            'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
+                        ]);
+                        break;
+                    case LearningActivityType::PowerPoint:
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/PowerPoints',
+                            $dto->learningActivityContentDto->powerPoint);
+
+                        $size = $dto->learningActivityContentDto->powerPoint->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
+                        $learningActivity->attachment()->create([
+                            'reference_field' => AttachmentReferenceField::LearningActivityPowerPointContentFile,
+                            'type' => AttachmentType::PowerPoint,
+                            'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
+                        ]);
+                        break;
+                    case LearningActivityType::Zip:
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Zips',
+                            $dto->learningActivityContentDto->zip);
+
+                        $size = $dto->learningActivityContentDto->zip->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
+                        $learningActivity->attachment()->create([
+                            'reference_field' => AttachmentReferenceField::LearningActivityZipContentFile,
+                            'type' => AttachmentType::Zip,
+                            'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
+                        ]);
+                        break;
                 }
             }
 
@@ -148,7 +194,11 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
             ]);
 
             if (!is_null($dto->learningActivityContentDto->pdf) ||
-                !is_null($dto->learningActivityContentDto->video))
+                !is_null($dto->learningActivityContentDto->video) ||
+                !is_null($dto->learningActivityContentDto->audio) ||
+                !is_null($dto->learningActivityContentDto->word) ||
+                !is_null($dto->learningActivityContentDto->powerPoint) ||
+                !is_null($dto->learningActivityContentDto->zip))
             {
 
                 switch ($dto->type)
@@ -204,6 +254,57 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                             'size_kb' => $sizeKb,
                         ]);
                         break;
+                    case LearningActivityType::Word:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Words/' . $learningActivity->attachment?->url);
+                        $learningActivity->attachments()->delete();
+
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Words',
+                            $dto->learningActivityContentDto->word);
+
+                        $size = $dto->learningActivityContentDto->word->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
+                        $learningActivity->attachment()->create([
+                            'reference_field' => AttachmentReferenceField::LearningActivityWordContentFile,
+                            'type' => AttachmentType::Word,
+                            'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
+                        ]);
+                        break;
+                    case LearningActivityType::PowerPoint:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/PowerPoints/' . $learningActivity->attachment?->url);
+                        $learningActivity->attachments()->delete();
+
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/PowerPoints',
+                            $dto->learningActivityContentDto->powerPoint);
+
+                        $size = $dto->learningActivityContentDto->powerPoint->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
+                        $learningActivity->attachment()->create([
+                            'reference_field' => AttachmentReferenceField::LearningActivityPowerPointContentFile,
+                            'type' => AttachmentType::PowerPoint,
+                            'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
+                        ]);
+                        break;
+                    case LearningActivityType::Zip:
+                        Storage::disk('supabase')->delete('LearningActivity/' . $learningActivity->id . '/Zips/' . $learningActivity->attachment?->url);
+                        $learningActivity->attachments()->delete();
+
+                        $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $learningActivity->id . '/Zips',
+                            $dto->learningActivityContentDto->zip);
+
+                        $size = $dto->learningActivityContentDto->zip->getSize();
+                        $sizeKb = round($size / 1024, 2);
+
+                        $learningActivity->attachment()->create([
+                            'reference_field' => AttachmentReferenceField::LearningActivityZipContentFile,
+                            'type' => AttachmentType::Zip,
+                            'url' => basename($storedFile),
+                            'size_kb' => $sizeKb,
+                        ]);
+                        break;
                 }
             }
 
@@ -229,6 +330,15 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                     break;
                 case AttachmentType::Video:
                     Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $attachment?->url);
+                    break;
+                case AttachmentType::Word:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Words/' . $attachment?->url);
+                    break;
+                case AttachmentType::PowerPoint:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/PowerPoints/' . $attachment?->url);
+                    break;
+                case AttachmentType::Zip:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Zips/' . $attachment?->url);
                     break;
             }
             $model->attachment()->delete();
@@ -279,6 +389,45 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 }
 
                 $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::Word:
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Words/' . $model->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('Word');
+                }
+
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Words/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::PowerPoint:
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/PowerPoints/' . $model->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('PowerPoint');
+                }
+
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/PowerPoints/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::Zip:
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Zips/' . $model->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('Zip');
+                }
+
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Zips/' . $model->attachment?->url);
                 $tempPath = storage_path('app/private/' . $model->attachment?->url);
                 file_put_contents($tempPath, $file);
 
@@ -357,6 +506,45 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 }
 
                 $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::Word:
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Words/' . $model->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('Word');
+                }
+
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Words/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::PowerPoint:
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/PowerPoints/' . $model->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('PowerPoint');
+                }
+
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/PowerPoints/' . $model->attachment?->url);
+                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                file_put_contents($tempPath, $file);
+
+                break;
+            case LearningActivityType::Zip:
+                $exists = Storage::disk('supabase')->exists('LearningActivity/' . $model->id . '/Zip/' . $model->attachment?->url);
+
+                if (! $exists)
+                {
+                    throw CustomException::notFound('Zip');
+                }
+
+                $file = Storage::disk('supabase')->get('LearningActivity/' . $model->id . '/Zip/' . $model->attachment?->url);
                 $tempPath = storage_path('app/private/' . $model->attachment?->url);
                 file_put_contents($tempPath, $file);
 
@@ -455,6 +643,60 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                     ]);
 
                     return UploadMessage::Video;
+                case LearningActivityType::Word:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Words/' . $model->attachment?->url);
+                    $model->attachments()->delete();
+
+                    $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $model->id . '/Words',
+                        $data['word']);
+
+                    array_map('unlink', glob("{$data['finalDir']}/*"));
+                    rmdir($data['finalDir']);
+
+                    $model->attachment()->create([
+                        'reference_field' => AttachmentReferenceField::LearningActivityWordContentFile,
+                        'type' => AttachmentType::Word,
+                        'url' => basename($storedFile),
+                        'size_kb' => $data['sizeKb'],
+                    ]);
+
+                    return UploadMessage::Word;
+                case LearningActivityType::PowerPoint:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/PowerPoints/' . $model->attachment?->url);
+                    $model->attachments()->delete();
+
+                    $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $model->id . '/PowerPoints',
+                        $data['powerPoint']);
+
+                    array_map('unlink', glob("{$data['finalDir']}/*"));
+                    rmdir($data['finalDir']);
+
+                    $model->attachment()->create([
+                        'reference_field' => AttachmentReferenceField::LearningActivityPowerPointContentFile,
+                        'type' => AttachmentType::PowerPoint,
+                        'url' => basename($storedFile),
+                        'size_kb' => $data['sizeKb'],
+                    ]);
+
+                    return UploadMessage::PowerPoint;
+                case LearningActivityType::Zip:
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Zips/' . $model->attachment?->url);
+                    $model->attachments()->delete();
+
+                    $storedFile = Storage::disk('supabase')->putFile('LearningActivity/' . $model->id . '/Zips',
+                        $data['zip']);
+
+                    array_map('unlink', glob("{$data['finalDir']}/*"));
+                    rmdir($data['finalDir']);
+
+                    $model->attachment()->create([
+                        'reference_field' => AttachmentReferenceField::LearningActivityZipContentFile,
+                        'type' => AttachmentType::Zip,
+                        'url' => basename($storedFile),
+                        'size_kb' => $data['sizeKb'],
+                    ]);
+
+                    return UploadMessage::Zip;
             }
         });
 
@@ -477,6 +719,18 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 break;
             case AttachmentType::Video:
                 Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $model->attachment?->url);
+
+                break;
+            case AttachmentType::Word:
+                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Words/' . $model->attachment?->url);
+
+                break;
+            case AttachmentType::PowerPoint:
+                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/PowerPoints/' . $model->attachment?->url);
+
+                break;
+            case AttachmentType::Zip:
+                Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Zips/' . $model->attachment?->url);
 
                 break;
         }

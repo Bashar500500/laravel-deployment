@@ -18,6 +18,8 @@ use Illuminate\Support\Carbon;
 use App\Enums\Trait\ModelName;
 use App\Enums\Exception\ForbiddenExceptionMessage;
 use App\Enums\ProjectSubmit\ProjectSubmitStatus;
+use App\Enums\Rubric\RubricType;
+use App\Models\Rubric\Rubric;
 
 class ProjectRepository extends BaseRepository implements ProjectRepositoryInterface
 {
@@ -46,6 +48,13 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
 
     public function create(ProjectDto $dto): object
     {
+        $rubric = Rubric::find($dto->rubricId);
+
+        if ($rubric->type != RubricType::Project)
+        {
+            throw CustomException::forbidden(ModelName::Project, ForbiddenExceptionMessage::ProjectRubric);
+        }
+
         $project = DB::transaction(function () use ($dto) {
             $project = (object) $this->model->create([
                 'course_id' => $dto->courseId,
@@ -88,6 +97,16 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
     public function update(ProjectDto $dto, int $id): object
     {
         $model = (object) parent::find($id);
+
+        if ($dto->rubricId)
+        {
+            $rubric = Rubric::find($dto->rubricId);
+
+            if ($rubric->type != RubricType::Project)
+            {
+                throw CustomException::forbidden(ModelName::Project, ForbiddenExceptionMessage::ProjectRubric);
+            }
+        }
 
         $project = DB::transaction(function () use ($dto, $model) {
             $project = tap($model)->update([

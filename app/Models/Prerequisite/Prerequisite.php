@@ -15,6 +15,10 @@ class Prerequisite extends Model
     protected $fillable = [
         'instructor_id',
         'type',
+        'prerequisiteable_type',
+        'prerequisiteable_id',
+        'requiredable_type',
+        'requiredable_id',
         'applies_to',
         'condition',
         'allow_override',

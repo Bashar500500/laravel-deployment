@@ -10,6 +10,9 @@ enum LearningActivityType: string
     case InteractiveContent = 'InteractiveContent';
     case ReusableContent = 'ReusableContent';
     case Audio = 'Audio';
+    case Word = 'Word';
+    case PowerPoint = 'PowerPoint';
+    case Zip = 'Zip';
     // case Scorm = 'SCORM';
     // case Presentation = 'Presentation';
     // case Embedded = 'Embedded';
@@ -20,12 +23,15 @@ enum LearningActivityType: string
     public function getEnumsExceptValue(): array
     {
         return match ($this) {
-            self::Pdf => ['Video', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Audio'],
-            self::Video => ['Pdf', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Audio'],
-            self::LiveSession => ['Pdf', 'Video', 'InteractiveContent', 'ReusableContent', 'Audio'],
-            self::InteractiveContent => ['Pdf', 'Video', 'LiveSession', 'ReusableContent', 'Audio'],
-            self::ReusableContent => ['Pdf', 'Video', 'LiveSession', 'InteractiveContent', 'Audio'],
-            self::Audio => ['Pdf', 'Video', 'LiveSession', 'InteractiveContent', 'ReusableContent'],
+            self::Pdf => ['Video', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Audio', 'Word', 'PowerPoint', 'Zip'],
+            self::Video => ['Pdf', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Audio', 'Word', 'PowerPoint', 'Zip'],
+            self::LiveSession => ['Pdf', 'Video', 'InteractiveContent', 'ReusableContent', 'Audio', 'Word', 'PowerPoint', 'Zip'],
+            self::InteractiveContent => ['Pdf', 'Video', 'LiveSession', 'ReusableContent', 'Audio', 'Word', 'PowerPoint', 'Zip'],
+            self::ReusableContent => ['Pdf', 'Video', 'LiveSession', 'InteractiveContent', 'Audio', 'Word', 'PowerPoint', 'Zip'],
+            self::Audio => ['Pdf', 'Video', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Word', 'PowerPoint', 'Zip'],
+            self::Word => ['Pdf', 'Video', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Audio', 'PowerPoint', 'Zip'],
+            self::PowerPoint => ['Pdf', 'Video', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Audio', 'Word', 'Zip'],
+            self::Zip => ['Pdf', 'Video', 'LiveSession', 'InteractiveContent', 'ReusableContent', 'Audio', 'Word', 'PowerPoint'],
         };
     }
 }

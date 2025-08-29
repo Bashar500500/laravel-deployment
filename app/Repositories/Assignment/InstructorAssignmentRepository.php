@@ -26,10 +26,12 @@ use App\Enums\Grade\GradeResubmission;
 use App\Enums\Grade\GradeStatus;
 use App\Enums\Grade\GradeTrend;
 use App\Enums\Plagiarism\PlagiarismStatus;
+use App\Enums\Rubric\RubricType;
 use App\Exceptions\CustomException;
 use ZipArchive;
 use Illuminate\Support\Facades\File;
 use App\Enums\Upload\UploadMessage;
+use App\Models\Rubric\Rubric;
 
 class InstructorAssignmentRepository extends BaseRepository implements AssignmentRepositoryInterface
 {
@@ -58,6 +60,15 @@ class InstructorAssignmentRepository extends BaseRepository implements Assignmen
 
     public function create(AssignmentDto $dto): object
     {
+        $rubric = Rubric::find($dto->rubricId);
+
+        $isPeerReviewed = $dto->peerReviewSettings['is_peer_reviewed'];
+        if (($isPeerReviewed && $rubric->type != RubricType::PeerReview) ||
+            (! $isPeerReviewed && $rubric->type != RubricType::Assignment))
+        {
+            throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentRubric);
+        }
+
         $assignment = DB::transaction(function () use ($dto) {
             $assignment = (object) $this->model->create([
                 'course_id' => $dto->courseId,
@@ -120,6 +131,18 @@ class InstructorAssignmentRepository extends BaseRepository implements Assignmen
     public function update(AssignmentDto $dto, int $id): object
     {
         $model = (object) parent::find($id);
+
+        if ($dto->rubricId)
+        {
+            $rubric = Rubric::find($dto->rubricId);
+
+            $isPeerReviewed = $dto->peerReviewSettings['is_peer_reviewed'];
+            if (($isPeerReviewed && $rubric->type != RubricType::PeerReview) ||
+                (! $isPeerReviewed && $rubric->type != RubricType::Assignment))
+            {
+                throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentRubric);
+            }
+        }
 
         $assignment = DB::transaction(function () use ($dto, $model) {
             $assignment = tap($model)->update([

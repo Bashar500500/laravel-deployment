@@ -30,6 +30,8 @@ class EventRequest extends FormRequest
         return [
             'course_id' => ['required', 'exists:courses,id'],
             'name' => ['required', 'string'],
+            'groups' => ['sometimes', 'array'],
+            'groups.*' => ['required_with:groups', 'exists:groups,id'],
             'type' => ['required', new Enum(EventType::class)],
             'date' => ['required', 'date', 'date_format:Y-m-d'],
             'start_time' => ['required', 'date_format:h:i A'],
@@ -48,6 +50,8 @@ class EventRequest extends FormRequest
     protected function onUpdate() {
         return [
             'name' => ['sometimes', 'string'],
+            'groups' => ['sometimes', 'array'],
+            'groups.*' => ['required_with:groups', 'exists:groups,id'],
             'type' => ['sometimes', new Enum(EventType::class)],
             'date' => ['sometimes', 'date', 'date_format:Y-m-d'],
             'start_time' => ['sometimes', 'date_format:h:i A'],

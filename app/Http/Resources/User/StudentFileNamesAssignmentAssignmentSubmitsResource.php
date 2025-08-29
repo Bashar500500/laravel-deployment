@@ -12,13 +12,11 @@ class StudentFileNamesAssignmentAssignmentSubmitsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'instructorFiles' => $this->attachments
-                ->where('reference_field', AttachmentReferenceField::AssignmentSubmitInstructorFiles)
+            'instructorFiles' => $this->attachments?->where('reference_field', AttachmentReferenceField::AssignmentSubmitInstructorFiles)
                 ->count() == 0 ? null :
                 FileNamesAttachmentResource::collection($this->attachments
                     ->where('reference_field', AttachmentReferenceField::AssignmentSubmitInstructorFiles)),
-            'studentFiles' => $this->attachments
-                ->where('reference_field', AttachmentReferenceField::AssignmentSubmitStudentFiles)
+            'studentFiles' => $this->attachments?->where('reference_field', AttachmentReferenceField::AssignmentSubmitStudentFiles)
                 ->count() == 0 ? null :
                 FileNamesAttachmentResource::collection($this->attachments
                     ->where('reference_field', AttachmentReferenceField::AssignmentSubmitStudentFiles)),

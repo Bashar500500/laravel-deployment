@@ -21,11 +21,14 @@ class StudentFileNamesAssignmentsResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'files' => $this->attachments->count() == 0 ?
+            'files' => $this->attachments?->count() == 0 ?
                 null :
                 FileNamesAttachmentResource::collection($this->attachments),
-            'assignmentSubmits' => StudentFileNamesAssignmentAssignmentSubmitsResource::collection(
-                $this->assignmentSubmits->where('student_id', $studentId)),
+            'assignmentSubmits' => StudentFileNamesAssignmentAssignmentSubmitsResource::collection(collect($this->assignmentSubmits)
+                ->filter(function ($submit) use ($studentId) {
+                    return $submit->student_id == $studentId;
+                })
+            ),
         ];
     }
 }

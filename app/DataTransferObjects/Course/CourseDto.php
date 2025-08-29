@@ -29,6 +29,7 @@ class CourseDto
         public readonly ?CourseStatus $status,
         public readonly ?int $duration,
         public readonly ?float $price,
+        public readonly ?string $code,
         public readonly ?CourseAccessSettingsDto $accessSettingsDto,
         public readonly ?CourseFeaturesDto $featuresDto,
     ) {}
@@ -52,6 +53,7 @@ class CourseDto
             status: null,
             duration: null,
             price: null,
+            code: null,
             accessSettingsDto: null,
             featuresDto: null,
         );
@@ -82,6 +84,7 @@ class CourseDto
             status: CourseStatus::from($request->validated('status')),
             duration: $request->validated('duration'),
             price: $request->validated('price'),
+            code: $request->validated('code'),
             accessSettingsDto: CourseAccessSettingsDto::from($request),
             featuresDto: CourseFeaturesDto::from($request),
         );
@@ -118,6 +121,7 @@ class CourseDto
                 null,
             duration: $request->validated('duration'),
             price: $request->validated('price'),
+            code: $request->validated('code'),
             accessSettingsDto: CourseAccessSettingsDto::from($request),
             featuresDto: CourseFeaturesDto::from($request),
         );

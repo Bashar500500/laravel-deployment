@@ -18,13 +18,19 @@ class LearningActivityContentResource extends JsonResource
             LearningActivityType::Video =>
                 $data = LearningActivityContentResource::videoType($learningActivityResource),
             LearningActivityType::Audio =>
-                $data = LearningActivityContentResource::AudioType($learningActivityResource),
+                $data = LearningActivityContentResource::audioType($learningActivityResource),
+            LearningActivityType::Word =>
+                $data = LearningActivityContentResource::wordType($learningActivityResource),
+            LearningActivityType::PowerPoint =>
+                $data = LearningActivityContentResource::powerPointType($learningActivityResource),
+            LearningActivityType::Zip =>
+                $data = LearningActivityContentResource::zipType($learningActivityResource),
             LearningActivityType::InteractiveContent =>
-                $data = LearningActivityContentResource::InteractiveContentType($learningActivityResource),
+                $data = LearningActivityContentResource::interactiveContentType($learningActivityResource),
             LearningActivityType::ReusableContent =>
-                $data = LearningActivityContentResource::ReusableContentType($learningActivityResource),
+                $data = LearningActivityContentResource::reusableContentType($learningActivityResource),
             LearningActivityType::LiveSession =>
-                $data = LearningActivityContentResource::LiveSessionType($learningActivityResource),
+                $data = LearningActivityContentResource::liveSessionType($learningActivityResource),
         };
 
         return [
@@ -54,10 +60,31 @@ class LearningActivityContentResource extends JsonResource
         return $data;
     }
 
+    private static function wordType(LearningActivityResource $learningActivityResource): array
+    {
+        $data['word'] = $learningActivityResource->whenLoaded('attachment') ? $learningActivityResource->whenLoaded('attachment')->url : null;
+
+        return $data;
+    }
+
+    private static function powerPointType(LearningActivityResource $learningActivityResource): array
+    {
+        $data['powerPoint'] = $learningActivityResource->whenLoaded('attachment') ? $learningActivityResource->whenLoaded('attachment')->url : null;
+
+        return $data;
+    }
+
+    private static function zipType(LearningActivityResource $learningActivityResource): array
+    {
+        $data['zip'] = $learningActivityResource->whenLoaded('attachment') ? $learningActivityResource->whenLoaded('attachment')->url : null;
+
+        return $data;
+    }
+
     private static function interactiveContentType(LearningActivityResource $learningActivityResource): array
     {
         $interactiveContent = InteractiveContent::fine($learningActivityResource->content_data['interactiveContentId']);
-        $data['interactiveContent'] = $interactiveContent->load('attachment') ? $interactiveContent->load('attachment')->url : null;
+        $data['interactiveContent'] = $interactiveContent->attachment ? $interactiveContent->attachment->url : null;
 
         return $data;
     }
@@ -65,7 +92,7 @@ class LearningActivityContentResource extends JsonResource
     private static function reusableContentType(LearningActivityResource $learningActivityResource): array
     {
         $reusableContent = InteractiveContent::fine($learningActivityResource->content_data['reusableContentId']);
-        $data['reusableContent'] = $reusableContent->load('attachment') ? $reusableContent->load('attachment')->url : null;
+        $data['reusableContent'] = $reusableContent->attachment ? $reusableContent->attachment->url : null;
 
         return $data;
     }

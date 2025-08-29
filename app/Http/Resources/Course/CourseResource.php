@@ -29,6 +29,7 @@ class CourseResource extends JsonResource
             'enrollments' => $this->whenLoaded('students')->count(),
             'duration' => $this->duration,
             'price' => $this->price,
+            'code' => $this->code,
             'accessSettings' => CourseAccessSettingResource::makeJson($this),
             'features' => CourseFeatureResource::makeJson($this),
             'prerequisites' => $this->whenLoaded('requireds')->count() == 0 ?

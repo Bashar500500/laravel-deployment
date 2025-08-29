@@ -12,7 +12,7 @@ class ProjectGroupMembersImagesResource extends JsonResource
     {
         return [
             // 'image' => $this->student->profile->load('attachment')->url ? $this->student->profile->load('attachment')->url : null,
-            'image' => $this->student->profile->load('attachment')->url ?
+            'image' => $this->student->profile?->load('attachment') ?
                 $this->prepareAttachmentData($this->student->profile->id, $this->student->profile->load('attachment')->url)
                 : null,
         ];

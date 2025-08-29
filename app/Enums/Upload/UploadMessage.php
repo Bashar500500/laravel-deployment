@@ -11,5 +11,8 @@ enum UploadMessage: string
     case Presentation = 'presentation';
     case Quiz = 'quiz';
     case Audio = 'audio';
+    case Word = 'word';
+    case PowerPoint = 'power_point';
+    case Zip = 'zip';
     case Chunk = 'chunk';
 }

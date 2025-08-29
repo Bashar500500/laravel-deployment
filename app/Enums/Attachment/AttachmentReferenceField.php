@@ -31,4 +31,7 @@ enum AttachmentReferenceField: string
     case ReusableContentPdfFile = 'reusable_content_pdf_file';
     case ReusableContentQuizFile = 'reusable_content_quiz_file';
     case LearningActivityAudioContentFile = 'learning_activity_audio_content_file';
+    case LearningActivityWordContentFile = 'learning_activity_word_content_file';
+    case LearningActivityPowerPointContentFile = 'learning_activity_power_point_content_file';
+    case LearningActivityZipContentFile = 'learning_activity_zip_content_file';
 }

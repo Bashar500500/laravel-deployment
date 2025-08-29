@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use App\Models\Course\Course;
-use App\Models\SectionGroup\SectionGroup;
+use App\Models\SectionEventGroup\SectionEventGroup;
 use App\Models\UserCourseGroup\UserCourseGroup;
 use App\Models\Project\Project;
 use App\Models\Attachment\Attachment;
@@ -38,9 +38,9 @@ class Group extends Model
         return $this->belongsTo(Course::class, 'course_id');
     }
 
-    public function sectionGroups(): HasMany
+    public function sectionEventGroups(): HasMany
     {
-        return $this->hasMany(SectionGroup::class, 'group_id');
+        return $this->hasMany(SectionEventGroup::class, 'group_id');
     }
 
     public function students(): HasMany

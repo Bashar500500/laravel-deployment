@@ -10,7 +10,7 @@ interface AssignmentSubmitRepositoryInterface
 
     public function find(int $id): object;
 
-    public function update(AssignmentSubmitDto $dto, int $id): object;
+    public function update(AssignmentSubmitDto $dto, int $id, array $data): object;
 
     public function delete(int $id): object;
 

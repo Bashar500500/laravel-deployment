@@ -112,4 +112,25 @@ return [
     'assignment_allowed_reviews' => [
         'description' => 'Assignment reached the allowed reviews. Try again with correct data.'
     ],
+    'assignment_corrected_by_student' => [
+        'description' => 'Assignment corrected by you not allowed to correct twice. Try again with correct data.'
+    ],
+    'assessment_finished' => [
+        'description' => 'Assessment finished. Try again with correct data.'
+    ],
+    'project_finished' => [
+        'description' => 'Project finished. Try again with correct data.'
+    ],
+    'assignment_peer_reviewed' => [
+        'description' => 'Assignment peer reviewed. Try again with correct data.'
+    ],
+    'assignment_not_peer_reviewed' => [
+        'description' => 'Assignment not peer reviewed. Try again with correct data.'
+    ],
+    'assignment_rubric' => [
+        'description' => 'Assignment rubric not correct. Try again with correct data.'
+    ],
+    'project_rubric' => [
+        'description' => 'Project rubric not correct. Try again with correct data.'
+    ],
 ];

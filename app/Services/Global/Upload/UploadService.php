@@ -108,11 +108,29 @@ class UploadService
                 $extension = $dto->audio->getClientOriginalExtension();
                 $file = $dto->audio;
                 break;
-            default:
+            case LearningActivityType::Video:
                 $dto = UploadDto::fromLearningActivityVideoUploadRequest($request, $learningActivity);
                 $type = AttachmentType::Video;
                 $extension = $dto->video->getClientOriginalExtension();
                 $file = $dto->video;
+                break;
+            case LearningActivityType::Word:
+                $dto = UploadDto::fromLearningActivityWordUploadRequest($request, $learningActivity);
+                $type = AttachmentType::Word;
+                $extension = $dto->word->getClientOriginalExtension();
+                $file = $dto->word;
+                break;
+            case LearningActivityType::PowerPoint:
+                $dto = UploadDto::fromLearningActivityPowerPointUploadRequest($request, $learningActivity);
+                $type = AttachmentType::PowerPoint;
+                $extension = $dto->powerPoint->getClientOriginalExtension();
+                $file = $dto->powerPoint;
+                break;
+            case LearningActivityType::Zip:
+                $dto = UploadDto::fromLearningActivityZipUploadRequest($request, $learningActivity);
+                $type = AttachmentType::Zip;
+                $extension = $dto->zip->getClientOriginalExtension();
+                $file = $dto->zip;
                 break;
         };
 
@@ -543,6 +561,26 @@ class UploadService
             ],
             AttachmentType::Video => [
                 'video' => $file,
+                'finalDir' => $finalDir,
+                'sizeKb' => $sizeKb,
+            ],
+            AttachmentType::Audio => [
+                'audio' => $file,
+                'finalDir' => $finalDir,
+                'sizeKb' => $sizeKb,
+            ],
+            AttachmentType::Word => [
+                'word' => $file,
+                'finalDir' => $finalDir,
+                'sizeKb' => $sizeKb,
+            ],
+            AttachmentType::PowerPoint => [
+                'powerPoint' => $file,
+                'finalDir' => $finalDir,
+                'sizeKb' => $sizeKb,
+            ],
+            AttachmentType::Zip => [
+                'zip' => $file,
                 'finalDir' => $finalDir,
                 'sizeKb' => $sizeKb,
             ],

@@ -82,6 +82,9 @@ enum ModelName: string
     case InteractiveContent = 'interactive_content';
     case ReusableContent = 'reusable_content';
     case Audio = 'audio';
+    case Word = 'word';
+    case PowerPoint = 'power_point';
+    case Zip = 'zip';
     case NoName = '';
 
     public static function getEnum(string $value): self
@@ -163,6 +166,9 @@ enum ModelName: string
             $value =='InteractiveContent' => self::InteractiveContent,
             $value =='ReusableContent' => self::ReusableContent,
             $value =='Audio' => self::Audio,
+            $value =='Word' => self::Word,
+            $value =='PowerPoint' => self::PowerPoint,
+            $value =='Zip' => self::Zip,
         };
     }
 
@@ -245,6 +251,9 @@ enum ModelName: string
             self::InteractiveContent => 'InteractiveContent',
             self::ReusableContent => 'ReusableContent',
             self::Audio => 'Audio',
+            self::Word => 'Word',
+            self::PowerPoint => 'PowerPoint',
+            self::Zip => 'Zip',
         };
     }
 

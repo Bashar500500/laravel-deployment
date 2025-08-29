@@ -19,7 +19,8 @@ class CalendarEventsResource extends JsonResource
             'category' => $this->category,
             'recurrence' => $this->recurrence,
             'description' => $this->description,
-            'attachments' => $this->attachments->count() == 0 ?
+            'groups' => CalendarGroupsResource::collection(collect($this->groups)),
+            'attachments' => $this->attachments?->count() == 0 ?
                 null : CalendarEventsAttachmentsResource::makeJson($this),
         ];
     }

@@ -136,6 +136,18 @@ class LearningActivityController extends Controller
                 ->setModelName(ModelName::Audio)
                 ->setData((object) [])
                 ->successResponse(),
+            UploadMessage::Word => $this->controller->setFunctionName(FunctionName::Upload)
+                ->setModelName(ModelName::Word)
+                ->setData((object) [])
+                ->successResponse(),
+            UploadMessage::PowerPoint => $this->controller->setFunctionName(FunctionName::Upload)
+                ->setModelName(ModelName::PowerPoint)
+                ->setData((object) [])
+                ->successResponse(),
+            UploadMessage::Zip => $this->controller->setFunctionName(FunctionName::Upload)
+                ->setModelName(ModelName::Zip)
+                ->setData((object) [])
+                ->successResponse(),
             UploadMessage::Chunk => $this->controller->setFunctionName(FunctionName::Upload)
                 ->setModelName(ModelName::Chunk)
                 ->setData((object) [])
@@ -160,6 +172,18 @@ class LearningActivityController extends Controller
                 ->successResponse(),
             LearningActivityType::Audio => $this->controller->setFunctionName(FunctionName::Delete)
                 ->setModelName(ModelName::Audio)
+                ->setData((object) [])
+                ->successResponse(),
+            LearningActivityType::Word => $this->controller->setFunctionName(FunctionName::Delete)
+                ->setModelName(ModelName::Word)
+                ->setData((object) [])
+                ->successResponse(),
+            LearningActivityType::PowerPoint => $this->controller->setFunctionName(FunctionName::Delete)
+                ->setModelName(ModelName::PowerPoint)
+                ->setData((object) [])
+                ->successResponse(),
+            LearningActivityType::Zip => $this->controller->setFunctionName(FunctionName::Delete)
+                ->setModelName(ModelName::Zip)
                 ->setData((object) [])
                 ->successResponse(),
         };

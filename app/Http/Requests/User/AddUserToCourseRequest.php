@@ -16,9 +16,10 @@ class AddUserToCourseRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['sometimes', 'string', 'email'],
+            'code' => ['sometimes', 'string'],
             'course_id' => ['required', 'exists:courses,id'],
-            'student_code' => ['required', 'string', 'min:3', 'max:3'],
+            'student_code' => ['required', 'string', 'min:8', 'max:8'],
         ];
     }
 

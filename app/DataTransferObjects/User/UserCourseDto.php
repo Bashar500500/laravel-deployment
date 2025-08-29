@@ -9,6 +9,7 @@ class UserCourseDto
 {
     public function __construct(
         public readonly ?string $email,
+        public readonly ?string $code,
         public readonly ?int $courseId,
         public readonly ?string $studentCode,
         public readonly ?string $studentId,
@@ -18,6 +19,7 @@ class UserCourseDto
     {
         return new self(
             email: $request->validated('email'),
+            code: $request->validated('code'),
             courseId: $request->validated('course_id'),
             studentCode: $request->validated('student_code'),
             studentId: null,
@@ -28,6 +30,7 @@ class UserCourseDto
     {
         return new self(
             email: null,
+            code: null,
             courseId: null,
             studentCode: $request->validated('student_code'),
             studentId: null,
@@ -38,6 +41,7 @@ class UserCourseDto
     {
         return new self(
             email: null,
+            code: null,
             courseId: null,
             studentCode: $request->validated('student_code'),
             studentId: $request->validated('student_id'),

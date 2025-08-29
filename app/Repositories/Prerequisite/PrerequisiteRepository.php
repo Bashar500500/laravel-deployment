@@ -42,11 +42,11 @@ class PrerequisiteRepository extends BaseRepository implements PrerequisiteRepos
                 'instructor_id' => $data['instructorId'],
                 'type' => $dto->type,
                 'prerequisiteable_type' => $dto->type == PrerequisiteType::Course ?
-                    ModelTypePath::Course->getTypePath():
+                    ModelTypePath::Course->getTypePath() :
                     ModelTypePath::Section->getTypePath(),
                 'prerequisiteable_id' => $dto->prerequisite,
                 'requiredable_type' => $dto->appliesTo == PrerequisiteAppliesTo::EntireCourse ?
-                    ModelTypePath::Course->getTypePath():
+                    ModelTypePath::Course->getTypePath() :
                     ModelTypePath::Section->getTypePath(),
                 'requiredable_id' => $dto->requiredFor,
                 'applies_to' => $dto->appliesTo,

@@ -17,6 +17,8 @@ use ZipArchive;
 use Illuminate\Support\Facades\File;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
+use App\Enums\Exception\ForbiddenExceptionMessage;
+use App\Enums\Trait\ModelName;
 
 class InstructorAssignmentSubmitRepository extends BaseRepository implements AssignmentSubmitRepositoryInterface
 {
@@ -43,12 +45,19 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
             ->load('assignment', 'student', 'attachments');
     }
 
-    public function update(AssignmentSubmitDto $dto, int $id): object
+    public function update(AssignmentSubmitDto $dto, int $id, array $data): object
     {
         $model = (object) parent::find($id);
         $points = 0;
         $detailedResults = [];
         $assignment = $model->assignment;
+        $isPeerReviewed = $assignment->peer_review_settings['is_peer_reviewed'];
+
+        if ($isPeerReviewed)
+        {
+            throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentPeerReviewed);
+        }
+
         $rubric = $assignment->rubric;
         $grade = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->first();
         $grades = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->all();
@@ -111,7 +120,7 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
 
             $assignmentSubmit = tap($model)->update([
                 'status' => AssignmentSubmitStatus::Corrected,
-                'score' => $points,
+                'score' => $model->score ? $model->score + $points : $points,
                 'detailed_results' => $detailedResults,
                 'feedback' => $dto->feedback ? $dto->feedback : $model->feedback,
             ]);
@@ -135,10 +144,14 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
                 }
             }
 
-            $assignmentSubmit->plagiarism->update([
-                'score' => $dto->plagiarismScore,
-                'status' => $dto->plagiarismScore < 30 ? PlagiarismStatus::Clear : PlagiarismStatus::Flagged,
-            ]);
+            $plagiarismCheck = $assignment->submission_settings['plagiarism_check'];
+            if($plagiarismCheck)
+            {
+                $assignmentSubmit->plagiarism->update([
+                    'score' => $dto->plagiarismScore,
+                    'status' => $dto->plagiarismScore < 30 ? PlagiarismStatus::Clear : PlagiarismStatus::Flagged,
+                ]);
+            }
 
             $oldTrendArray = $grade->trend_data;
             $newTrendArray = $oldTrendArray;

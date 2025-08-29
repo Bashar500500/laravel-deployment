@@ -13,7 +13,7 @@ class FileNamesSectionsResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'files' => $this->attachments->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->count() == 0 ?
+            'files' => $this->attachments?->where('reference_field', AttachmentReferenceField::SectionResourcesFile)->count() == 0 ?
                 null :
                 FileNamesAttachmentResource::collection($this->attachments->where('reference_field', AttachmentReferenceField::SectionResourcesFile)),
             'learningActivities' => FileNamesSectionsLearningActivitiesResource::collection(collect($this->learningActivities)),

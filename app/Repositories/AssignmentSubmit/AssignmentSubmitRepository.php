@@ -32,7 +32,7 @@ class AssignmentSubmitRepository extends BaseRepository implements AssignmentSub
         return (object) parent::find($id);
     }
 
-    public function update(AssignmentSubmitDto $dto, int $id): object
+    public function update(AssignmentSubmitDto $dto, int $id, array $data): object
     {
         $model = (object) parent::find($id);
 

@@ -163,7 +163,7 @@ class UserController extends Controller
             : (object) [];
 
         return $this->controller->setFunctionName(FunctionName::InstructorFileNames)
-            ->setModelName(ModelName::Instructor)
+            ->setModelName(ModelName::Student)
             ->setData($data)
             ->successResponse();
     }

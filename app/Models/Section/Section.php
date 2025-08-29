@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use App\Enums\Section\SectionStatus;
 use App\Models\Course\Course;
-use App\Models\SectionGroup\SectionGroup;
+use App\Models\SectionEventGroup\SectionEventGroup;
 use App\Models\Group\Group;
 use App\Models\LearningActivity\LearningActivity;
 use Illuminate\Database\Eloquent\Collection;
@@ -43,15 +43,20 @@ class Section extends Model
         return $this->belongsTo(Course::class, 'course_id');
     }
 
-    public function sectionGroups(): HasMany
+    public function sectionEventGroups(): MorphMany
     {
-        return $this->hasMany(SectionGroup::class, 'section_id');
+        return $this->morphMany(SectionEventGroup::class, 'groupable');
+    }
+
+    public function sectionEventGroup(): MorphOne
+    {
+        return $this->morphOne(SectionEventGroup::class, 'groupable');
     }
 
     public function groups(): HasManyThrough
     {
-        return $this->hasManyThrough(Group::class, SectionGroup::class,
-            'section_id',
+        return $this->hasManyThrough(Group::class, SectionEventGroup::class,
+            'groupable_id',
             'id',
             'id',
             'group_id'

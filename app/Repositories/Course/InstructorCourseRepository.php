@@ -68,6 +68,7 @@ class InstructorCourseRepository extends BaseRepository implements CourseReposit
                 'duration' => $dto->duration,
                 'estimated_duration_hours' => 1,
                 'price' => $dto->price,
+                'code' => $dto->code,
                 'access_settings_access_type' => $dto->accessSettingsDto->accessType,
                 'access_settings_price_hidden' => $dto->accessSettingsDto->priceHidden,
                 'access_settings_is_secret' => $dto->accessSettingsDto->isSecret,

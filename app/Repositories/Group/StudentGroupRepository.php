@@ -29,7 +29,7 @@ class StudentGroupRepository extends BaseRepository implements GroupRepositoryIn
     public function allWithFilter(GroupDto $dto): object
     {
         return (object) $this->model->where('course_id', $dto->courseId)
-            ->with('course', 'sectionGroups', 'students', 'attachment')
+            ->with('course', 'sectionEventGroups', 'students', 'attachment')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -42,7 +42,7 @@ class StudentGroupRepository extends BaseRepository implements GroupRepositoryIn
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('course', 'sectionGroups', 'students', 'attachment');
+            ->load('course', 'sectionEventGroups', 'students', 'attachment');
     }
 
     public function create(GroupDto $dto): object

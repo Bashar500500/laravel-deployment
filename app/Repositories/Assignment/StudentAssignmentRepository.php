@@ -16,6 +16,7 @@ use App\Enums\Attachment\AttachmentType;
 use App\Enums\Model\ModelTypePath;
 use App\Enums\Challenge\ChallengeStatus;
 use App\Enums\Challenge\ChallengeType;
+use App\Enums\EnrollmentOption\EnrollmentOptionPeriod;
 use Illuminate\Support\Carbon;
 use App\Models\Rule\Rule;
 use App\Models\Badge\Badge;
@@ -31,6 +32,7 @@ use App\Exceptions\CustomException;
 use ZipArchive;
 use Illuminate\Support\Facades\File;
 use App\Enums\Upload\UploadMessage;
+use App\Models\Course\Course;
 
 class StudentAssignmentRepository extends BaseRepository implements AssignmentRepositoryInterface
 {
@@ -40,6 +42,23 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
 
     public function all(AssignmentDto $dto): object
     {
+        $course = Course::find($dto->courseId);
+        $period = $course->course->enrollmentOption?->period;
+
+        if ($period && $period == EnrollmentOptionPeriod::AlwaysAvailable)
+        {
+            return (object) $this->model->where('course_id', $dto->courseId)
+                ->where('status', AssignmentStatus::Published)
+                ->with('course', 'assignmentSubmits', 'grades')
+                ->latest('created_at')
+                ->simplePaginate(
+                    $dto->pageSize,
+                    ['*'],
+                    'page',
+                    $dto->currentPage,
+                );
+        }
+
         return (object) $this->model->where('course_id', $dto->courseId)
             ->where('status', AssignmentStatus::Published)
             ->whereDate('due_date', '>=', Carbon::today())
@@ -221,6 +240,7 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
                 }
         }
 
+        $penalty = 0;
         $dueDate = Carbon::parse($model->due_date);
         if(! $dueDate->isSameDay(Carbon::today()))
         {
@@ -228,6 +248,8 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
             {
                 case 'No Late Submissions':
                     throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentNoLateSubmission);
+                case 'Accept with Penalty':
+                    $penalty = $model->policies['late_submission']['penalty_percentage'];
                 case 'Accept Until Date':
                     $cutoffDate = Carbon::parse($model->policies['late_submission']['cutoff_date']);
                     if($cutoffDate->isBefore(Carbon::today()))
@@ -241,6 +263,7 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
                         'resubmission' => GradeResubmission::NotAvailable,
                         'resubmission_due' => $model->policies['late_submission']['cutoff_date'],
                     ]);
+                    break;
             }
         }
         else
@@ -253,10 +276,11 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
             ]);
         }
 
-        $assignmentSubmit = DB::transaction(function () use ($dto, $model, $data) {
+        $assignmentSubmit = DB::transaction(function () use ($dto, $model, $data, $penalty) {
             $assignmentSubmit = $model->assignmentSubmits()->create([
                 'student_id' => $data['studentId'],
                 'status' => AssignmentSubmitStatus::NotCorrected,
+                'score' => $penalty == 0 ? null : -$penalty,
                 'text' => $dto->text ? $dto->text : null,
             ]);
 
@@ -279,9 +303,13 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
                 }
             }
 
-            $assignmentSubmit->plagiarism()->create([
-                'status' => PlagiarismStatus::Pending,
-            ]);
+            $plagiarismCheck = $model->submission_settings['plagiarism_check'];
+            if($plagiarismCheck)
+            {
+                $assignmentSubmit->plagiarism()->create([
+                    'status' => PlagiarismStatus::Pending,
+                ]);
+            }
 
             $this->checkChallengeSubmitAssignmentOnTimeRule($assignmentSubmit);
 

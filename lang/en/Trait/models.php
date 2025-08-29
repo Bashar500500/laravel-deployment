@@ -220,4 +220,13 @@ return [
     'audio' => [
         'message' => 'Audio'
     ],
+    'word' => [
+        'message' => 'Word'
+    ],
+    'power_point' => [
+        'message' => 'Power point'
+    ],
+    'zip' => [
+        'message' => 'Zip'
+    ],
 ];

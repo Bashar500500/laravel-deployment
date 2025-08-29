@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('section_groups', function (Blueprint $table) {
+        Schema::create('section_event_groups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('section_id')->constrained('sections')->cascadeOnDelete();
             $table->foreignId('group_id')->constrained('groups')->cascadeOnDelete();
-            $table->unique(['section_id', 'group_id']);
+            $table->morphs('groupable');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('section_groups');
+        Schema::dropIfExists('section_event_groups');
     }
 };

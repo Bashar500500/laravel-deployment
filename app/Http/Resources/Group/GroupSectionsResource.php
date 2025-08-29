@@ -10,7 +10,7 @@ class GroupSectionsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->section_id,
+            'id' => $this->groupable_id,
         ];
     }
 }

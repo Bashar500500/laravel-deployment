@@ -41,6 +41,7 @@ class CourseRequest extends FormRequest
             'status' => ['required', new Enum(CourseStatus::class)],
             'duration' => ['required', 'integer', 'gt:0'],
             'price' => ['sometimes', 'decimal:0,2', 'gte:0'],
+            'code' => ['sometimes', 'string'],
             'access_settings' => ['sometimes', 'array'],
             'access_settings.access_type' => ['sometimes', new Enum(CourseAccessType::class)],
             'access_settings.price_hidden' => ['sometimes', 'boolean'],

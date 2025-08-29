@@ -252,10 +252,58 @@ class StudentRepository extends BaseRepository implements UserRepositoryInterfac
 
     public function addStudentToCourse(UserCourseDto $dto): UserMessage
     {
+        if (! $dto->code)
+        {
+            throw CustomException::forbidden(ModelName::User, ForbiddenExceptionMessage::InstructorAddStudentToCourse);
+        }
+
+        $student = User::where('email', $dto->email)->first();
+        $course = User::find($dto->courseId);
+
+        $exists = $student->userCourseGroups->where('student_id', $student->id)
+            ->where('course_id', $dto->courseId)->first();
+
+        if ($exists)
+        {
+            throw CustomException::forbidden(ModelName::User, ForbiddenExceptionMessage::User);
+        }
+
+        if ($dto->code != $course->code)
+        {
+            throw CustomException::forbidden(ModelName::User, ForbiddenExceptionMessage::CourseCodeNotCorrect);
+        }
+
+        DB::transaction(function () use ($dto, $student, $course) {
+            $orderNumber = UserCourseGroup::getOrder($dto->courseId);
+            $order = str_pad($orderNumber, 3, "0", STR_PAD_LEFT);
+            $year = Carbon::now()->format('Y');
+            $studentCode = $dto->studentCode . $year . $order;
+
+            $student->userCourseGroups()->create([
+                'course_id' => $dto->courseId,
+                'student_code' => $studentCode,
+            ]);
+
+            $student->instructorStudentsForStudent()->create([
+                'instructor_id' => $course->instructor_id,
+            ]);
+        });
+
         return UserMessage::StudentAddedToCourse;
     }
 
-    public function removeStudentFromCourse(UserCourseDto $dto): void {}
+    public function removeStudentFromCourse(UserCourseDto $dto): void {
+        $exists = UserCourseGroup::where('student_code', $dto->studentCode)->first();
+
+        if (! $exists)
+        {
+            throw CustomException::notFound('Student');
+        }
+
+        DB::transaction(function () use ($exists) {
+            $exists->delete();
+        });
+    }
 
     public function removeStudentFromInstructorList(UserCourseDto $dto, array $data): void {}
 }

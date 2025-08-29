@@ -15,6 +15,7 @@ use App\Exceptions\CustomException;
 use App\Enums\Model\ModelTypePath;
 use App\Enums\Challenge\ChallengeStatus;
 use App\Enums\Challenge\ChallengeType;
+use App\Enums\EnrollmentOption\EnrollmentOptionPeriod;
 use App\Models\Rule\Rule;
 use App\Models\Badge\Badge;
 use App\Enums\UserAward\UserAwardType;
@@ -24,6 +25,7 @@ use App\Enums\Grade\GradeCategory;
 use App\Enums\Grade\GradeResubmission;
 use App\Enums\Grade\GradeStatus;
 use App\Enums\Grade\GradeTrend;
+use App\Models\Course\Course;
 use Illuminate\Support\Carbon;
 
 class StudentAssessmentRepository extends BaseRepository implements AssessmentRepositoryInterface
@@ -34,6 +36,23 @@ class StudentAssessmentRepository extends BaseRepository implements AssessmentRe
 
     public function all(AssessmentDto $dto): object
     {
+        $course = Course::find($dto->courseId);
+        $period = $course->course->enrollmentOption?->period;
+
+        if ($period && $period == EnrollmentOptionPeriod::AlwaysAvailable)
+        {
+            return (object) $this->model->where('course_id', $dto->courseId)
+                ->where('status', AssessmentStatus::Published)
+                ->with('assessmentMultipleTypeQuestions', 'assessmentTrueOrFalseQuestions', 'assessmentShortAnswerQuestions', 'assessmentFillInBlankQuestions', 'assessmentQuestionBankMultipleTypeQuestions', 'assessmentQuestionBankTrueOrFalseQuestions', 'assessmentQuestionBankShortAnswerQuestions', 'assessmentQuestionBankFillInBlankQuestions', 'course', 'assessmentSubmits', 'grades')
+                ->latest('created_at')
+                ->simplePaginate(
+                    $dto->pageSize,
+                    ['*'],
+                    'page',
+                    $dto->currentPage,
+                );
+        }
+
         return (object) $this->model->where('course_id', $dto->courseId)
             ->where('status', AssessmentStatus::Published)
             ->whereDate('available_from', '<=', Carbon::today())
@@ -72,6 +91,19 @@ class StudentAssessmentRepository extends BaseRepository implements AssessmentRe
     public function submit(AssessmentSubmitDto $dto, array $data): object
     {
         $model = (object) parent::find($dto->assessmentId);
+        $period = $model->course->enrollmentOption?->period;
+
+        if ($period && $period == EnrollmentOptionPeriod::BeforeStart)
+        {
+            $availableFrom = Carbon::parse($model->available_from);
+            $availableTo = Carbon::parse($model->available_to);
+
+            if ($availableFrom->isAfter(Carbon::today()) || $availableTo->isBefore(Carbon::today()))
+            {
+                throw CustomException::forbidden(ModelName::Assessment, ForbiddenExceptionMessage::AssessmentFinished);
+            }
+        }
+
         $points = 0;
         $detailedResults = [];
         $studentId = $data['student']->id;

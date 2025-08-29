@@ -18,7 +18,7 @@ class AssignmentSubmitService
     {
         $dto = AssignmentSubmitDto::fromIndexRequest($request);
         $role = Auth::user()->getRoleNames();
-        $data = $this->prepareIndexData();
+        $data = $this->prepareIndexAndUpdateData();
         $repository = $this->factory->make($role[0]);
         return $repository->all($dto, $data);
     }
@@ -34,8 +34,9 @@ class AssignmentSubmitService
     {
         $dto = AssignmentSubmitDto::fromUpdateRequest($request);
         $role = Auth::user()->getRoleNames();
+        $data = $this->prepareIndexAndUpdateData();
         $repository = $this->factory->make($role[0]);
-        return $repository->update($dto, $assignmentSubmit->id);
+        return $repository->update($dto, $assignmentSubmit->id, $data);
     }
 
     public function destroy(AssignmentSubmit $assignmentSubmit): object
@@ -59,7 +60,7 @@ class AssignmentSubmitService
         return $repository->download($assignmentSubmit->id);
     }
 
-    private function prepareIndexData(): array
+    private function prepareIndexAndUpdateData(): array
     {
         return [
             'studentId' => Auth::user()->id,

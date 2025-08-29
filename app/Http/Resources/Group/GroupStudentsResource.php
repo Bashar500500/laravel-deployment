@@ -12,8 +12,10 @@ class GroupStudentsResource extends JsonResource
     {
         return [
             'studentId' => $this->student_id,
-            'studentImage' => $this->load('student.profile.attachment') ?
-                $this->prepareAttachmentData($this->load('student.profile')->id, $this->load('student.profile.attachment')->url) :
+            'studentName' => $this->student->first_name .
+                ' ' . $this->student->last_name,
+            'studentImage' => $this->student->profile?->load('attachment') ?
+                $this->prepareAttachmentData($this->student->profile->id, $this->student->profile->load('attachment')->url) :
                 null,
         ];
     }

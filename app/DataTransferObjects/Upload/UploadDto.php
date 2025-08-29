@@ -25,6 +25,9 @@ class UploadDto
         public readonly ?UploadedFile $pdf,
         public readonly ?UploadedFile $video,
         public readonly ?UploadedFile $audio,
+        public readonly ?UploadedFile $word,
+        public readonly ?UploadedFile $powerPoint,
+        public readonly ?UploadedFile $zip,
         public readonly ?UploadedFile $file,
         public readonly ?UploadedFile $presentation,
         public readonly ?UploadedFile $quiz,
@@ -40,6 +43,9 @@ class UploadDto
             pdf: null,
             video: null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             file: null,
             presentation: null,
             quiz: null,
@@ -61,6 +67,9 @@ class UploadDto
             pdf: $request->validated('pdf') ? UploadedFile::createFromBase($request->validated('pdf')) : null,
             video: null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             file: null,
             presentation: null,
             quiz: null,
@@ -82,6 +91,9 @@ class UploadDto
             pdf: null,
             video: null,
             audio: $request->validated('audio') ? UploadedFile::createFromBase($request->validated('audio')) : null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             file: null,
             presentation: null,
             quiz: null,
@@ -103,6 +115,81 @@ class UploadDto
             pdf: null,
             video: $request->validated('video') ? UploadedFile::createFromBase($request->validated('video')) : null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
+            file: null,
+            presentation: null,
+            quiz: null,
+            dzuuid: $request->validated('dz_uuid'),
+            dzChunkIndex: $request->validated('dz_chunk_index'),
+            dzTotalChunkCount: $request->validated('dz_total_chunk_count'),
+        );
+    }
+
+    public static function fromLearningActivityWordUploadRequest(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadDto
+    {
+        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->content_type)
+        {
+            throw CustomException::forbidden(ModelName::LearningActivity, ForbiddenExceptionMessage::LearningActivity);
+        }
+
+        return new self(
+            image: null,
+            pdf: null,
+            video: null,
+            audio: null,
+            word: $request->validated('word') ? UploadedFile::createFromBase($request->validated('word')) : null,
+            powerPoint: null,
+            zip: null,
+            file: null,
+            presentation: null,
+            quiz: null,
+            dzuuid: $request->validated('dz_uuid'),
+            dzChunkIndex: $request->validated('dz_chunk_index'),
+            dzTotalChunkCount: $request->validated('dz_total_chunk_count'),
+        );
+    }
+
+    public static function fromLearningActivityPowerPointUploadRequest(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadDto
+    {
+        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->content_type)
+        {
+            throw CustomException::forbidden(ModelName::LearningActivity, ForbiddenExceptionMessage::LearningActivity);
+        }
+
+        return new self(
+            image: null,
+            pdf: null,
+            video: null,
+            audio: null,
+            word: null,
+            powerPoint: $request->validated('power_point') ? UploadedFile::createFromBase($request->validated('power_point')) : null,
+            zip: null,
+            file: null,
+            presentation: null,
+            quiz: null,
+            dzuuid: $request->validated('dz_uuid'),
+            dzChunkIndex: $request->validated('dz_chunk_index'),
+            dzTotalChunkCount: $request->validated('dz_total_chunk_count'),
+        );
+    }
+
+    public static function fromLearningActivityZipUploadRequest(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadDto
+    {
+        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->content_type)
+        {
+            throw CustomException::forbidden(ModelName::LearningActivity, ForbiddenExceptionMessage::LearningActivity);
+        }
+
+        return new self(
+            image: null,
+            pdf: null,
+            video: null,
+            audio: null,
+            word: null,
+            powerPoint: null,
+            zip: $request->validated('zip') ? UploadedFile::createFromBase($request->validated('zip')) : null,
             file: null,
             presentation: null,
             quiz: null,
@@ -124,6 +211,9 @@ class UploadDto
             pdf: null,
             video: $request->validated('video') ? UploadedFile::createFromBase($request->validated('video')) : null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             presentation: null,
             quiz: null,
             file: null,
@@ -146,6 +236,9 @@ class UploadDto
             video: null,
             presentation: $request->validated('presentation') ? UploadedFile::createFromBase($request->validated('presentation')) : null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             quiz: null,
             file: null,
             dzuuid: $request->validated('dz_uuid'),
@@ -166,6 +259,9 @@ class UploadDto
             pdf: null,
             video: null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             presentation: null,
             quiz: $request->validated('quiz') ? UploadedFile::createFromBase($request->validated('quiz')) : null,
             file: null,
@@ -187,6 +283,9 @@ class UploadDto
             pdf: null,
             video: $request->validated('video') ? UploadedFile::createFromBase($request->validated('video')) : null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             presentation: null,
             quiz: null,
             file: null,
@@ -208,6 +307,9 @@ class UploadDto
             pdf: null,
             video: null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             presentation: $request->validated('presentation') ? UploadedFile::createFromBase($request->validated('presentation')) : null,
             quiz: null,
             file: null,
@@ -229,6 +331,9 @@ class UploadDto
             pdf: null,
             video: null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             presentation: null,
             quiz: $request->validated('quiz') ? UploadedFile::createFromBase($request->validated('quiz')) : null,
             file: null,
@@ -250,6 +355,9 @@ class UploadDto
             pdf: $request->validated('pdf') ? UploadedFile::createFromBase($request->validated('pdf')) : null,
             video: null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             presentation: null,
             quiz: null,
             file: null,
@@ -266,6 +374,9 @@ class UploadDto
             pdf: null,
             video: null,
             audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
             presentation: null,
             quiz: null,
             file: $request->validated('file') ? UploadedFile::createFromBase($request->validated('file')) : null,

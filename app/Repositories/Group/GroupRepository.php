@@ -24,7 +24,7 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
     public function all(GroupDto $dto, array $data): object
     {
         return (object) $this->model->where('course_id', $dto->courseId)
-            ->with('course', 'sectionGroups', 'students', 'attachment')
+            ->with('course', 'sectionEventGroups', 'students', 'attachment')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -42,7 +42,7 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('course', 'sectionGroups', 'students', 'attachment');
+            ->load('course', 'sectionEventGroups', 'students', 'attachment');
     }
 
     public function create(GroupDto $dto): object
@@ -99,7 +99,7 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
             return $group;
         });
 
-        return (object) $group->load('course', 'sectionGroups', 'students', 'attachment');
+        return (object) $group->load('course', 'sectionEventGroups', 'students', 'attachment');
     }
 
     public function update(GroupDto $dto, int $id): object
@@ -133,7 +133,7 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
             return $group;
         });
 
-        return (object) $group->load('course', 'sectionGroups', 'students', 'attachment');
+        return (object) $group->load('course', 'sectionEventGroups', 'students', 'attachment');
     }
 
     public function delete(int $id): object

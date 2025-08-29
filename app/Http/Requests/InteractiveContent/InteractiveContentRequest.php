@@ -28,7 +28,7 @@ class InteractiveContentRequest extends FormRequest
             'description' => ['required', 'string'],
             'type' => ['required', new Enum(InteractiveContentType::class)],
             'file' => [
-                'required',
+                'sometimes',
                 'file',
                 ($this->request->get('type') == InteractiveContentType::Video->getType() ?
                     'mimes:mp4,mov,ogg,qt,ogx,oga,ogv,webm' :

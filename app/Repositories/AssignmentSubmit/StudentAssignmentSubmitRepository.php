@@ -46,25 +46,41 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
             ->load('assignment', 'student', 'attachments');
     }
 
-    public function update(AssignmentSubmitDto $dto, int $id): object
+    public function update(AssignmentSubmitDto $dto, int $id, array $authData): object
     {
         $model = (object) parent::find($id);
         $points = 0;
         $detailedResults = [];
         $assignment = $model->assignment;
+        $isPeerReviewed = $assignment->peer_review_settings['is_peer_reviewed'];
+
+        if ($isPeerReviewed)
+        {
+            throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentNotPeerReviewed);
+        }
+
         $rubric = $assignment->rubric;
         $grade = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->first();
         $grades = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->all();
         $gradeScoreSum = $grades->sum('points_earned');
 
-        $assignmentSubmit = DB::transaction(function () use ($dto, $model, $points, $detailedResults, $rubric, $grade, $assignment, $gradeScoreSum, $grades) {
+        $assignmentSubmit = DB::transaction(function () use ($dto, $model, $authData, $points, $detailedResults, $rubric, $grade, $assignment, $gradeScoreSum, $grades) {
             if ($model->status == AssignmentSubmitStatus::NotCorrected)
             {
                 $correctionsCount = 0;
+                $penalty = $model->score ? $model->score : 0;
             }
             else
             {
+                $exists = collect($model->detailed_results)->contains('studentId', $authData['studentId']);
+
+                if ($exists)
+                {
+                    throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentCorrectedByStudent);
+                }
+
                 $correctionsCount = count($model->detailed_results);
+                $penalty = $model->detailed_results[0]['penalty'];
             }
 
             if ($correctionsCount == $assignment->peer_review_settings['allowed_reviews'])
@@ -126,23 +142,33 @@ class StudentAssignmentSubmitRepository extends BaseRepository implements Assign
                 }
             }
 
-            $isLastSubmit = $correctionsCount == ($assignment->peer_review_settings['allowed_reviews']) - 1;
+            $detailedResults[0]['penalty'] = $penalty;
+            $detailedResults[0]['studentId'] = $authData['studentId'];
+            $isLastCorrection = $correctionsCount == ($assignment->peer_review_settings['allowed_reviews']) - 1;
             $assignmentSubmit = tap($model)->update([
-                'status' => $isLastSubmit ? AssignmentSubmitStatus::Corrected : AssignmentSubmitStatus::Pending,
-                'score' => $correctionsCount == 0 ? $points : ($model->points + $points) / ($correctionsCount + 1),
-                'detailed_results' => array_push($model->detailed_results, $detailedResults),
+                'status' => $isLastCorrection ? AssignmentSubmitStatus::Corrected : AssignmentSubmitStatus::Pending,
+                'score' => $correctionsCount == 0 ? $points :
+                    ($isLastCorrection ? $detailedResults[0]['penalty'] + (($model->points + $points) / ($correctionsCount + 1)) :
+                    ($model->points + $points) / ($correctionsCount + 1)),
+                'detailed_results' => $model->detailed_results ?
+                    array_push($model->detailed_results, $detailedResults[0]) :
+                    $detailedResults,
                 'feedback' => $dto->feedback ? $dto->feedback : $model->feedback,
             ]);
 
-            $plagiarism = $assignmentSubmit->plagiarism;
-            $plagiarism->update([
-                'score' => $correctionsCount == 0 ? $dto->plagiarismScore : ($plagiarism->score + $dto->plagiarismScore) / ($correctionsCount + 1),
-                'status' => $isLastSubmit ?
-                    ($dto->plagiarismScore < 30 ? PlagiarismStatus::Clear : PlagiarismStatus::Flagged) :
-                    PlagiarismStatus::Pending,
-            ]);
+            $plagiarismCheck = $assignment->submission_settings['plagiarism_check'];
+            if($plagiarismCheck)
+            {
+                $plagiarism = $assignmentSubmit->plagiarism;
+                $plagiarism->update([
+                    'score' => $correctionsCount == 0 ? $dto->plagiarismScore : ($plagiarism->score + $dto->plagiarismScore) / ($correctionsCount + 1),
+                    'status' => $isLastCorrection ?
+                        ($dto->plagiarismScore < 30 ? PlagiarismStatus::Clear : PlagiarismStatus::Flagged) :
+                        PlagiarismStatus::Pending,
+                ]);
+            }
 
-            if ($isLastSubmit)
+            if ($isLastCorrection)
             {
                 $oldTrendArray = $grade->trend_data;
                 $newTrendArray = $oldTrendArray;

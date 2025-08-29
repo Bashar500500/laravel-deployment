@@ -31,7 +31,7 @@ class ReusableContentRequest extends FormRequest
             'tags.*' => ['required_with:tags', 'string'],
             'share_with_community' => ['required', 'boolean'],
             'file' => [
-                'required',
+                'sometimes',
                 'file',
                 (($this->request->get('type') == ReusableContentType::Video->getType() ?
                     'mimes:mp4,mov,ogg,qt,ogx,oga,ogv,webm' :

@@ -41,6 +41,15 @@ enum ForbiddenExceptionMessage: string
     case InteractiveContent = 'interactive_content';
     case ReusableContent = 'reusable_content';
     case AssignmentAllowedReviews = 'assignment_allowed_reviews';
+    case AssignmentCorrectedByStudent = 'assignment_corrected_by_student';
+    case AssessmentFinished = 'assessment_finished';
+    case ProjectFinished = 'project_finished';
+    case AssignmentPeerReviewed = 'assignment_peer_reviewed';
+    case AssignmentNotPeerReviewed = 'assignment_not_peer_reviewed';
+    case AssignmentRubric = 'assignment_rubric';
+    case ProjectRubric = 'project_rubric';
+    case InstructorAddStudentToCourse = 'instructor_add_student_to_course';
+    case CourseCodeNotCorrect = 'course_code_not_correct';
 
     public function getDescription(): string
     {

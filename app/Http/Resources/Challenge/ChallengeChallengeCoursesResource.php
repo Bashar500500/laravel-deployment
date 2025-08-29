@@ -10,7 +10,7 @@ class ChallengeChallengeCoursesResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name' => $this->load('course')->name,
+            'name' => $this->course?->name,
         ];
     }
 }

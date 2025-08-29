@@ -15,6 +15,7 @@ class EventDto
         public readonly ?int $pageSize,
         public readonly ?int $courseId,
         public readonly ?string $name,
+        public readonly ?array $groups,
         public readonly ?EventType $type,
         public readonly ?Carbon $date,
         public readonly ?Carbon $startTime,
@@ -32,6 +33,7 @@ class EventDto
             currentPage: $request->validated('page'),
             pageSize: $request->validated('page_size') ?? 20,
             name: null,
+            groups: null,
             type: null,
             date: null,
             startTime: null,
@@ -50,6 +52,7 @@ class EventDto
             pageSize: null,
             courseId: $request->validated('course_id'),
             name: $request->validated('name'),
+            groups: $request->validated('groups'),
             type: EventType::from($request->validated('type')),
             date: Carbon::parse($request->validated('date')),
             startTime: Carbon::parse($request->validated('start_time')),
@@ -68,6 +71,7 @@ class EventDto
             pageSize: null,
             courseId: null,
             name: $request->validated('name'),
+            groups: $request->validated('groups'),
             type: $request->validated('type') ?
                 EventType::from($request->validated('type')) :
                 null,

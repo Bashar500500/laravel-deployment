@@ -334,6 +334,11 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
 
     public function addStudentToCourse(UserCourseDto $dto): UserMessage
     {
+        if (! $dto->email)
+        {
+            throw CustomException::forbidden(ModelName::User, ForbiddenExceptionMessage::InstructorAddStudentToCourse);
+        }
+
         $student = User::where('email', $dto->email)->first();
 
         if (! $student)

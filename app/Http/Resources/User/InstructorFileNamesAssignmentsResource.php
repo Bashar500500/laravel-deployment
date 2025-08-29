@@ -12,7 +12,7 @@ class InstructorFileNamesAssignmentsResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'files' => $this->attachments->count() == 0 ?
+            'files' => $this->attachments?->count() == 0 ?
                 null :
                 FileNamesAttachmentResource::collection($this->attachments),
             'assignmentSubmits' => InstructorFileNamesAssignmentAssignmentSubmitsResource::collection(collect($this->assignmentSubmits)),

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('deadline');
             $table->string('priority');
             $table->string('status');
+            $table->unique(['student_id', 'assignment_id']);
             $table->timestamps();
         });
     }

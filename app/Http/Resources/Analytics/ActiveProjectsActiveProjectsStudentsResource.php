@@ -13,7 +13,7 @@ class ActiveProjectsActiveProjectsStudentsResource extends JsonResource
         return [
             // 'image' => $this->student->profile->load('attachment')->url ? $this->student->profile->load('attachment')->url : null,
             'name' => $this->student->first_name . ' ' . $this->student->last_name,
-            'avatar' => $this->student->profile->load('attachment')->url ?
+            'avatar' => $this->student->profile?->load('attachment') ?
                 $this->prepareAttachmentData($this->student->profile->id, $this->student->profile->load('attachment')->url)
                 : null,
         ];

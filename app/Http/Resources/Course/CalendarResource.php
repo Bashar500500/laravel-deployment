@@ -18,7 +18,6 @@ class CalendarResource extends JsonResource
                         Carbon::parse($event->date)->lessThanOrEqualTo(Carbon::today()->addMonth());
                 })
             ),
-            'eventStudents' => CalendarStudentsResource::collection(collect($this->students)),
             'learningActivities' => CalendarLearningActivitiesResource::collection(collect($this->learningActivities)
                 ->filter(function ($activity) {
                     return $activity->type == LearningActivityType::LiveSession &&

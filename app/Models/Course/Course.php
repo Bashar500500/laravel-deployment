@@ -50,6 +50,7 @@ class Course extends Model
         'duration',
         'estimated_duration_hours',
         'price',
+        'code',
         'access_settings_access_type',
         'access_settings_price_hidden',
         'access_settings_is_secret',

@@ -60,7 +60,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
             {
                 foreach ($dto->groups as $id)
                 {
-                    $section->sectionGroups()->create([
+                    $section->sectionEventGroups()->create([
                         'group_id' => $id,
                     ]);
                 }
@@ -123,11 +123,11 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
 
             if ($dto->groups)
             {
-                $section->sectionGroups()->delete();
+                $section->sectionEventGroups()->delete();
 
                 foreach ($dto->groups as $id)
                 {
-                    $section->sectionGroups()->create([
+                    $section->sectionEventGroups()->create([
                         'group_id' => $id,
                     ]);
                 }
@@ -213,6 +213,7 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
                 }
             }
             $model->attachments()->delete();
+            $model->sectionEventGroups()->delete();
             $model->prerequisites()->delete();
             $model->requireds()->delete();
             return parent::delete($id);

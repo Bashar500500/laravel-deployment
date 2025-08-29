@@ -11,11 +11,10 @@ class FileNamesWikisResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'username' => $this->user ?
-                $this->user->first_name . $this->user->last_name :
-                null,
+            'username' => $this->user->first_name .
+                $this->user->last_name,
             'title' => $this->title,
-            'files' => $this->attachments->count() == 0 ?
+            'files' => $this->attachments?->count() == 0 ?
                 null :
                 FileNamesAttachmentResource::collection($this->attachments),
         ];
