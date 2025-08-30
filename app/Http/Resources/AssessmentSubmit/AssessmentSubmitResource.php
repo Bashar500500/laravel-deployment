@@ -17,9 +17,6 @@ class AssessmentSubmitResource extends JsonResource
             'feedback' => $this->feedback,
             'detailedResults' => $this->detailed_results,
             'answers' => $this->answers,
-            'files' => $this->whenLoaded('attachments')->count() == 0 ?
-                null :
-                AssessmentSubmitAttachmentResource::collection($this->whenLoaded('attachments')),
         ];
     }
 }

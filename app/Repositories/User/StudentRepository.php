@@ -91,9 +91,9 @@ class StudentRepository extends BaseRepository implements UserRepositoryInterfac
             $ownedCourses = $model->ownedCourses;
             $badges = $model->badges;
 
-            $attachment = $profile->attachment;
-            Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $attachment?->url);
-            $profile->attachment()->delete();
+            $attachment = $profile?->attachment;
+            Storage::disk('supabase')->delete('Profile/' . $profile?->id . '/Images/' . $attachment?->url);
+            $profile?->attachment()->delete();
 
             // foreach ($projects as $project)
             // {

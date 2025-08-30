@@ -32,11 +32,12 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
     public function all(UserDto $dto, array $data): object
     {
         $user = $data['user'];
-        $students = $user->instructorStudentsForInstructor
+        $students = $user->instructorStudentsForInstructor()
             ->pluck('student_id')
             ->values();
 
         return (object) $this->model->whereIn('id', $students)
+            ->with('userCourseGroups')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -57,6 +58,7 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
             ->values();
 
         return (object) $this->model->whereIn('id', $students)
+            ->with('userCourseGroups')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -126,9 +128,9 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
             $ownedCourses = $model->ownedCourses;
             $badges = $model->badges;
 
-            $attachment = $profile->attachment;
-            Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $attachment?->url);
-            $profile->attachment()->delete();
+            $attachment = $profile?->attachment;
+            Storage::disk('supabase')->delete('Profile/' . $profile?->id . '/Images/' . $attachment?->url);
+            $profile?->attachment()->delete();
 
             foreach ($wikis as $wiki)
             {
@@ -159,10 +161,10 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
                 $assessments = $ownedCourse->assessments;
                 $assignments = $ownedCourse->assignments;
                 $questionBank = $ownedCourse->questionBank;
-                $questionBankMultipleTypeQuestions = $questionBank->questionBankMultipleTypeQuestions ?? [];
-                $questionBankTrueOrFalseQuestions = $questionBank->questionBankTrueOrFalseQuestions ?? [];
-                $questionBankShortAnswerQuestions = $questionBank->questionBankShortAnswerQuestions ?? [];
-                $questionBankFillInBlankQuestions = $questionBank->questionBankFillInBlankQuestions ?? [];
+                $questionBankMultipleTypeQuestions = $questionBank?->questionBankMultipleTypeQuestions ?? [];
+                $questionBankTrueOrFalseQuestions = $questionBank?->questionBankTrueOrFalseQuestions ?? [];
+                $questionBankShortAnswerQuestions = $questionBank?->questionBankShortAnswerQuestions ?? [];
+                $questionBankFillInBlankQuestions = $questionBank?->questionBankFillInBlankQuestions ?? [];
 
                 foreach ($learningActivities as $learningActivity)
                 {
@@ -421,7 +423,8 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
             throw CustomException::notFound('Student');
         }
 
-        DB::transaction(function () use ($exists) {
+        DB::transaction(function () use ($exists, $data) {
+            $exists->enrolledCourses()->where('instructor_id', $data['user']->id)->delete();
             $exists->delete();
         });
     }

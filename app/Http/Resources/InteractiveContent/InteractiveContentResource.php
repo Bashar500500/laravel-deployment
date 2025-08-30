@@ -15,7 +15,9 @@ class InteractiveContentResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'type' => $this->type,
-            'file' => $this->whenLoaded('attachment')->url,
+            'file' => $this->whenLoaded('attachment') ?
+                $this->whenLoaded('attachment')->url :
+                null,
         ];
     }
 }

@@ -32,8 +32,9 @@ class CourseResource extends JsonResource
             'code' => $this->code,
             'accessSettings' => CourseAccessSettingResource::makeJson($this),
             'features' => CourseFeatureResource::makeJson($this),
-            'prerequisites' => $this->whenLoaded('requireds')->count() == 0 ?
-                null : CoursePrerequisitesResource::makeJson($this),
+            'prerequisites' => CoursePrerequisitesResource::collection($this->whenLoaded('requireds')),
+            // 'prerequisites' => $this->whenLoaded('requireds')->count() == 0 ?
+            //     null : CoursePrerequisitesResource::collection($this->whenLoaded('requireds')),
         ];
     }
 

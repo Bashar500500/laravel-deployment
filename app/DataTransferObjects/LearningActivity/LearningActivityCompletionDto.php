@@ -16,11 +16,18 @@ class LearningActivityCompletionDto
 
     public static function from(LearningActivityRequest $request): LearningActivityCompletionDto
     {
-        $type = LearningActivityCompletionType::from($request->validated('completion.type'));
+        $type = $request->validated('completion.type') ?
+            LearningActivityCompletionType::from($request->validated('completion.type')) : null;
         return match ($type) {
             LearningActivityCompletionType::View => LearningActivityCompletionDto::fromViewType($request),
             LearningActivityCompletionType::Score => LearningActivityCompletionDto::fromScoreType($request),
             LearningActivityCompletionType::Composite => LearningActivityCompletionDto::fromCompositeType($request),
+            null => new self(
+                type: null,
+                minDuration: null,
+                passingScore: null,
+                rules: null,
+            )
         };
     }
 

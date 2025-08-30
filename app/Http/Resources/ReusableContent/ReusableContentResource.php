@@ -17,7 +17,9 @@ class ReusableContentResource extends JsonResource
             'type' => $this->type,
             'tags' => $this->tags,
             'shareWithCommunity' => $this->share_with_community == 0 ? 'false' : 'true',
-            'file' => $this->whenLoaded('attachment')->url,
+            'file' => $this->whenLoaded('attachment') ?
+                $this->whenLoaded('attachment')->url :
+                null,
         ];
     }
 }

@@ -42,10 +42,10 @@ class RubricRequest extends FormRequest
             'rubric_criterias.*.levels.satisfactory.points' => ['required', 'integer', 'lt:rubric_criterias.*.levels.good.points'],
             'rubric_criterias.*.levels.satisfactory.description' => ['required', 'string'],
             'rubric_criterias.*.levels.needsImprovement' => ['required', 'array'],
-            'rubric_criterias.*.levels.needsImprovement.points' => ['required', 'integer', 'lt:rubric_criterias.*.levels.s1.points'],
+            'rubric_criterias.*.levels.needsImprovement.points' => ['required', 'integer', 'lt:rubric_criterias.*.levels.satisfactory.points'],
             'rubric_criterias.*.levels.needsImprovement.description' => ['required', 'string'],
             'rubric_criterias.*.levels.unsatisfactory' => ['required', 'array'],
-            'rubric_criterias.*.levels.unsatisfactory.points' => ['required', 'integer', 'lt:rubric_criterias.*.levels.s2.points'],
+            'rubric_criterias.*.levels.unsatisfactory.points' => ['required', 'integer', 'lt:rubric_criterias.*.levels.needsImprovement.points'],
             'rubric_criterias.*.levels.unsatisfactory.description' => ['required', 'string'],
         ];
     }
@@ -67,14 +67,14 @@ class RubricRequest extends FormRequest
             'rubric_criterias.*.levels.good.points' => ['required_with:rubric_criterias.*.levels.good', 'integer', 'lt:rubric_criterias.*.levels.excellent.points'],
             'rubric_criterias.*.levels.good.description' => ['required_with:rubric_criterias.*.levels.good', 'string'],
             'rubric_criterias.*.levels.satisfactory' => ['required_with:rubric_criterias.*.levels', 'array'],
-            'rubric_criterias.*.levels.satisfactory.points' => ['required_with:rubric_criterias.*.levels.s1', 'integer', 'lt:rubric_criterias.*.levels.good.points'],
-            'rubric_criterias.*.levels.satisfactory.description' => ['required_with:rubric_criterias.*.levels.s1', 'string'],
+            'rubric_criterias.*.levels.satisfactory.points' => ['required_with:rubric_criterias.*.levels.satisfactory', 'integer', 'lt:rubric_criterias.*.levels.good.points'],
+            'rubric_criterias.*.levels.satisfactory.description' => ['required_with:rubric_criterias.*.levels.satisfactory', 'string'],
             'rubric_criterias.*.levels.needsImprovement' => ['required_with:rubric_criterias.*.levels', 'array'],
-            'rubric_criterias.*.levels.needsImprovement.points' => ['required_with:rubric_criterias.*.levels.s2', 'integer', 'lt:rubric_criterias.*.levels.s1.points'],
-            'rubric_criterias.*.levels.needsImprovement.description' => ['required_with:rubric_criterias.*.levels.s2', 'string'],
+            'rubric_criterias.*.levels.needsImprovement.points' => ['required_with:rubric_criterias.*.levels.needsImprovement', 'integer', 'lt:rubric_criterias.*.levels.satisfactory.points'],
+            'rubric_criterias.*.levels.needsImprovement.description' => ['required_with:rubric_criterias.*.levels.needsImprovement', 'string'],
             'rubric_criterias.*.levels.unsatisfactory' => ['required_with:rubric_criterias.*.levels', 'array'],
-            'rubric_criterias.*.levels.unsatisfactory.points' => ['required_with:rubric_criterias.*.levels.bad', 'integer', 'lt:rubric_criterias.*.levels.s2.points'],
-            'rubric_criterias.*.levels.unsatisfactory.description' => ['required_with:rubric_criterias.*.levels.bad', 'string'],
+            'rubric_criterias.*.levels.unsatisfactory.points' => ['required_with:rubric_criterias.*.levels.unsatisfactory', 'integer', 'lt:rubric_criterias.*.levels.needsImprovement.points'],
+            'rubric_criterias.*.levels.unsatisfactory.description' => ['required_with:rubric_criterias.*.levels.unsatisfactory', 'string'],
         ];
     }
 

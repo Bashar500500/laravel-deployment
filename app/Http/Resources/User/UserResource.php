@@ -14,7 +14,8 @@ class UserResource extends JsonResource
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'email' => $this->email,
-            'role'  => $this->getRoleNames()[0],
+            'role'  => $this->getRoleNames()[0] ?? null,
+            'userCourseCodes'  => UserUserCourseCodesResource::collection($this->whenLoaded('userCourseGroups')),
         ];
     }
 }

@@ -108,9 +108,9 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
             $ownedCourses = $model->ownedCourses;
             $badges = $model->badges;
 
-            $attachment = $profile->attachment;
-            Storage::disk('supabase')->delete('Profile/' . $profile->id . '/Images/' . $attachment?->url);
-            $profile->attachment()->delete();
+            $attachment = $profile?->attachment;
+            Storage::disk('supabase')->delete('Profile/' . $profile?->id . '/Images/' . $attachment?->url);
+            $profile?->attachment()->delete();
 
             foreach ($wikis as $wiki)
             {

@@ -279,7 +279,13 @@ class StudentAssessmentRepository extends BaseRepository implements AssessmentRe
             $assessmentMultipleTypeQuestionsPoints = $model->assessmentMultipleTypeQuestions->sum('points');
             $assessmentTrueOrFalseQuestionsPoints = $model->assessmentTrueOrFalseQuestions->sum('points');
             $assessmentShortAnswerQuestionsPoints = $model->assessmentShortAnswerQuestions->sum('points');
-            $assessmentFillInBlankQuestionsPoints = $model->assessmentFillInBlankQuestions->sum('points');
+            $assessmentFillInBlankQuestionsPoints = 0;
+            $assessmentFillInBlankQuestions = $model->assessmentFillInBlankQuestions;
+            foreach ($assessmentFillInBlankQuestions as $assessmentFillInBlankQuestion)
+            {
+                $points = $assessmentFillInBlankQuestion->blanks->sum('points');
+                $assessmentFillInBlankQuestionsPoints += $points;
+            }
             $assessmentQuestionBankMultipleTypeQuestionsPoints = $model->assessmentQuestionBankMultipleTypeQuestions->sum('points');
             $assessmentQuestionBankTrueOrFalseQuestionsPoints = $model->assessmentQuestionBankTrueOrFalseQuestions->sum('points');
             $assessmentQuestionBankShortAnswerQuestionsPoints = $model->assessmentQuestionBankShortAnswerQuestions->sum('points');
@@ -605,7 +611,13 @@ class StudentAssessmentRepository extends BaseRepository implements AssessmentRe
         $assessmentMultipleTypeQuestionsPoints = $assessment->assessmentMultipleTypeQuestions->sum('points');
         $assessmentTrueOrFalseQuestionsPoints = $assessment->assessmentTrueOrFalseQuestions->sum('points');
         $assessmentShortAnswerQuestionsPoints = $assessment->assessmentShortAnswerQuestions->sum('points');
-        $assessmentFillInBlankQuestionsPoints = $assessment->assessmentFillInBlankQuestions->sum('points');
+        $assessmentFillInBlankQuestionsPoints = 0;
+        $assessmentFillInBlankQuestions = $assessment->assessmentFillInBlankQuestions;
+        foreach ($assessmentFillInBlankQuestions as $assessmentFillInBlankQuestion)
+        {
+            $points = $assessmentFillInBlankQuestion->blanks->sum('points');
+            $assessmentFillInBlankQuestionsPoints += $points;
+        }
         $assessmentQuestionBankMultipleTypeQuestionsPoints = $assessment->assessmentQuestionBankMultipleTypeQuestions->sum('points');
         $assessmentQuestionBankTrueOrFalseQuestionsPoints = $assessment->assessmentQuestionBankTrueOrFalseQuestions->sum('points');
         $assessmentQuestionBankShortAnswerQuestionsPoints = $assessment->assessmentQuestionBankShortAnswerQuestions->sum('points');
@@ -693,7 +705,13 @@ class StudentAssessmentRepository extends BaseRepository implements AssessmentRe
         $assessmentMultipleTypeQuestionsPoints = $assessment->assessmentMultipleTypeQuestions->sum('points');
         $assessmentTrueOrFalseQuestionsPoints = $assessment->assessmentTrueOrFalseQuestions->sum('points');
         $assessmentShortAnswerQuestionsPoints = $assessment->assessmentShortAnswerQuestions->sum('points');
-        $assessmentFillInBlankQuestionsPoints = $assessment->assessmentFillInBlankQuestions->sum('points');
+        $assessmentFillInBlankQuestionsPoints = 0;
+        $assessmentFillInBlankQuestions = $assessment->assessmentFillInBlankQuestions;
+        foreach ($assessmentFillInBlankQuestions as $assessmentFillInBlankQuestion)
+        {
+            $points = $assessmentFillInBlankQuestion->blanks->sum('points');
+            $assessmentFillInBlankQuestionsPoints += $points;
+        }
         $assessmentQuestionBankMultipleTypeQuestionsPoints = $assessment->assessmentQuestionBankMultipleTypeQuestions->sum('points');
         $assessmentQuestionBankTrueOrFalseQuestionsPoints = $assessment->assessmentQuestionBankTrueOrFalseQuestions->sum('points');
         $assessmentQuestionBankShortAnswerQuestionsPoints = $assessment->assessmentQuestionBankShortAnswerQuestions->sum('points');

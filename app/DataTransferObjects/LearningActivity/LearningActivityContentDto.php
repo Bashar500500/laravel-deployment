@@ -22,7 +22,8 @@ class LearningActivityContentDto
 
     public static function from(LearningActivityRequest $request): LearningActivityContentDto
     {
-        $type = LearningActivityType::from($request->validated('type'));
+        $type = $request->validated('type') ?
+            LearningActivityType::from($request->validated('type')) : null;
         return match ($type) {
             LearningActivityType::Pdf => LearningActivityContentDto::fromPdfType($request),
             LearningActivityType::Video => LearningActivityContentDto::fromVideoType($request),
@@ -32,6 +33,17 @@ class LearningActivityContentDto
             LearningActivityType::Zip => LearningActivityContentDto::fromZipType($request),
             LearningActivityType::InteractiveContent => LearningActivityContentDto::fromInteractiveContentType($request),
             LearningActivityType::ReusableContent => LearningActivityContentDto::fromReusableContentType($request),
+            null => new self(
+                pdf: null,
+                video: null,
+                audio: null,
+                word: null,
+                powerPoint: null,
+                zip: null,
+                interactiveContentId: null,
+                reusableContentId: null,
+                learningActivityContentCaptionsDto: null,
+            ),
         };
     }
 
