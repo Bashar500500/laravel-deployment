@@ -21,7 +21,7 @@ class SectionGroupResource extends JsonResource
                 : null,
             'capacity' => SectionGroupCapacityResource::makeJson($this),
             'instructorId' => $this->group->course->instructor->id,
-            'students' => $this->group->students?->select('id'),
+            'students' => $this->group->students?->select('student_id'),
         ];
     }
 

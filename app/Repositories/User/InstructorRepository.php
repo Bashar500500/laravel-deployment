@@ -423,8 +423,11 @@ class InstructorRepository extends BaseRepository implements UserRepositoryInter
             throw CustomException::notFound('Student');
         }
 
-        DB::transaction(function () use ($exists, $data) {
-            $exists->enrolledCourses()->where('instructor_id', $data['user']->id)->delete();
+        $ownedCourses = $data['user']->ownedCourses->pluck('id')->toArray();
+
+        DB::transaction(function () use ($exists, $dto, $ownedCourses) {
+            $exists->student->userCourseGroups()->where('student_id', $dto->studentId)
+                ->whereIn('course_id', $ownedCourses)->delete();
             $exists->delete();
         });
     }

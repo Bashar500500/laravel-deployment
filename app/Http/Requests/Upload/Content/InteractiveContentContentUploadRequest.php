@@ -20,8 +20,8 @@ class InteractiveContentContentUploadRequest extends FormRequest
         return [
             'content_type' => ['required', new Enum(InteractiveContentType::class)],
             'video' => ['required_if:content_type,==,Video', 'missing_if:content_type,==,' . implode(',', InteractiveContentType::Video->getEnumsExceptValue()), 'file', 'mimes:mp4,mov,ogg,qt,ogx,oga,ogv,webm'],
-            'presentation' => ['required_if:content_type,==,PDF', 'missing_if:content_type,==,' . implode(',', InteractiveContentType::Presentation->getEnumsExceptValue()), 'file', 'mimes:ppt,pptx,odp'],
-            'quiz' => ['required_if:content_type,==,Video', 'missing_if:content_type,==,' . implode(',', InteractiveContentType::Quiz->getEnumsExceptValue()), 'file'],
+            'presentation' => ['required_if:content_type,==,Presentation', 'missing_if:content_type,==,' . implode(',', InteractiveContentType::Presentation->getEnumsExceptValue()), 'file', 'mimes:ppt,pptx,odp'],
+            'quiz' => ['required_if:content_type,==,Quiz', 'missing_if:content_type,==,' . implode(',', InteractiveContentType::Quiz->getEnumsExceptValue()), 'file'],
             'dz_uuid' => ['required', 'string', 'uuid'],
             'dz_chunk_index' => ['required', 'integer', 'gte:0'],
             'dz_total_chunk_count' => ['required', 'integer', 'gt:dz_chunk_index'],

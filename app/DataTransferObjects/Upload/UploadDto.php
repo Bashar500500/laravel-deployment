@@ -57,7 +57,7 @@ class UploadDto
 
     public static function fromLearningActivityPdfUploadRequest(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadDto
     {
-        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->content_type)
+        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->type)
         {
             throw CustomException::forbidden(ModelName::LearningActivity, ForbiddenExceptionMessage::LearningActivity);
         }
@@ -81,7 +81,7 @@ class UploadDto
 
     public static function fromLearningActivityAudioUploadRequest(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadDto
     {
-        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->content_type)
+        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->type)
         {
             throw CustomException::forbidden(ModelName::LearningActivity, ForbiddenExceptionMessage::LearningActivity);
         }
@@ -105,7 +105,7 @@ class UploadDto
 
     public static function fromLearningActivityVideoUploadRequest(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadDto
     {
-        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->content_type)
+        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->type)
         {
             throw CustomException::forbidden(ModelName::LearningActivity, ForbiddenExceptionMessage::LearningActivity);
         }
@@ -129,7 +129,7 @@ class UploadDto
 
     public static function fromLearningActivityWordUploadRequest(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadDto
     {
-        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->content_type)
+        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->type)
         {
             throw CustomException::forbidden(ModelName::LearningActivity, ForbiddenExceptionMessage::LearningActivity);
         }
@@ -153,7 +153,7 @@ class UploadDto
 
     public static function fromLearningActivityPowerPointUploadRequest(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadDto
     {
-        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->content_type)
+        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->type)
         {
             throw CustomException::forbidden(ModelName::LearningActivity, ForbiddenExceptionMessage::LearningActivity);
         }
@@ -177,7 +177,7 @@ class UploadDto
 
     public static function fromLearningActivityZipUploadRequest(LearningActivityContentUploadRequest $request, LearningActivity $learningActivity): UploadDto
     {
-        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->content_type)
+        if (LearningActivityType::from($request->validated('content_type')) != $learningActivity->type)
         {
             throw CustomException::forbidden(ModelName::LearningActivity, ForbiddenExceptionMessage::LearningActivity);
         }
@@ -201,7 +201,7 @@ class UploadDto
 
     public static function fromInteractiveContentVideoUploadRequest(InteractiveContentContentUploadRequest $request, InteractiveContent $interactiveContent): UploadDto
     {
-        if (InteractiveContentType::from($request->validated('content_type')) != $interactiveContent->content_type)
+        if (InteractiveContentType::from($request->validated('content_type')) != $interactiveContent->type)
         {
             throw CustomException::forbidden(ModelName::InteractiveContent, ForbiddenExceptionMessage::InteractiveContent);
         }
@@ -225,7 +225,7 @@ class UploadDto
 
     public static function fromInteractiveContentPresentationUploadRequest(InteractiveContentContentUploadRequest $request, InteractiveContent $interactiveContent): UploadDto
     {
-        if (InteractiveContentType::from($request->validated('content_type')) != $interactiveContent->content_type)
+        if (InteractiveContentType::from($request->validated('content_type')) != $interactiveContent->type)
         {
             throw CustomException::forbidden(ModelName::InteractiveContent, ForbiddenExceptionMessage::InteractiveContent);
         }
@@ -249,7 +249,7 @@ class UploadDto
 
     public static function fromInteractiveContentQuizUploadRequest(InteractiveContentContentUploadRequest $request, InteractiveContent $interactiveContent): UploadDto
     {
-        if (InteractiveContentType::from($request->validated('content_type')) != $interactiveContent->content_type)
+        if (InteractiveContentType::from($request->validated('content_type')) != $interactiveContent->type)
         {
             throw CustomException::forbidden(ModelName::InteractiveContent, ForbiddenExceptionMessage::InteractiveContent);
         }
@@ -273,7 +273,7 @@ class UploadDto
 
     public static function fromReusableContentVideoUploadRequest(ReusableContentContentUploadRequest $request, ReusableContent $reusableContent): UploadDto
     {
-        if (ReusableContentType::from($request->validated('content_type')) != $reusableContent->content_type)
+        if (ReusableContentType::from($request->validated('content_type')) != $reusableContent->type)
         {
             throw CustomException::forbidden(ModelName::ReusableContent, ForbiddenExceptionMessage::ReusableContent);
         }
@@ -297,7 +297,7 @@ class UploadDto
 
     public static function fromReusableContentPresentationUploadRequest(ReusableContentContentUploadRequest $request, ReusableContent $reusableContent): UploadDto
     {
-        if (ReusableContentType::from($request->validated('content_type')) != $reusableContent->content_type)
+        if (ReusableContentType::from($request->validated('content_type')) != $reusableContent->type)
         {
             throw CustomException::forbidden(ModelName::ReusableContent, ForbiddenExceptionMessage::ReusableContent);
         }
@@ -321,7 +321,7 @@ class UploadDto
 
     public static function fromReusableContentQuizUploadRequest(ReusableContentContentUploadRequest $request, ReusableContent $reusableContent): UploadDto
     {
-        if (ReusableContentType::from($request->validated('content_type')) != $reusableContent->content_type)
+        if (ReusableContentType::from($request->validated('content_type')) != $reusableContent->type)
         {
             throw CustomException::forbidden(ModelName::ReusableContent, ForbiddenExceptionMessage::ReusableContent);
         }
@@ -345,7 +345,7 @@ class UploadDto
 
     public static function fromReusableContentPdfUploadRequest(ReusableContentContentUploadRequest $request, ReusableContent $reusableContent): UploadDto
     {
-        if (ReusableContentType::from($request->validated('content_type')) != $reusableContent->content_type)
+        if (ReusableContentType::from($request->validated('content_type')) != $reusableContent->type)
         {
             throw CustomException::forbidden(ModelName::ReusableContent, ForbiddenExceptionMessage::ReusableContent);
         }

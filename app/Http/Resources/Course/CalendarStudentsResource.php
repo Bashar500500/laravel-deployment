@@ -10,7 +10,7 @@ class CalendarStudentsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'studentName' => $this->first_name . ' ' . $this->last_name,
+            'studentName' => $this->student?->first_name . ' ' . $this->student?->last_name,
         ];
     }
 }

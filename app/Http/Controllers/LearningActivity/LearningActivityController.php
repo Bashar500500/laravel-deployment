@@ -161,7 +161,7 @@ class LearningActivityController extends Controller
 
         $this->learningActivityService->destroyAttachment($learningActivity);
 
-        return match ($learningActivity->content_type) {
+        return match ($learningActivity->type) {
             LearningActivityType::Pdf => $this->controller->setFunctionName(FunctionName::Delete)
                 ->setModelName(ModelName::Pdf)
                 ->setData((object) [])
