@@ -5,6 +5,7 @@ namespace App\Http\Resources\LearningActivity;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Enums\LearningActivity\LearningActivityType;
 use App\Models\InteractiveContent\InteractiveContent;
+use App\Models\ReusableContent\ReusableContent;
 
 class LearningActivityContentResource extends JsonResource
 {
@@ -34,8 +35,9 @@ class LearningActivityContentResource extends JsonResource
         };
 
         return [
-            'type' => $learningActivityResource->content_type,
-            'data' => $data,
+            'type' => $learningActivityResource->content_type ?? $data['type'],
+            'data' => $learningActivityResource->content_type ? $data :
+                $data['interactiveContent'] ?? $data['reusableContent'] ?? $data['captions'],
         ];
     }
 
@@ -85,14 +87,16 @@ class LearningActivityContentResource extends JsonResource
     {
         $interactiveContent = InteractiveContent::find($learningActivityResource->content_data['interactiveContentId']);
         $data['interactiveContent'] = $interactiveContent->attachment ? $interactiveContent->attachment->url : null;
+        $data['type'] = $interactiveContent->type->value;
 
         return $data;
     }
 
     private static function reusableContentType(LearningActivityResource $learningActivityResource): array
     {
-        $reusableContent = InteractiveContent::find($learningActivityResource->content_data['reusableContentId']);
+        $reusableContent = ReusableContent::find($learningActivityResource->content_data['reusableContentId']);
         $data['reusableContent'] = $reusableContent->attachment ? $reusableContent->attachment->url : null;
+        $data['type'] = $reusableContent->type->value;
 
         return $data;
     }
@@ -100,6 +104,7 @@ class LearningActivityContentResource extends JsonResource
     private static function liveSessionType(LearningActivityResource $learningActivityResource): array
     {
         $data['captions'] = $learningActivityResource->content_data['captions'];
+        $data['type'] = $learningActivityResource->type->value;
 
         return $data;
     }

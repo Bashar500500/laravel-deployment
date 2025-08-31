@@ -33,6 +33,7 @@ class LearningActivityContentDto
             LearningActivityType::Zip => LearningActivityContentDto::fromZipType($request),
             LearningActivityType::InteractiveContent => LearningActivityContentDto::fromInteractiveContentType($request),
             LearningActivityType::ReusableContent => LearningActivityContentDto::fromReusableContentType($request),
+            LearningActivityType::LiveSession => LearningActivityContentDto::fromLiveSessionType($request),
             null => new self(
                 pdf: null,
                 video: null,
@@ -165,6 +166,21 @@ class LearningActivityContentDto
     }
 
     private static function fromReusableContentType(LearningActivityRequest $request): LearningActivityContentDto
+    {
+        return new self(
+            pdf: null,
+            video: null,
+            audio: null,
+            word: null,
+            powerPoint: null,
+            zip: null,
+            interactiveContentId: null,
+            reusableContentId: $request->validated('content.data.reusable_content_id'),
+            learningActivityContentCaptionsDto: LearningActivityContentCaptionsDto::from($request),
+        );
+    }
+
+    private static function fromLiveSessionType(LearningActivityRequest $request): LearningActivityContentDto
     {
         return new self(
             pdf: null,

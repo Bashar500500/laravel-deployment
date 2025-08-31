@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Enums\LearningActivity\LearningActivityType;
 use App\Enums\Attachment\AttachmentReferenceField;
 use App\Enums\Attachment\AttachmentType;
+use App\Enums\InteractiveContent\InteractiveContentType;
+use App\Enums\ReusableContent\ReusableContentType;
 use App\Exceptions\CustomException;
 use App\Enums\Upload\UploadMessage;
 use App\Models\InteractiveContent\InteractiveContent;
@@ -434,29 +436,31 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 break;
             case LearningActivityType::InteractiveContent:
                 $interactiveContent = InteractiveContent::find($model->content_data['interactiveContentId']);
-                $exists = Storage::disk('supabase')->exists('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . 's/' . $interactiveContent->attachment?->url);
+                $tail = $interactiveContent->type == InteractiveContentType::Quiz ? 'zes' : 's';
+                $exists = Storage::disk('supabase')->exists('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . $tail . '/' . $interactiveContent->attachment?->url);
 
                 if (! $exists)
                 {
                     throw CustomException::notFound('InteractiveContent');
                 }
 
-                $file = Storage::disk('supabase')->get('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . 's/' . $interactiveContent->attachment?->url);
-                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                $file = Storage::disk('supabase')->get('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . $tail . '/' . $interactiveContent->attachment?->url);
+                $tempPath = storage_path('app/private/' . $interactiveContent->attachment?->url);
                 file_put_contents($tempPath, $file);
 
                 break;
             case LearningActivityType::ReusableContent:
                 $reusableContent = ReusableContent::find($model->content_data['reusableContentId']);
-                $exists = Storage::disk('supabase')->exists('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . 's/' . $reusableContent->attachment?->url);
+                $tail = $reusableContent->type == ReusableContentType::Quiz ? 'zes' : 's';
+                $exists = Storage::disk('supabase')->exists('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . $tail . '/' . $reusableContent->attachment?->url);
 
                 if (! $exists)
                 {
                     throw CustomException::notFound('ReusableContent');
                 }
 
-                $file = Storage::disk('supabase')->get('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . 's/' . $reusableContent->attachment?->url);
-                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                $file = Storage::disk('supabase')->get('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . $tail . '/' . $reusableContent->attachment?->url);
+                $tempPath = storage_path('app/private/' . $reusableContent->attachment?->url);
                 file_put_contents($tempPath, $file);
 
                 break;
@@ -551,29 +555,31 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
                 break;
             case LearningActivityType::InteractiveContent:
                 $interactiveContent = InteractiveContent::find($model->content_data['interactiveContentId']);
-                $exists = Storage::disk('supabase')->exists('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . 's/' . $interactiveContent->attachment?->url);
+                $tail = $interactiveContent->type == InteractiveContentType::Quiz ? 'zes' : 's';
+                $exists = Storage::disk('supabase')->exists('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . $tail . '/' . $interactiveContent->attachment?->url);
 
                 if (! $exists)
                 {
                     throw CustomException::notFound('InteractiveContent');
                 }
 
-                $file = Storage::disk('supabase')->get('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . 's/' . $interactiveContent->attachment?->url);
-                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                $file = Storage::disk('supabase')->get('InteractiveContent/' . $interactiveContent->id . '/' . $interactiveContent->type->value . $tail . '/' . $interactiveContent->attachment?->url);
+                $tempPath = storage_path('app/private/' . $interactiveContent->attachment?->url);
                 file_put_contents($tempPath, $file);
 
                 break;
             case LearningActivityType::ReusableContent:
                 $reusableContent = ReusableContent::find($model->content_data['reusableContentId']);
-                $exists = Storage::disk('supabase')->exists('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . 's/' . $reusableContent->attachment?->url);
+                $tail = $reusableContent->type == ReusableContentType::Quiz ? 'zes' : 's';
+                $exists = Storage::disk('supabase')->exists('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . $tail . '/' . $reusableContent->attachment?->url);
 
                 if (! $exists)
                 {
                     throw CustomException::notFound('ReusableContent');
                 }
 
-                $file = Storage::disk('supabase')->get('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . 's/' . $reusableContent->attachment?->url);
-                $tempPath = storage_path('app/private/' . $model->attachment?->url);
+                $file = Storage::disk('supabase')->get('ReusableContent/' . $reusableContent->id . '/' . $reusableContent->type->value . $tail . '/' . $reusableContent->attachment?->url);
+                $tempPath = storage_path('app/private/' . $reusableContent->attachment?->url);
                 file_put_contents($tempPath, $file);
 
                 break;
