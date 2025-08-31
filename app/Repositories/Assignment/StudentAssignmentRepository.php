@@ -49,7 +49,7 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
         {
             return (object) $this->model->where('course_id', $dto->courseId)
                 ->where('status', AssignmentStatus::Published)
-                ->with('course', 'assignmentSubmits', 'grades')
+                ->with('course', 'assignmentSubmits', 'grades', 'attachments')
                 ->latest('created_at')
                 ->simplePaginate(
                     $dto->pageSize,
@@ -62,7 +62,7 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
         return (object) $this->model->where('course_id', $dto->courseId)
             ->where('status', AssignmentStatus::Published)
             ->whereDate('due_date', '>=', Carbon::today())
-            ->with('course', 'assignmentSubmits', 'grades')
+            ->with('course', 'assignmentSubmits', 'grades', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -75,7 +75,7 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('course', 'assignmentSubmits', 'grades');
+            ->load('course', 'assignmentSubmits', 'grades', 'attachments');
     }
 
     public function create(AssignmentDto $dto): object
@@ -168,8 +168,9 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
                     foreach ($dto->files as $file)
                     {
                         $fileSize = $file->getSize();
+                        $sizeKb = round($fileSize / 1024, 2);
 
-                        if ($fileSize > $model->submission_settings['max_file_size_mb'])
+                        if ($sizeKb > $model->submission_settings['max_file_size_mb'])
                         {
                             throw CustomException::forbidden(ModelName::Assignment, ForbiddenExceptionMessage::AssignmentSubmissionFileSize);
                         }
@@ -316,7 +317,7 @@ class StudentAssignmentRepository extends BaseRepository implements AssignmentRe
             return $assignmentSubmit;
         });
 
-        return (object) $assignmentSubmit;
+        return (object) $assignmentSubmit->load('assignment', 'student', 'attachments');
     }
 
     private function checkChallengeSubmitAssignmentOnTimeRule(object $assignmentSubmit): void

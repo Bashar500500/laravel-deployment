@@ -83,7 +83,7 @@ class LearningActivityContentResource extends JsonResource
 
     private static function interactiveContentType(LearningActivityResource $learningActivityResource): array
     {
-        $interactiveContent = InteractiveContent::fine($learningActivityResource->content_data['interactiveContentId']);
+        $interactiveContent = InteractiveContent::find($learningActivityResource->content_data['interactiveContentId']);
         $data['interactiveContent'] = $interactiveContent->attachment ? $interactiveContent->attachment->url : null;
 
         return $data;
@@ -91,7 +91,7 @@ class LearningActivityContentResource extends JsonResource
 
     private static function reusableContentType(LearningActivityResource $learningActivityResource): array
     {
-        $reusableContent = InteractiveContent::fine($learningActivityResource->content_data['reusableContentId']);
+        $reusableContent = InteractiveContent::find($learningActivityResource->content_data['reusableContentId']);
         $data['reusableContent'] = $reusableContent->attachment ? $reusableContent->attachment->url : null;
 
         return $data;

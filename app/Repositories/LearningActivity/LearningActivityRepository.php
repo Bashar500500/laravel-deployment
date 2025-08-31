@@ -319,29 +319,29 @@ class LearningActivityRepository extends BaseRepository implements LearningActiv
         $model = (object) parent::find($id);
 
         $learningActivity = DB::transaction(function () use ($id, $model) {
-            $attachment = $model->attachment;
-            switch ($attachment->type)
+            $attachment = $model?->attachment;
+            switch ($attachment?->type)
             {
                 case AttachmentType::Pdf:
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Pdfs/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model?->id . '/Pdfs/' . $attachment?->url);
                     break;
                 case AttachmentType::Audio:
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Audios/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model?->id . '/Audios/' . $attachment?->url);
                     break;
                 case AttachmentType::Video:
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Videos/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model?->id . '/Videos/' . $attachment?->url);
                     break;
                 case AttachmentType::Word:
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Words/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model?->id . '/Words/' . $attachment?->url);
                     break;
                 case AttachmentType::PowerPoint:
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/PowerPoints/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model?->id . '/PowerPoints/' . $attachment?->url);
                     break;
                 case AttachmentType::Zip:
-                    Storage::disk('supabase')->delete('LearningActivity/' . $model->id . '/Zips/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('LearningActivity/' . $model?->id . '/Zips/' . $attachment?->url);
                     break;
             }
-            $model->attachment()->delete();
+            $model?->attachment()->delete();
             return parent::delete($id);
         });
 

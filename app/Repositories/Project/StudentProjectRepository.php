@@ -161,7 +161,7 @@ class StudentProjectRepository extends BaseRepository implements ProjectReposito
         $startDate = Carbon::parse($model->start_date);
         $endDate = Carbon::parse($model->end_date);
 
-        if($projectSubmits == $model->max_sibmits)
+        if($projectSubmits == $model->max_submits)
         {
             throw CustomException::forbidden(ModelName::Project, ForbiddenExceptionMessage::ProjectMaxSubmits);
         }
@@ -195,6 +195,8 @@ class StudentProjectRepository extends BaseRepository implements ProjectReposito
                 }
             }
 
+            $this->checkChallengeScore100OnProjectRule($projectSubmit);
+
             return $projectSubmit;
         });
 
@@ -203,7 +205,7 @@ class StudentProjectRepository extends BaseRepository implements ProjectReposito
 
     private function checkChallengeScore100OnProjectRule(object $projectSubmit): void
     {
-        $course = $projectSubmit->assessment->course;
+        $course = $projectSubmit->project->course;
         $challenges = $course->instructor->challenges;
         $groupStudents = $projectSubmit->project->group->students->pluck('student_id')->toArray();
         $leaderId = $projectSubmit->project->leader_id;

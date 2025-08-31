@@ -40,6 +40,12 @@ return [
     'video' => [
         'message' => 'Video'
     ],
+    'presentation' => [
+        'message' => 'Presentation'
+    ],
+    'quiz' => [
+        'message' => 'Quiz'
+    ],
     'file' => [
         'message' => 'File'
     ],
@@ -162,6 +168,12 @@ return [
     ],
     'badge' => [
         'message' => 'Badge'
+    ],
+    'assessment_submit' => [
+        'message' => 'Assessment submit'
+    ],
+    'assignment_submit' => [
+        'message' => 'Assignment submit'
     ],
     'blank' => [
         'message' => 'Blank'

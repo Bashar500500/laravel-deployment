@@ -18,6 +18,7 @@ class AssignmentSubmit extends Model
     protected $fillable = [
         'assignment_id',
         'student_id',
+        'status',
         'text',
         'score',
         'feedback',

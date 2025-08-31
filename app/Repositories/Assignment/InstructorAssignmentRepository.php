@@ -42,7 +42,7 @@ class InstructorAssignmentRepository extends BaseRepository implements Assignmen
     public function all(AssignmentDto $dto): object
     {
         return (object) $this->model->where('course_id', $dto->courseId)
-            ->with('course', 'assignmentSubmits', 'grades')
+            ->with('course', 'assignmentSubmits', 'grades', 'attachments')
             ->latest('created_at')
             ->simplePaginate(
                 $dto->pageSize,
@@ -55,7 +55,7 @@ class InstructorAssignmentRepository extends BaseRepository implements Assignmen
     public function find(int $id): object
     {
         return (object) parent::find($id)
-            ->load('course', 'assignmentSubmits', 'grades');
+            ->load('course', 'assignmentSubmits', 'grades', 'attachments');
     }
 
     public function create(AssignmentDto $dto): object
@@ -125,7 +125,7 @@ class InstructorAssignmentRepository extends BaseRepository implements Assignmen
             return $assignment;
         });
 
-        return (object) $assignment->load('course', 'assignmentSubmits', 'grades');
+        return (object) $assignment->load('course', 'assignmentSubmits', 'grades', 'attachments');
     }
 
     public function update(AssignmentDto $dto, int $id): object
@@ -187,7 +187,7 @@ class InstructorAssignmentRepository extends BaseRepository implements Assignmen
             return $assignment;
         });
 
-        return (object) $assignment->load('course', 'assignmentSubmits', 'grades');
+        return (object) $assignment->load('course', 'assignmentSubmits', 'grades', 'attachments');
     }
 
     public function delete(int $id): object

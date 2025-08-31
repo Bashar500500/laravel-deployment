@@ -87,7 +87,7 @@ class AssignmentService
     private function prepareAssignmentSubmitData(): array
     {
         return [
-            'student' => Auth::user(),
+            'studentId' => Auth::user()->id,
         ];
     }
 }

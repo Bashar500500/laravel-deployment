@@ -502,7 +502,7 @@ class UploadService
         {
             $data = $this->mergeChunks($type, $dzuuid, $extension, $chunkDir, $dto->dzTotalChunkCount, $sizeKb);
 
-            $repository = $this->factory->make(ModelName::InteractiveContent);
+            $repository = $this->factory->make(ModelName::ReusableContent);
             return $repository->upload($reusableContent->id, $data);
         }
 

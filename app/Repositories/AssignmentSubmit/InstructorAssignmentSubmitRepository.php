@@ -59,9 +59,9 @@ class InstructorAssignmentSubmitRepository extends BaseRepository implements Ass
         }
 
         $rubric = $assignment->rubric;
-        $grade = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->first();
-        $grades = $model->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->all();
-        $gradeScoreSum = $grades->sum('points_earned');
+        $grade = $assignment->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->first();
+        $grades = $assignment->grades->where('gradeable_type', ModelTypePath::Assignment->getTypePath())->where('gradeable_id', $assignment->id)->all();
+        $gradeScoreSum = collect($grades)->sum('points_earned');
 
         $assignmentSubmit = DB::transaction(function () use ($dto, $model, $points, $detailedResults, $rubric, $grade, $assignment, $gradeScoreSum, $grades) {
             foreach ($dto->rubricCriterias as $item)

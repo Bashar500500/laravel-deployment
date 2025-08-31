@@ -184,20 +184,20 @@ class InteractiveContentRepository extends BaseRepository implements Interactive
         $model = (object) parent::find($id);
 
         $interactiveContent = DB::transaction(function () use ($id, $model) {
-            $attachment = $model->attachment;
-            switch ($attachment->type)
+            $attachment = $model?->attachment;
+            switch ($attachment?->type)
             {
                 case AttachmentType::Video:
-                    Storage::disk('supabase')->delete('InteractiveContent/' . $model->id . '/Videos/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('InteractiveContent/' . $model?->id . '/Videos/' . $attachment?->url);
                     break;
                 case AttachmentType::Presentation:
-                    Storage::disk('supabase')->delete('InteractiveContent/' . $model->id . '/Presentations/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('InteractiveContent/' . $model?->id . '/Presentations/' . $attachment?->url);
                     break;
                 default:
-                    Storage::disk('supabase')->delete('InteractiveContent/' . $model->id . '/Quizzes/' . $attachment?->url);
+                    Storage::disk('supabase')->delete('InteractiveContent/' . $model?->id . '/Quizzes/' . $attachment?->url);
                     break;
             }
-            $model->attachment()->delete();
+            $model?->attachment()->delete();
             return parent::delete($id);
         });
 
