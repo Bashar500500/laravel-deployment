@@ -14,9 +14,9 @@ class PrerequisiteResource extends JsonResource
         $prerequisiteableAttribute = class_basename($this->prerequisiteable_type) == 'Course' ?
             Course::find($this->prerequisiteable_id) :
             Section::find($this->prerequisiteable_id);
-        $requiredableAttribute = class_basename($this->prerequisiteable_type) == 'Course' ?
-            Course::find($this->prerequisiteable_id) :
-            Section::find($this->prerequisiteable_id);
+        $requiredableAttribute = class_basename($this->requiredable_type) == 'Course' ?
+            Course::find($this->requiredable_id) :
+            Section::find($this->requiredable_id);
 
         return [
             'id' => $this->id,
