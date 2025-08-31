@@ -49,5 +49,11 @@ fi
 # Refresh caches
 php artisan optimize --no-ansi --force
 
+echo "Caching config..."
+php artisan config:cache
+
+echo "Caching routes..."
+php artisan route:cache
+
 # Start php-fpm (Nginx will proxy requests to it)
 php-fpm

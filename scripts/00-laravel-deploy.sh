@@ -43,6 +43,12 @@ composer install --no-dev --optimize-autoloader --working-dir=/var/www/html
 echo "=== Optimizing Laravel caches ==="
 php artisan optimize --no-ansi --force
 
+echo "Caching config..."
+php artisan config:cache
+
+echo "Caching routes..."
+php artisan route:cache
+
 # Optional: run migrations automatically
 # echo "=== Running migrations ==="
 # php artisan migrate --force
