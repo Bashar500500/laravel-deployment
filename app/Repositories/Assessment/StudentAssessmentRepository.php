@@ -37,7 +37,7 @@ class StudentAssessmentRepository extends BaseRepository implements AssessmentRe
     public function all(AssessmentDto $dto): object
     {
         $course = Course::find($dto->courseId);
-        $period = $course->course->enrollmentOption?->period;
+        $period = $course->enrollmentOption?->period;
 
         if ($period && $period == EnrollmentOptionPeriod::AlwaysAvailable)
         {
