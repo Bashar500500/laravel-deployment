@@ -35,8 +35,8 @@ class LearningActivityContentResource extends JsonResource
         };
 
         return [
-            'type' => $learningActivityResource->content_type ?? $data['type'],
-            'data' => $learningActivityResource->content_type ? $data :
+            'type' => $learningActivityResource->type ?? $data['type'],
+            'data' => $learningActivityResource->type ? $data :
                 $data['interactiveContent'] ?? $data['reusableContent'] ?? $data['captions'],
         ];
     }
